@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head> <!-- Start of Head -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title> <!-- Title -->
+    <link href="styles.css" rel="stylesheet" /> <!-- Links to CSS file -->
+</head> <!-- End of Head -->
+
+<body>
+
+    <h2 class="signupheader"> Sign Up</h2>
+
+    <div class="signupform">
+
+        <div class="signupinput">
+            <label for="first">First Name: </label>
+            <input type="text" id="first" name="first">
+        </div>
+
+        <div class="signupinput">
+            <label for="last">Last Name: </label>
+            <input type="text" id="last" name="last">
+        </div>
+
+        <div class="signupinput">
+            <label for="user">Username: </label>
+            <input type="text" id="user" name="user">
+        </div>
+
+        <div class="signupinput">
+            <label for="pass">Password: </label>
+            <input type="password" id="pass" name="pass">
+            <button type="button" class="toggle-btn" onclick="togglePassword('pass')">Show</button>
+        </div>
+
+        <div class="signupinput">
+            <label for="confpass">Confirm Password: </label>
+            <input type="password" id="confpass" name="confpass">
+            <button type="button" class="toggle-btn" onclick="togglePassword('confpass')">Show</button>
+        </div>
+
+        <div class="signupinput">
+            <div class="label-spacer"></div>
+            <a href="success.html" class="buttons"> Sign in </a>
+        </div>
+
+    </div>
+
+    <a href="index.html" class="buttons back"> back </a>
+
+    <div class="themewrapper">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider round"></span>
+        </label>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

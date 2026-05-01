@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head> <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Tracker</title> <link href="styles.css" rel="stylesheet" /> </head> <body>
+
+    <h1> Homework Tracker </h1>
+
+    <div class="loginform">
+        <div class="logininput">
+            <label for="pin">ENTER PIN:</label>
+            <input type="password" id="pin" name="pin">
+            <button type="button" class="toggle-btn" onclick="togglePassword('pin')">Show</button>
+        </div>
+
+        <div class="logininput bottom-row">
+            <div class="label-spacer"></div>
+            <a href="recovery.html">Forgot PIN?</a>
+            <a href="index.html" class="buttons">Log in</a>
+            <a href="signup.html" class=" buttons"> Sign Up</a>
+
+        </div>
+    </div>
+
+    <div class="themewrapper">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider round"></span>
+        </label>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

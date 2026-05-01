@@ -1,0 +1,376 @@
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+h1 {
+    /* For Titles */
+    color: rgb(139, 107, 35);
+    /* Sets text color to brown */
+    text-align: center;
+    /* text is aligned centrally */
+    font-size: 100px;
+}
+
+
+h2 {
+    color: rgb(139, 107, 35);
+    text-align: center;
+    font-size: 50px;
+}
+
+
+h3 {
+    color: green;
+    text-align: center;
+    font-size: 200px;
+}
+
+
+.nav {
+    /* For Navigation Bar */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 40px;
+    margin: 0 auto 4px auto;
+    width: fit-content;
+}
+
+
+.buttons {
+    padding: 12px 30px;
+    /* Sets Dimensions 12x30 */
+    background-color: rgb(139, 107, 35);
+    /* Sets Button Color to Brown */
+    color: rgb(255, 255, 255);
+    /* Sets Text Color to White */
+    font-weight: bold;
+    /* Sets text to Bold */
+    text-decoration: none;
+    /* Removes Underline from Link */
+}
+
+/* 1. The Container: Handles the 4-column layout */
+.main-button-container {
+    display: flex;
+    flex-direction: row;      /* Puts them side-by-side */
+    justify-content: center;  /* Centers them if they don't fill width */
+    gap: 15px;                /* Adds space between the buttons */
+    width: 100%;              /* Takes up full width of the screen */
+    max-width: 1400px;        /* Optional: keeps it from getting TOO wide on ultrawide monitors */
+    margin: 20px auto;        /* Centers the container itself */
+    box-sizing: border-box;
+}
+
+
+.mainbuttons {
+    flex: 1;
+    /* Use Flexbox INSIDE the button to stack text */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    /* Allow text to wrap and set height */
+    min-height: 150px;       /* Ensures all buttons are the same height */
+    padding: 20px;
+    white-space: normal;     /* Allows text to wrap to multiple lines */
+    text-align: center;
+    
+    background-color: rgb(139, 107, 35);
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    text-decoration: none;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.btn-title {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.btn-info {
+    font-size: 16px;
+    font-weight: normal;
+    opacity: 0.9;
+}
+
+.buttons:hover {
+    /* When Hovering Over Button */
+    /*background-color: rgb(176, 141, 0);*/
+    background-color: rgb(212, 175, 55);
+    /* Changes Color of Button to Lighter Brown */
+}
+
+.toggle-btn {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    border: 1px solid rgb(139, 107, 35);
+    cursor: pointer;
+    font-weight: bold;
+    width: 60px;
+}
+
+.toggle-btn:hover {
+    background-color: #ddd;
+}
+
+.btn-spacer {
+    width: 70px; /* Matches toggle-btn width (60px) + margin (10px) */
+    flex-shrink: 0;
+}
+
+label {
+    font-size: 20px;
+    font-weight: bold;
+    color: rgb(0, 0, 0);
+    text-align: left;
+}
+
+
+input {
+    font-weight: bold;
+    width: fit-content;
+    padding: 12px;
+    font-size: 18px;
+    border: 2px solid;
+    border-color: rgb(139, 107, 35);
+    box-sizing: border-box;
+}
+
+.input:hover {
+    border-color: rgb(212, 175, 55);
+}
+
+.signupheader{
+    margin-bottom: 50px;
+}
+
+.signupform {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 500px;
+    gap: 10px;
+    margin-top: 0;
+}
+
+
+.signupinput {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.signupinput label {
+    width: 160px; /* Forces all labels to be the exact same width */
+    text-align: right; /* Aligns the text neatly next to the input */
+    margin-right: 15px; /* Creates a clean gap before the textbox */
+}
+
+.label-spacer {
+    width: 160px; /* This MUST match the width you gave to .signupinput label */
+    margin-right: 15px; /* Matches the label's margin-right */
+}
+
+.loginheader{
+    margin-bottom: 50px;
+}
+
+.loginform {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the whole block of rows on the page */
+    width: 100%;
+    gap: 15px;
+}
+
+.loginform .label-spacer {
+    width: 100px;
+    margin-right: 15px; /* Matches the label's margin */
+    flex-shrink: 0;
+}
+
+.logininput {
+    display: flex;
+    flex-direction: row; 
+    align-items: center;
+    justify-content: flex-start; /* Aligns contents to the left side of the row */
+    width: 520px; /* Give every row the same total width */
+    margin: 0;    /* Remove '0 auto' to stop them from shifting independently */
+}
+
+.password-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.bottom-row { 
+    margin-top: 10px;
+    gap: 20px;
+}
+
+.loginform .bottom-row {
+    width: 520px;       /* Must match the .logininput width */
+    justify-content: flex-start; 
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.logininput input {
+    width: 250px;
+    flex-shrink: 0;
+}
+
+.logininput label {
+    width: 100px;
+    text-align: right;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.recoveryform {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    width: 100%;
+    max-width: 1000px;
+    gap: 20px;
+}
+
+.recoveryinput {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+
+.back {
+    margin-top: auto;
+    align-self: flex-start;
+}
+
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+
+/* Hide default HTML checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: black;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+
+input:checked+.slider {
+    background-color: #2196F3;
+}
+
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+
+input:checked+.slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.themewrapper{
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+body.dark-mode {
+    background-color: #1a1a1a; /* Dark gray background */
+    color: #ffffff;
+}
+
+/* Make titles pop better against the dark background */
+body.dark-mode h1, 
+body.dark-mode h2 {
+    color: rgb(212, 175, 55); /* Lighter gold color */
+}
+
+/* Change label text to white */
+body.dark-mode label {
+    color: #ffffff;
+}
+
+/* Style the textboxes for dark mode */
+body.dark-mode input {
+    background-color: #333333;
+    color: #ffffff;
+    border-color: rgb(212, 175, 55);
+}
+
+/* Style the "Show" password button for dark mode */
+body.dark-mode .toggle-btn {
+    background-color: #333333;
+    color: #ffffff;
+    border-color: rgb(212, 175, 55);
+}
+
+body.dark-mode .toggle-btn:hover {
+    background-color: #555555;
+}

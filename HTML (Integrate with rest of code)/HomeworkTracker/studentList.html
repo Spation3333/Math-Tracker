@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MathTrack - Student Progress</title>
+            <style>
+            /* Use a standard, clean font. White background, black text. */
+            body { font-family: sans-serif; margin: 40px; background-color: white; color: black; }
+            
+            /* Remove the 'card' look. No shadow, no border-radius, no background. */
+            .container { max-width: 800px; margin: auto; }
+            
+            /* Simple black headers */
+            h1, h2, h3 {
+                color: black;
+                border-bottom: none;
+                padding-bottom: 5px; }
+            
+            /* Remove the blue background. Just a simple grid with borders. */
+            .form-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px; }
+            .form-item { display: flex; flex-direction: column; }
+            label { font-size: 0.8em; text-transform: uppercase; margin-bottom: 2px; }
+            
+            /* Square inputs with simple borders */
+            input, select { padding: 8px; border: 1px solid black; border-radius: 0; font-size: 1em; }
+            .checkbox-group { display: flex; align-items: center; gap: 10px; grid-column: span 2; }
+            
+            /* Black and white buttons. No transitions or fancy hover effects. */
+            button { padding: 10px; background-color: black; color: white; border: 1px solid black; border-radius: 0; cursor: pointer; }
+            button:hover { background-color: white; color: black; }
+            
+            /* Simple list items with top borders only */
+            .student-list {
+                list-style: none;
+                padding: 0;
+                border-top: none; }
+
+            .student-card {
+                border-bottom: none;
+                padding: 10px 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center; }
+            /* Styling for the hidden edit panel */
+            .edit-panel {
+                display: none; /* Hidden by default */
+                background: #f9f9f9;
+                border: 1px solid black;
+                padding: 15px;
+                margin-top: 10px;
+                grid-column: 1 / -1; /* Take up full width */
+            }
+
+            .edit-panel.active {
+                display: block;
+            }
+
+            .edit-btn {
+                background: none;
+                color: black;
+                border: 1px solid black;
+                padding: 2px 8px;
+                font-size: 0.8em;
+                margin-right: 5px;
+            }
+
+            .save-btn {
+                background-color: black;
+                color: white;
+                margin-top: 10px;
+            }
+            /* No colors for status or percentages */
+            .info p { margin: 2px 0; font-size: 0.9em; }
+            .percentage { font-weight: bold; font-size: 1.1em; }
+            .late-warn { font-weight: bold; text-decoration: underline; margin-left: 10px; }
+            
+            /* Minimalist Delete and Quit buttons */
+            .delete-btn { background: none; color: black; border: 1px solid black; padding: 2px 8px; font-size: 0.8em; margin-top: 5px; }
+            .delete-btn:hover { background: black; color: white; }
+            .quit-btn { background: none; color: black; border: 1px solid black; }
+        </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Class List</h1>
+
+    
+    <div class="form-item" style="grid-column: span 2; margin-top: 10px;">
+        <label for="csv-file">Import Class CSV (Google Classroom Export)</label>
+        <input type="file" id="csv-file" accept=".csv" style="border: 1px dashed black; padding: 10px;">
+        <button onclick="handleCSV()" style="margin-top: 10px;">Process CSV Upload</button>
+    </div>
+    <button onclick="emailAllStudents()" style="margin-top: 10px; background-color: white; color: black;">
+    Email All Students
+</button>
+    <ul id="student-list" class="student-list">
+        </ul>
+    <button id="emailAllBtn" style="padding: 10px; background-color: #4CAF50; color: white; cursor: pointer;">
+  Email All Students
+</button>
+<p id="emailStatus"></p>
+
+</div>
+
+<script>
+    document.getElementById('emailAllBtn').addEventListener('click', async () => {
+    const statusText = document.getElementById('emailStatus');
+    statusText.innerText = "Sending emails... please wait.";
+    
+    try {
+      // This sends a signal to your server.js
+      const response = await fetch('http://localhost:3000/send-all', { method: 'POST' });
+      
+      if (response.ok) {
+        statusText.innerText = "✅ All emails sent successfully!";
+      } else {
+        statusText.innerText = "❌ Server error. Check terminal.";
+      }
+    } catch (error) {
+      statusText.innerText = "❌ Failed to connect to server.";
+    }
+  });
+    async function handleCSV() {
+    const fileInput = document.getElementById('csv-file');
+    const file = fileInput.files[0];
+
+    if (!file) return alert("Please select a CSV file first.");
+
+    const reader = new FileReader();
+    
+    reader.onload = async function(e) {
+        const text = e.target.result;
+        
+        // --- IMPROVED CSV PARSING ---
+        // This logic handles newlines inside quoted fields (like Lukas's comments)
+        const rows = [];
+        let currentRow = "";
+        let inQuotes = false;
+
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            if (char === '"') inQuotes = !inQuotes;
+            // Only split on newline if we aren't inside a quoted section
+            if ((char === '\n' || char === '\r') && !inQuotes) {
+                if (currentRow.trim() !== "") rows.push(currentRow);
+                currentRow = "";
+                // Skip the \n if we just handled a \r (for Windows-style line endings)
+                if (char === '\r' && text[i+1] === '\n') i++; 
+            } else {
+                currentRow += char;
+            }
+        }
+        if (currentRow.trim() !== "") rows.push(currentRow);
+
+        // Skip the header row
+        const studentData = rows.slice(1);
+
+        try {
+            // STEP 1: Clear existing data
+            const clearResponse = await fetch('http://localhost:3000/api/clear', { 
+                method: 'DELETE' 
+            });
+            
+            if (!clearResponse.ok) throw new Error("Failed to clear database.");
+
+            // STEP 2: Import new data
+            for (const row of studentData) {
+                // Split columns by comma, respecting quotes
+                const columns = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                
+                // Ensure we have at least Last Name, First Name, and Email
+                if (columns.length < 3) continue;
+
+                const lastName = columns[0].replace(/"/g, '').trim();
+                const firstName = columns[1].replace(/"/g, '').trim();
+                const email = columns[2].replace(/"/g, '').trim();
+
+                const student = {
+                    name: `${firstName} ${lastName}`,
+                    guardian_email: email,
+                    completion_pct: 0, // Ignoring percentage as requested
+                    is_late: 0 
+                };
+
+                await fetch('http://localhost:3000/api/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(student)
+                });
+            }
+
+            alert("Import complete! Lukas and the others should now appear.");
+            loadData();
+            fileInput.value = ''; 
+
+        } catch (err) {
+            console.error("Import error:", err);
+            alert("Error: " + err.message);
+        }
+    };
+
+    reader.readAsText(file);
+}
+    
+    // 1. LOAD DATA
+    async function loadData() {
+        try {
+            const response = await fetch('http://localhost:3000/api/data');
+            const json = await response.json();
+            const list = document.getElementById('student-list');
+            list.innerHTML = '';
+
+            if (!json.data || json.data.length === 0) {
+                list.innerHTML = '<p>No students tracked yet.</p>';
+                return;
+            }
+
+            // Replace the .forEach inside loadData() with this:
+            json.data.forEach(student => {
+                const li = document.createElement('li');
+                li.className = 'student-card';
+                li.style.flexWrap = 'wrap'; // Allow edit panel to drop to next line
+
+                li.innerHTML = `
+                    <div class="info">
+                        <h3>${student.name}</h3>
+                        <p><strong>Student Email:</strong> ${student.guardian_email}</p>
+                        <button class="edit-btn" onclick="toggleEdit(${student.id})">Edit</button>
+                        <button class="delete-btn" onclick="deleteStudent(${student.id})">Remove</button>
+                    </div>
+                    
+                    <div id="edit-${student.id}" class="edit-panel">
+                        <div class="form-item">
+                            <label>Name</label>
+                            <input type="text" id="edit-name-${student.id}" value="${student.name}">
+                        </div>
+                        <div class="form-item" style="margin-top:10px;">
+                            <label>Email</label>
+                            <input type="email" id="edit-email-${student.id}" value="${student.guardian_email}">
+                        </div>
+                        <button class="save-btn" onclick="saveEdit(${student.id})">Save Changes</button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        } catch (err) {
+            console.error("Error loading data:", err);
+        }
+    }
+
+    // 2. ADD STUDENT
+    async function addStudent() {
+        const data = {
+            name: document.getElementById('name').value,
+            guardian_email: document.getElementById('email').value,
+            lesson_name: document.getElementById('lesson').value,
+            completion_pct: document.getElementById('completion').value,
+            is_late: document.getElementById('is_late').checked ? 1 : 0
+        };
+
+        if (!data.name || !data.lesson_name) return alert("Please fill in Name and Lesson.");
+
+        try {
+            await fetch('http://localhost:3000/api/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            // Clear inputs
+            document.getElementById('name').value = '';
+            document.getElementById('lesson').value = '';
+            document.getElementById('is_late').checked = false;
+            
+            loadData(); // Refresh list
+        } catch (err) {
+            alert("Error saving student.");
+        }
+    }
+
+    // 3. DELETE STUDENT
+    async function deleteStudent(id) {
+        if (!confirm("Remove this student from the tracker?")) return;
+        try {
+            await fetch(`http://localhost:3000/api/delete/${id}`, { method: 'DELETE' });
+            loadData();
+        } catch (err) {
+            console.error("Delete failed:", err);
+        }
+    }
+    // Toggle the edit dropdown visibility
+    function toggleEdit(id) {
+        const panel = document.getElementById(`edit-${id}`);
+        panel.classList.toggle('active');
+    }
+
+    // Send the updated data to the server
+    async function saveEdit(id) {
+        const newName = document.getElementById(`edit-name-${id}`).value;
+        const newEmail = document.getElementById(`edit-email-${id}`).value;
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/update/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newName, guardian_email: newEmail })
+            });
+
+            if (response.ok) {
+                alert("Student updated!");
+                loadData(); // Refresh the list to show new info
+            } else {
+                alert("Failed to update.");
+            }
+        } catch (err) {
+            console.error("Update failed:", err);
+        }
+    }
+
+
+    async function emailAllStudents() {
+    try {
+        // 1. Fetch the latest data from your server
+        const response = await fetch('http://localhost:3000/api/data');
+        const json = await response.json();
+        const students = json.data;
+
+        if (!students || students.length === 0) {
+            return alert("No students found to email.");
+        }
+
+        // 2. Extract all emails and join them with a comma
+        const emailList = students
+            .map(s => s.guardian_email)
+            .filter(email => email && email.includes('@')) // Ensure they are valid emails
+            .join(',');
+
+        if (emailList.length === 0) {
+            return alert("No valid email addresses found.");
+        }
+
+        // 3. Create the mailto link
+        // We use BCC so students can't see each other's emails
+        const subject = encodeURIComponent("MathTrack Update");
+        const body = encodeURIComponent("Hello,\n\nI am writing to provide an update on your progress in Math class...");
+        
+        const mailtoLink = `mailto:?bcc=${emailList}&subject=${subject}&body=${body}`;
+
+        // 4. Trigger the email client
+        window.location.href = mailtoLink;
+
+    } catch (err) {
+        console.error("Error generating email list:", err);
+        alert("Could not generate email list.");
+    }
+}
+
+    // Initial load
+    loadData();
+</script>
+
+</body>
+</html>
