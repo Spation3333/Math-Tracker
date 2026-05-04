@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head> <!-- Start of Head -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title> <!-- Title -->
+    <link href="styles.css" rel="stylesheet" /> <!-- Links to CSS file -->
+</head> <!-- End of Head -->
+
+
+<body> <!-- Start of Body -->
+
+
+    <p id="currentdate" class="datedisplay"></p>
+
+
+    <h2 class="signupheader"> Sign Up</h2> <!-- Displays Title -->
+
+
+    <div class="signupform"> <!-- Start of the Signup Form -->
+
+
+        <div class="signupinput"> <!-- Start of First Name -->
+            <label for="first">First Name: </label> <!-- Displays Label -->
+            <input type="text" id="first" name="first"> <!-- Displays Textbox -->
+        </div> <!-- End of First Name -->
+
+
+        <div class="signupinput"> <!-- Start of Second Name -->
+            <label for="last">Last Name: </label> <!-- Displays Label -->
+            <input type="text" id="last" name="last"> <!-- Displays Textbox -->
+        </div> <!-- End of Second Name -->
+
+
+        <div class="signupinput"> <!-- Start of Username -->
+            <label for="signupUser">Username: </label> <!-- Displays Label -->
+            <input type="text" id="signupUser" name="signupUser"> <!-- Displays Textbox -->
+        </div> <!-- End of Username -->
+
+
+        <div class="signupinput"> <!-- Start of Password -->
+            <label for="signupPass">Password: </label> <!-- Displays Label -->
+            <input type="password" id="signupPass" name="pass"> <!-- Displays Textbox -->
+            <button type="button" class="togglebuttons" onclick="togglePassword('signupPass')">👁️</button>
+            <!-- Show Password Button -->
+        </div> <!-- End of Password -->
+
+
+        <div class="signupinput"> <!-- Start of Confirm Password -->
+            <label for="confpass">Confirm Password: </label> <!-- Displays Label -->
+            <input type="password" id="confpass" name="confpass"> <!-- Displays Textbox -->
+            <button type="button" class="togglebuttons" onclick="togglePassword('confpass')">👁️</button>
+            <!-- Show Password Button -->
+        </div> <!-- End of Confirm Password -->
+
+
+        <div class="signupinput"> <!--  -->
+            <div class="signupspace"></div>
+            <a href="#" class="buttons" onclick="signup(event)"> Sign in </a> <!-- Sign In Button -->
+        </div> <!--  -->
+
+
+    </div> <!-- End of the Signup Form -->
+
+
+    <a href="index.html" class="buttons backbuttons"> back </a> <!-- Back Button -->
+
+
+    <div class="themewrapper"> <!-- Start of Theme Switch Bar -->
+        <label class="switch"> <!-- Creates Switch -->
+            <input type="checkbox" id="theme-toggle"> <!-- Makes it an Input -->
+            <span class="slider round"></span> <!-- Makes Switch into Circle -->
+        </label> <!-- End of Switch -->
+    </div> <!-- End of Theme Switch Bar -->
+
+
+    <script src="script.js"></script> <!-- Links to JS File -->
+
+
+</body> <!-- End of Body -->
+
+
+</html> <!-- End of HTML -->

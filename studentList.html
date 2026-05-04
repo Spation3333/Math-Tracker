@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathTrack - Class Roster</title>
+    <style>
+        /* Restored Base Styling & Light Mode */
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: white;
+            --border-color: #ccc;
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+        }
+
+
+        /* Dark Mode Override */
+        body.darkmode {
+            --bg-color: #1a1a1a;
+            --text-color: #f4f4f4;
+            --card-bg: #2d2d2d;
+            --border-color: #444;
+            --primary: #ecf0f1;
+            --accent: #2980b9;
+        }
+
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background 0.3s, color 0.3s;
+        }
+
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+
+        .date-display {
+            font-weight: bold;
+            margin: 0;
+            color: var(--accent);
+        }
+
+
+        /* The Switch (Copied from your styles.css logic) */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--accent);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+        }
+
+        .body.darkmode .btn{
+            color: black;
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            padding: 5px 10px;
+            font-size: 0.85em;
+        }
+
+        .student-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .student-card {
+            border: 1px solid var(--border-color);
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px;
+            background: var(--card-bg);
+        }
+
+        .info h3 {
+            margin: 0 0 5px 0;
+        }
+
+        .info p {
+            margin: 0;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+
+        .import-section {
+            border: 2px dashed var(--border-color);
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: var(--bg-color);
+        }
+
+        .nav-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <p id="currentdate" class="date-display" style="position: absolute; top: 15px; left: 20px;"></p>
+
+
+    <div class="container">
+        <div class="header-bar">
+            <h1 style="margin: 0;">MathTrack Progress</h1>
+
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 0.9em; font-weight: bold;">Dark Mode</span>
+                <label class="switch">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+
+
+        <a href="select.html" class="nav-link">← Back to Classes</a>
+
+
+        <div class="controls">
+            <h2 style="margin: 0;">Viewing: <span id="current-class-label"
+                    style="color: var(--accent);">Loading...</span></h2>
+
+            <div>
+                <button class="btn btn-success" onclick="emailAllStudents()">📧 Email Current Class</button>
+                <span id="emailStatus" style="margin-left: 10px;"></span>
+            </div>
+        </div>
+
+
+        <div class="import-section">
+            <p style="margin-top: 0;"><strong>Import Roster (.csv)</strong></p>
+            <input type="file" id="csv-file" accept=".csv" style="margin-bottom: 10px;">
+            <br>
+            <button class="btn" style="background: var(--primary);" onclick="handleCSV()">Upload & Process CSV</button>
+        </div>
+
+
+        <ul id="student-list" class="student-list"></ul>
+    </div>
+
+
+    <script>
+        let currentClass = "Unknown Class";
+
+
+        window.onload = () => {
+            // Display Date
+            const dateElement = document.getElementById('currentdate');
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.textContent = new Date().toLocaleDateString('en-US', options);
+
+
+            // Theme Toggle Logic
+            const themeToggle = document.getElementById('theme-toggle');
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('darkmode');
+                themeToggle.checked = true;
+            }
+
+
+            themeToggle.addEventListener('change', function () {
+                if (this.checked) {
+                    document.body.classList.add('darkmode');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    document.body.classList.remove('darkmode');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+
+
+            // Get Exact Class Name from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const classFromUrl = urlParams.get('class');
+
+            if (classFromUrl) {
+                currentClass = classFromUrl;
+            }
+
+            document.getElementById('current-class-label').innerText = currentClass;
+            loadData();
+        };
+
+
+        // Keep your exact same data functions below:
+        async function loadData() {
+            const list = document.getElementById('student-list');
+            list.innerHTML = '<li>Loading students...</li>';
+            try {
+                const response = await fetch(`http://localhost:3000/api/data/${encodeURIComponent(currentClass)}`);
+                const json = await response.json();
+                list.innerHTML = '';
+                if (!json.data || json.data.length === 0) {
+                    list.innerHTML = '<li><p style="text-align:center; width:100%;">No students tracked. Upload a CSV.</p></li>';
+                    return;
+                }
+                json.data.forEach(student => {
+                    const li = document.createElement('li');
+                    li.className = 'student-card';
+                    li.innerHTML = `
+                    <div class="info">
+                        <h3>${student.name}</h3>
+                        <p><strong>Email:</strong> ${student.guardian_email}</p>
+                    </div>
+                    <button class="btn btn-danger" onclick="deleteStudent(${student.id})">Remove</button>
+                `;
+                    list.appendChild(li);
+                });
+            } catch (err) {
+                list.innerHTML = '<li style="color:var(--danger);">Error connecting to server. Is node server.js running?</li>';
+            }
+        }
+
+
+        async function handleCSV() {
+            const fileInput = document.getElementById('csv-file');
+            const file = fileInput.files[0];
+            if (!file) return alert("Select a file first.");
+
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const rows = e.target.result.split('\n').slice(1);
+                for (let row of rows) {
+                    const cols = row.split(',');
+                    if (cols.length < 3) continue;
+
+
+                    // Grab the email and clean it up
+                    const email = cols[2].replace(/"/g, '').trim();
+
+                    // NEW: Skip this row if it's a weird Google Classroom header (no @ symbol)
+                    if (!email.includes('@')) continue;
+
+
+                    await fetch('http://localhost:3000/api/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: `${cols[1]} ${cols[0]}`.replace(/"/g, '').trim(),
+                            guardian_email: email,
+                            class_name: currentClass
+                        })
+                    });
+                }
+                alert("Import finished!");
+                fileInput.value = '';
+                loadData();
+            };
+            reader.readAsText(file);
+        }
+
+
+        async function deleteStudent(id) {
+            if (!confirm("Remove this student?")) return;
+            await fetch(`http://localhost:3000/api/delete/${id}`, { method: 'DELETE' });
+            loadData();
+        }
+
+
+        async function emailAllStudents() {
+            const status = document.getElementById('emailStatus');
+            status.innerText = "Sending...";
+            try {
+                const response = await fetch(`http://localhost:3000/send-all/${encodeURIComponent(currentClass)}`, { method: 'POST' });
+                status.innerText = response.ok ? "✅ Emails sent!" : "❌ Failed to send.";
+            } catch (err) {
+                status.innerText = "❌ Server offline.";
+            }
+            setTimeout(() => status.innerText = "", 3000);
+        }
+    </script>
+</body>
+
+</html>
