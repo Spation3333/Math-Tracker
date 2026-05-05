@@ -1,5 +1,5 @@
 @echo off
 echo Starting MathTrack...
 :: Go into the engine folder and run node
-cd engine
+start "" "index.html"
 .\node.exe server.js

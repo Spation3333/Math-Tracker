@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MathTrack - Class Roster</title>
     <style>
-        /* Restored Base Styling & Light Mode */
+        
         :root {
             --bg-color: #f4f7f6;
             --text-color: #333;
@@ -18,8 +18,6 @@
             --danger: #e74c3c;
         }
 
-
-        /* Dark Mode Override */
         body.darkmode {
             --bg-color: #1a1a1a;
             --text-color: #f4f4f4;
@@ -28,7 +26,6 @@
             --primary: #ecf0f1;
             --accent: #2980b9;
         }
-
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -39,7 +36,6 @@
             transition: background 0.3s, color 0.3s;
         }
 
-
         .container {
             max-width: 900px;
             margin: auto;
@@ -48,7 +44,6 @@
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
 
         .header-bar {
             display: flex;
@@ -59,20 +54,17 @@
             margin-bottom: 20px;
         }
 
-
         .date-display {
             font-weight: bold;
             margin: 0;
             color: var(--accent);
         }
 
-
-        /* The Switch (Copied from your styles.css logic) */
         .switch {
             position: relative;
             display: inline-block;
-            width: 50px;
-            height: 24px;
+            width: 60px;
+            height: 34px;
         }
 
         .switch input {
@@ -88,31 +80,50 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
+            background-color: black;
+            -webkit-transition: .4s;
             transition: .4s;
-            border-radius: 24px;
         }
 
         .slider:before {
             position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
+            content: "☀️";
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            height: 26px;
+            width: 26px;
             left: 4px;
             bottom: 4px;
-            background-color: white;
+            background-color: black;
+            -webkit-transition: .4s;
             transition: .4s;
             border-radius: 50%;
         }
 
         input:checked+.slider {
-            background-color: var(--accent);
+            background-color: white;
+        }
+
+        input:focus+.slider {
+            box-shadow: 0 0 1px #2196F3;
         }
 
         input:checked+.slider:before {
+            -webkit-transform: translateX(26px);
+            content: "🌙";
+            -ms-transform: translateX(26px);
             transform: translateX(26px);
         }
 
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
 
         .controls {
             display: flex;
@@ -132,7 +143,7 @@
             font-weight: bold;
         }
 
-        .body.darkmode .btn{
+        body.darkmode .btn {
             color: black;
         }
 
@@ -172,7 +183,6 @@
             opacity: 0.8;
         }
 
-
         .import-section {
             border: 2px dashed var(--border-color);
             padding: 20px;
@@ -194,9 +204,7 @@
 
 <body>
 
-
     <p id="currentdate" class="date-display" style="position: absolute; top: 15px; left: 20px;"></p>
-
 
     <div class="container">
         <div class="header-bar">
@@ -211,20 +219,16 @@
             </div>
         </div>
 
-
         <a href="select.html" class="nav-link">← Back to Classes</a>
-
 
         <div class="controls">
             <h2 style="margin: 0;">Viewing: <span id="current-class-label"
                     style="color: var(--accent);">Loading...</span></h2>
-
             <div>
                 <button class="btn btn-success" onclick="emailAllStudents()">📧 Email Current Class</button>
                 <span id="emailStatus" style="margin-left: 10px;"></span>
             </div>
         </div>
-
 
         <div class="import-section">
             <p style="margin-top: 0;"><strong>Import Roster (.csv)</strong></p>
@@ -233,14 +237,11 @@
             <button class="btn" style="background: var(--primary);" onclick="handleCSV()">Upload & Process CSV</button>
         </div>
 
-
         <ul id="student-list" class="student-list"></ul>
     </div>
 
-
     <script>
         let currentClass = "Unknown Class";
-
 
         window.onload = () => {
             // Display Date
@@ -248,14 +249,12 @@
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             dateElement.textContent = new Date().toLocaleDateString('en-US', options);
 
-
             // Theme Toggle Logic
             const themeToggle = document.getElementById('theme-toggle');
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('darkmode');
                 themeToggle.checked = true;
             }
-
 
             themeToggle.addEventListener('change', function () {
                 if (this.checked) {
@@ -266,7 +265,6 @@
                     localStorage.setItem('theme', 'light');
                 }
             });
-
 
             // Get Exact Class Name from URL
             const urlParams = new URLSearchParams(window.location.search);
@@ -279,7 +277,6 @@
             document.getElementById('current-class-label').innerText = currentClass;
             loadData();
         };
-
 
         // Keep your exact same data functions below:
         async function loadData() {
@@ -310,29 +307,25 @@
             }
         }
 
-
         async function handleCSV() {
             const fileInput = document.getElementById('csv-file');
             const file = fileInput.files[0];
             if (!file) return alert("Select a file first.");
 
-
             const reader = new FileReader();
             reader.onload = async (e) => {
                 const rows = e.target.result.split('\n').slice(1);
+                let successCount = 0;
+                let errorCount = 0;
+
                 for (let row of rows) {
                     const cols = row.split(',');
                     if (cols.length < 3) continue;
 
-
-                    // Grab the email and clean it up
                     const email = cols[2].replace(/"/g, '').trim();
+                    if (!email.includes('@')) continue; // Skips headers and empty lines
 
-                    // NEW: Skip this row if it's a weird Google Classroom header (no @ symbol)
-                    if (!email.includes('@')) continue;
-
-
-                    await fetch('http://localhost:3000/api/add', {
+                    const response = await fetch('http://localhost:3000/api/add', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -341,21 +334,28 @@
                             class_name: currentClass
                         })
                     });
+
+                    if (response.ok) successCount++;
+                    else errorCount++;
                 }
-                alert("Import finished!");
+
+                if (errorCount > 0) {
+                    alert(`Import complete: ${successCount} students added, but ${errorCount} failed. Check your server console for errors.`);
+                } else {
+                    alert(`Success! ${successCount} students imported to ${currentClass}.`);
+                }
+
                 fileInput.value = '';
                 loadData();
             };
             reader.readAsText(file);
         }
 
-
         async function deleteStudent(id) {
             if (!confirm("Remove this student?")) return;
             await fetch(`http://localhost:3000/api/delete/${id}`, { method: 'DELETE' });
             loadData();
         }
-
 
         async function emailAllStudents() {
             const status = document.getElementById('emailStatus');

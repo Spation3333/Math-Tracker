@@ -4,7 +4,6 @@ const cors = require('cors');
 const path = require('path');
 const nodemailer = require('nodemailer');
 
-
 // 1. Set up the connection using your sender email
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -14,9 +13,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-
 const app = express();
-
 
 // --- MIDDLEWARE ---
 app.use(cors());
@@ -24,17 +21,35 @@ app.use(express.json()); // Allows the server to read JSON from the website
 // This tells Express to serve your HTML/CSS files from your folder
 app.use(express.static(__dirname));
 // --- DATABASE CONNECTION ---
-// Using path.join ensures it finds the DB file in the same folder as this script
+
+// --- PERMANENT DATABASE SETUP ---
 const dbPath = path.join(__dirname, 'world.db');
 const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) console.error("Database connection error:", err.message);
-    else console.log("Connected to MathTrack database.");
+    if (err) {
+        console.error("Database connection error:", err.message);
+    } else {
+        console.log("Connected to MathTrack database.");
+        // This block runs every time the server starts to ensure the schema is perfect
+        db.serialize(() => {
+            // 1. Create the table if it's missing
+            db.run(`CREATE TABLE IF NOT EXISTS Students (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                guardian_email TEXT,
+                class_name TEXT
+            )`);
+
+            // 2. Automatically add the class_name column if an old version of the DB is being used
+            db.run("ALTER TABLE Students ADD COLUMN class_name TEXT", (err) => {
+                if (err && !err.message.includes("duplicate column name")) {
+                    console.error("Error verifying columns:", err.message);
+                }
+            });
+        });
+    }
 });
 
-
 // --- ROUTES ---
-
-
 // 1. GET: Fetch all student progress
 // This route handles fetching students for a SPECIFIC class (A, B, C, or D)
 app.get('/api/data/:class_name', (req, res) => {
@@ -50,7 +65,6 @@ app.get('/api/data/:class_name', (req, res) => {
     });
 });
 
-
 // This route handles the old "All Students" request just in case
 app.get('/api/data', (req, res) => {
     db.all("SELECT * FROM Students", [], (err, rows) => {
@@ -62,7 +76,6 @@ app.get('/api/data', (req, res) => {
     });
 });
 
-
 // 2. POST: Add a new student or lesson update
 app.post('/api/add', (req, res) => {
     // NEW: We added class_name here so the server knows what class to put them in!
@@ -71,9 +84,7 @@ app.post('/api/add', (req, res) => {
     // NEW: Updated the SQL to save the name, email, and class_name
     const sql = `INSERT INTO Students (name, guardian_email, class_name)
                  VALUES (?, ?, ?)`;
-   
     const params = [name, guardian_email, class_name];
-
 
     db.run(sql, params, function(err) {
         if (err) return res.status(500).json({ error: err.message });
@@ -83,7 +94,6 @@ app.post('/api/add', (req, res) => {
         });
     });
 });
-
 
 // 2. Update the email sending route
 app.post('/send-all/:class_name', (req, res) => {
@@ -95,7 +105,6 @@ app.post('/send-all/:class_name', (req, res) => {
             return res.status(500).json({ error: "No students found." });
         }
 
-
         // Loop through the students and send an email
         rows.forEach(student => {
             const mailOptions = {
@@ -104,7 +113,6 @@ app.post('/send-all/:class_name', (req, res) => {
                 subject: `MathTrack Update: ${className}`,
                 text: `Hello ${student.name},\n\nThis is a test email sent from my MathTrack Node.js server!`
             };
-
 
             transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
@@ -115,24 +123,20 @@ app.post('/send-all/:class_name', (req, res) => {
             });
         });
 
-
         res.json({ message: "Emails are processing!" });
     });
 });
-
 
 // 3. DELETE: Remove a student entry
 app.delete('/api/delete/:id', (req, res) => {
     const id = req.params.id;
     const sql = "DELETE FROM Students WHERE id = ?";
 
-
     db.run(sql, id, function(err) {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ status: "Deleted", rowsAffected: this.changes });
     });
 });
-
 
 // Add this to your ROUTES section in server.js
 // 4. DELETE: Clear all students (for overwriting during import)
@@ -143,7 +147,6 @@ app.delete('/api/clear', (req, res) => {
         res.json({ status: "Table cleared", rowsAffected: this.changes });
     });
 });
-
 
 // 5. PUT: Update an existing student
 app.put('/api/update/:id', (req, res) => {
@@ -157,7 +160,6 @@ app.put('/api/update/:id', (req, res) => {
     });
 });
 
-
 // --- SHUTDOWN ROUTE ---
 app.post('/api/quit', (req, res) => {
     res.json({ message: "Server shutting down..." });
@@ -168,7 +170,6 @@ app.post('/api/quit', (req, res) => {
         process.exit(0);
     }, 500);
 });
-
 
 // --- START SERVER ---
 const PORT = 3000;

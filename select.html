@@ -1,49 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Class</title>
     <link href="styles.css" rel="stylesheet" />
 </head>
-<body>
 
+<body>
 
     <p id="currentdate" class="datedisplay"></p>
 
-
-    <h1 class="welcomeheader">Welcome Ms. Bourassa!</h1>
+    <h1 id="welcome-header" class="welcomeheader">Welcome Ms. Bourassa!</h1>
     <h2 class="subtitle">Select your class:</h2>
 
-
     <div class="newclass" id="newclass"></div>
-
 
     <div id="modal" class="modal">
         <div class="modalcontent">
 
-
             <h2 id="modalheader">Create New Class</h2>
             <input type="hidden" id="edit-index" value="-1">
-
 
             <div class="signupinput">
                 <label for="classname">Class Name:</label>
                 <input type="text" id='classname' placeholder='e.g. Grade 9 Math - MTH1W'>
             </div>
 
-
             <div class="signupinput">
                 <label for="weeklylesson">Weekly Lesson:</label>
                 <input type="text" id='weeklylesson' placeholder='e.g. 1.1 - 1.7'>
             </div>
 
-
             <div class="signupinput">
                 <label for="evaluation">Next Evaluation:</label>
                 <input type="text" id='evaluation' placeholder='e.g. Feb 20'>
             </div>
-
 
             <div class="signupinput">
                 <label for="font-family">Card Font:</label>
@@ -56,11 +49,11 @@
                 </select>
             </div>
 
-
             <div class="signupinput">
                 <label>Background Color:</label>
                 <div style="display: flex; gap: 10px;">
-                    <select id="bg-color-select" onchange="toggleCustomColor('bg')" style="padding: 8px; flex: 1; border: 1px solid #ccc; border-radius: 4px;">
+                    <select id="bg-color-select" onchange="toggleCustomColor('bg')"
+                        style="padding: 8px; flex: 1; border: 1px solid #ccc; border-radius: 4px;">
                         <option value="#f9f9f9">Default (Off-White)</option>
                         <option value="#ffcccc">Pastel Red</option>
                         <option value="#ccffcc">Pastel Green</option>
@@ -68,15 +61,16 @@
                         <option value="#ffffcc">Pastel Yellow</option>
                         <option value="custom">Custom RGB...</option>
                     </select>
-                    <input type="color" id="bg-color-custom" style="display:none; width: 40px; height: 35px; padding: 0; border: none; cursor: pointer;">
+                    <input type="color" id="bg-color-custom"
+                        style="display:none; width: 40px; height: 35px; padding: 0; border: none; cursor: pointer;">
                 </div>
             </div>
-
 
             <div class="signupinput">
                 <label>Text Color:</label>
                 <div style="display: flex; gap: 10px;">
-                    <select id="text-color-select" onchange="toggleCustomColor('text')" style="padding: 8px; flex: 1; border: 1px solid #ccc; border-radius: 4px;">
+                    <select id="text-color-select" onchange="toggleCustomColor('text')"
+                        style="padding: 8px; flex: 1; border: 1px solid #ccc; border-radius: 4px;">
                         <option value="#000000">Default (Black)</option>
                         <option value="#ffffff">White</option>
                         <option value="#e74c3c">Red</option>
@@ -84,25 +78,22 @@
                         <option value="#2980b9">Blue</option>
                         <option value="custom">Custom RGB...</option>
                     </select>
-                    <input type="color" id="text-color-custom" style="display:none; width: 40px; height: 35px; padding: 0; border: none; cursor: pointer;">
+                    <input type="color" id="text-color-custom"
+                        style="display:none; width: 40px; height: 35px; padding: 0; border: none; cursor: pointer;">
                 </div>
             </div>
-
 
             <div class="modalaction">
                 <button class="buttons" onclick="saveClass()">Save</button>
                 <button class="buttons cancelbutton" onclick="closeClass()">Cancel</button>
             </div>
 
-
         </div>
     </div>
-
 
     <div class="bottomnav">
         <a href="index.html" class="buttons backbuttons"> back </a>
     </div>
-
 
     <div class="themewrapper">
         <label class="switch">
@@ -111,7 +102,8 @@
         </label>
     </div>
 
-
     <script src="script.js"></script>
+    
 </body>
+
 </html>

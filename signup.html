@@ -1,85 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
-<head> <!-- Start of Head -->
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title> <!-- Title -->
-    <link href="styles.css" rel="stylesheet" /> <!-- Links to CSS file -->
-</head> <!-- End of Head -->
+    <title>MathTrack - Sign Up</title>
+    <link href="styles.css" rel="stylesheet" />
+    <style>
+        .portal-container {
+            max-width: 500px;
+            margin: 60px auto;
+            background-color: var(--card-bg, #fff);
+            padding: 40px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
 
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            margin-bottom: 15px;
+        }
 
-<body> <!-- Start of Body -->
+        .input-group label {
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
 
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+        }
 
-    <p id="currentdate" class="datedisplay"></p>
+        .name-row {
+            display: flex;
+            gap: 15px;
+        }
 
+        /* Password Rules Box */
+        .rules-box {
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            text-align: left;
+        }
 
-    <h2 class="signupheader"> Sign Up</h2> <!-- Displays Title -->
+        body.darkmode .rules-box {
+            background: #333;
+            border-color: rgb(212, 175, 55);
+        }
 
+        .rule {
+            color: #e74c3c;
+            margin: 3px 0;
+        }
 
-    <div class="signupform"> <!-- Start of the Signup Form -->
+        .rule.valid {
+            color: #27ae60;
+        }
 
+        .btn-full {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    </style>
+    
+</head>
 
-        <div class="signupinput"> <!-- Start of First Name -->
-            <label for="first">First Name: </label> <!-- Displays Label -->
-            <input type="text" id="first" name="first"> <!-- Displays Textbox -->
-        </div> <!-- End of First Name -->
+<body>
 
+    <div class="themewrapper" style="position: absolute; top: 20px; right: 20px;">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider round"></span>
+        </label>
+    </div>
 
-        <div class="signupinput"> <!-- Start of Second Name -->
-            <label for="last">Last Name: </label> <!-- Displays Label -->
-            <input type="text" id="last" name="last"> <!-- Displays Textbox -->
-        </div> <!-- End of Second Name -->
+    <div class="portal-container">
+        <h1 class="welcomeheader" style="margin-bottom: 10px; font-size: 40px;">Create Account</h1>
+        <p style="margin-bottom: 30px; opacity: 0.8;">Join the MathTrack Portal</p>
 
+        <div class="name-row">
+            <div class="input-group" style="flex: 1;">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" placeholder="e.g. Jane">
+            </div>
+            <div class="input-group" style="flex: 1;">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" placeholder="e.g. Doe">
+            </div>
+        </div>
 
-        <div class="signupinput"> <!-- Start of Username -->
-            <label for="signupUser">Username: </label> <!-- Displays Label -->
-            <input type="text" id="signupUser" name="signupUser"> <!-- Displays Textbox -->
-        </div> <!-- End of Username -->
+        <div class="input-group">
+            <label for="email">Email Address (Username)</label>
+            <input type="email" id="email" placeholder="teacher@school.com">
+        </div>
 
+        <div class="name-row">
+            <div class="input-group" style="flex: 1;">
+                <label for="pin">4-Digit PIN</label>
+                <input type="password" id="pin" placeholder="1234" maxlength="4">
+            </div>
+            <div class="input-group" style="flex: 1;">
+                <label for="confPin">Confirm PIN</label>
+                <input type="password" id="confPin" placeholder="1234" maxlength="4">
+            </div>
+        </div>
 
-        <div class="signupinput"> <!-- Start of Password -->
-            <label for="signupPass">Password: </label> <!-- Displays Label -->
-            <input type="password" id="signupPass" name="pass"> <!-- Displays Textbox -->
-            <button type="button" class="togglebuttons" onclick="togglePassword('signupPass')">👁️</button>
-            <!-- Show Password Button -->
-        </div> <!-- End of Password -->
+        <div class="rules-box" id="rulesBox">
+            <div id="rule-length" class="rule">❌ Must be exactly 4 characters</div>
+            <div id="rule-number" class="rule">❌ Must contain only numbers</div>
+            <div id="rule-match" class="rule">❌ PINs must match</div>
+        </div>
 
+        <button class="buttons btn-full" id="signupBtn" onclick="createAccount()" disabled style="opacity: 0.5;">Create
+            Account & Login</button>
 
-        <div class="signupinput"> <!-- Start of Confirm Password -->
-            <label for="confpass">Confirm Password: </label> <!-- Displays Label -->
-            <input type="password" id="confpass" name="confpass"> <!-- Displays Textbox -->
-            <button type="button" class="togglebuttons" onclick="togglePassword('confpass')">👁️</button>
-            <!-- Show Password Button -->
-        </div> <!-- End of Confirm Password -->
+        <a href="index.html"
+            style="display: block; margin-top: 20px; color: rgb(139, 107, 35); font-weight: bold; text-decoration: none;">←
+            Back to Login</a>
+    </div>
 
+    <script>
+        // --- Theme Logic ---
+        const themeToggle = document.getElementById('theme-toggle');
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('darkmode');
+            themeToggle.checked = true;
+        }
+        themeToggle.addEventListener('change', () => {
+            document.body.classList.toggle('darkmode');
+            localStorage.setItem('theme', document.body.classList.contains('darkmode') ? 'dark' : 'light');
+        });
 
-        <div class="signupinput"> <!--  -->
-            <div class="signupspace"></div>
-            <a href="#" class="buttons" onclick="signup(event)"> Sign in </a> <!-- Sign In Button -->
-        </div> <!--  -->
+        // --- Real-time PIN Validation ---
+        const pinInput = document.getElementById('pin');
+        const confPinInput = document.getElementById('confPin');
+        const btn = document.getElementById('signupBtn');
 
+        function validateForm() {
+            const pin = pinInput.value;
+            const conf = confPinInput.value;
 
-    </div> <!-- End of the Signup Form -->
+            let isLengthValid = pin.length === 4;
+            let isNumValid = /^\d+$/.test(pin);
+            let isMatchValid = (pin === conf) && pin.length > 0;
 
+            document.getElementById('rule-length').className = isLengthValid ? 'rule valid' : 'rule';
+            document.getElementById('rule-length').innerText = isLengthValid ? '✅ Must be exactly 4 characters' : '❌ Must be exactly 4 characters';
 
-    <a href="index.html" class="buttons backbuttons"> back </a> <!-- Back Button -->
+            document.getElementById('rule-number').className = isNumValid && pin.length > 0 ? 'rule valid' : 'rule';
+            document.getElementById('rule-number').innerText = isNumValid && pin.length > 0 ? '✅ Must contain only numbers' : '❌ Must contain only numbers';
 
+            document.getElementById('rule-match').className = isMatchValid ? 'rule valid' : 'rule';
+            document.getElementById('rule-match').innerText = isMatchValid ? '✅ PINs must match' : '❌ PINs must match';
 
-    <div class="themewrapper"> <!-- Start of Theme Switch Bar -->
-        <label class="switch"> <!-- Creates Switch -->
-            <input type="checkbox" id="theme-toggle"> <!-- Makes it an Input -->
-            <span class="slider round"></span> <!-- Makes Switch into Circle -->
-        </label> <!-- End of Switch -->
-    </div> <!-- End of Theme Switch Bar -->
+            // Only enable button if all rules pass and names/emails are filled
+            const first = document.getElementById('firstName').value.trim();
+            const last = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
 
+            if (isLengthValid && isNumValid && isMatchValid && first !== "" && last !== "" && email !== "") {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            } else {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+            }
+        }
 
-    <script src="script.js"></script> <!-- Links to JS File -->
+        pinInput.addEventListener('input', validateForm);
+        confPinInput.addEventListener('input', validateForm);
+        document.getElementById('firstName').addEventListener('input', validateForm);
+        document.getElementById('lastName').addEventListener('input', validateForm);
+        document.getElementById('email').addEventListener('input', validateForm);
 
+        // --- Create Account Logic ---
+        function createAccount() {
+            const userObj = {
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                email: document.getElementById('email').value.trim().toLowerCase(),
+                pin: document.getElementById('pin').value
+            };
 
-</body> <!-- End of Body -->
+            // Fetch existing users dictionary or create new one
+            const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
 
+            if (users[userObj.email]) {
+                alert("An account with this email already exists!");
+                return;
+            }
 
-</html> <!-- End of HTML -->
+            // Save user to the "database"
+            users[userObj.email] = userObj;
+            localStorage.setItem('mathTrackUsers', JSON.stringify(users));
+
+            // Log them in immediately!
+            localStorage.setItem('currentUser', JSON.stringify(userObj));
+            window.location.href = 'select.html';
+        }
+    </script>
+</body>
+
+</html>

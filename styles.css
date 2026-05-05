@@ -9,7 +9,6 @@ body {
     box-sizing: border-box;
 }
 
-
 /*---------------------------Headers------------------------------------*/
 /*Titles*/
 h1 {
@@ -18,14 +17,12 @@ h1 {
     font-size: 100px;
 }
 
-
 /*Subtitles*/
 h2 {
     color: rgb(139, 107, 35);
     text-align: center;
     font-size: 50px;
 }
-
 
 /*------------------------Navigation and Buttons------------------------*/
 /*Navigation Bar*/
@@ -38,7 +35,6 @@ h2 {
     width: fit-content;
 }
 
-
 /*Buttons*/
 .buttons {
     padding: 12px 30px;
@@ -48,26 +44,22 @@ h2 {
     text-decoration: none;
 }
 
-
 /*Buttons on Main Page*/
 .mainbuttons {
     padding: 24px 60px;
     font-size: 40px;
 }
 
-
 /*Button When Hovering*/
 .buttons:hover {
     background-color: rgb(212, 175, 55);
 }
-
 
 /*Buttons That Go Back to Previous Page*/
 .backbuttons {
     margin-top: auto;
     align-self: flex-start;
 }
-
 
 /*Shows or Hides Password Button*/
 .togglebuttons {
@@ -82,12 +74,10 @@ h2 {
     border-radius: 50%;
 }
 
-
 /*Show or Hide Button When Hovering*/
 .togglebuttons:hover {
     background-color: #ddd;
 }
-
 
 /*Cancel Button*/
 .cancelbutton {
@@ -95,12 +85,10 @@ h2 {
     border: none;
 }
 
-
 /*Cancel Button When Hovering*/
 .cancelbutton:hover {
     background-color: rgb(51, 51, 51);
 }
-
 
 /*----------------------------Label and Input---------------------------*/
 /*Labels*/
@@ -110,7 +98,6 @@ label {
     color: rgb(0, 0, 0);
     text-align: left;
 }
-
 
 /*Textboxes*/
 input {
@@ -123,7 +110,6 @@ input {
     box-sizing: border-box;
 }
 
-
 input[type="color"] {
     width: 100%;
     height: 40px;
@@ -134,13 +120,11 @@ input[type="color"] {
     background-color: white;
 }
 
-
 /*---------------------------------Signup Page--------------------------*/
 /*Signup Title*/
 .signupheader {
     margin-bottom: 50px;
 }
-
 
 /*The Signup Form Itself*/
 .signupform {
@@ -154,14 +138,12 @@ input[type="color"] {
     margin-top: 0;
 }
 
-
 /*Signup Inputs*/
 .signupinput {
     display: flex;
     align-items: center;
     gap: 8px;
 }
-
 
 /*Signup Label Text*/
 .signupinput label {
@@ -170,19 +152,16 @@ input[type="color"] {
     margin-right: 15px;
 }
 
-
 .signupspace {
     width: 160px;
     margin-right: 15px;
 }
-
 
 /*--------------------------------Login Page----------------------------*/
 /*Login Title*/
 .loginheader {
     margin-bottom: 50px;
 }
-
 
 /*The Login Form Itself*/
 .loginform {
@@ -193,13 +172,11 @@ input[type="color"] {
     gap: 15px;
 }
 
-
 .loginform .label-spacer {
     width: 100px;
     margin-right: 15px;
     flex-shrink: 0;
 }
-
 
 /*Login Inputs*/
 .logininput {
@@ -211,18 +188,15 @@ input[type="color"] {
     margin: 0;
 }
 
-
 .password-wrapper {
     display: flex;
     align-items: center;
 }
 
-
 .bottom-row {
     margin-top: 10px;
     gap: 20px;
 }
-
 
 .loginform .bottom-row {
     width: 520px;
@@ -231,13 +205,11 @@ input[type="color"] {
     margin-top: 10px;
 }
 
-
 /*Login Textboxes*/
 .logininput input {
     width: 250px;
     flex-shrink: 0;
 }
-
 
 /*Login Label Text*/
 .logininput label {
@@ -246,7 +218,6 @@ input[type="color"] {
     margin-right: 15px;
     flex-shrink: 0;
 }
-
 
 /*---------------------------Recovery Page------------------------------*/
 /*The Login Form Itself*/
@@ -261,7 +232,6 @@ input[type="color"] {
     gap: 20px;
 }
 
-
 /*The Login Form Itself*/
 .recoveryinput {
     display: flex;
@@ -271,19 +241,16 @@ input[type="color"] {
     width: 100%;
 }
 
-
 /*--------------------------Class Selection Page------------------------*/
 .welcomeheader {
     /*margin-top: 5px;*/
     margin-bottom: 50px;
 }
 
-
 .subtitle {
     margin-top: 0;
     margin-bottom: 5px;
 }
-
 
 .newclass {
     display: flex;
@@ -296,7 +263,6 @@ input[type="color"] {
     margin-left: auto;
     margin-right: auto;
 }
-
 
 /*Create Class Button*/
 .addbox {
@@ -314,15 +280,13 @@ input[type="color"] {
     transition: 0.3s;
 }
 
-
 /*Create Class Button When Hovering*/
 .addbox:hover {
     background-color: rgb(102, 102, 102);
 }
 
-
 .classcard {
-    position: relative; 
+    position: relative;
     display: flex;
     flex-direction: column;
     width: 200px;
@@ -330,17 +294,15 @@ input[type="color"] {
     border: 4px solid rgb(139, 107, 35);
     border-radius: 10px;
     padding: 20px;
-    padding-top: 50px; 
+    padding-top: 50px;
     box-sizing: border-box;
     background-color: #f9f9f9;
 }
 
-
-
 .cardedit, .carddelete {
     position: absolute;
     top: 10px;
-    padding: 4px 8px; 
+    padding: 4px 8px;
     font-size: 14px;
     color: black;
     background-color: white;
@@ -350,7 +312,7 @@ input[type="color"] {
 .carddelete { right: 10px; }
 
 .class-title {
-    text-align: center; 
+    text-align: center;
     font-size: 20px;
     font-weight: bold;
     color: rgb(139, 107, 35);
@@ -359,16 +321,14 @@ input[type="color"] {
     margin-bottom: 15px;
 }
 
-
 .classcard p {
-    text-align: left; 
+    text-align: left;
     width: 100%;
     font-size: 16px;
     font-weight: bold;
     margin: 8px 0;
     color: black;
 }
-
 
 .cardwrapper {
     display: flex;
@@ -377,14 +337,12 @@ input[type="color"] {
     gap: 10px;
 }
 
-
 /*Class Letter*/
 .classletter {
     font-size: 28px;
     font-weight: bold;
     color: rgb(139, 107, 35);
 }
-
 
 .bottomnav {
     display: flex;
@@ -393,7 +351,6 @@ input[type="color"] {
     margin-top: auto;
     padding-top: 40px;
 }
-
 
 .modal {
     display: none;
@@ -408,7 +365,6 @@ input[type="color"] {
     align-items: center;
 }
 
-
 .modalcontent {
     background-color: white;
     padding: 30px;
@@ -419,7 +375,6 @@ input[type="color"] {
     gap: 15px;
 }
 
-
 .modalactions {
     display: flex;
     justify-content: center;
@@ -427,12 +382,10 @@ input[type="color"] {
     margin-top: 20px;
 }
 
-
 .databaseEdit {
     margin-top: auto;
     align-self: flex-end;
 }
-
 
 /*-------------------Current Date---------------------------------------*/
 /*Displays Current Date*/
@@ -441,7 +394,7 @@ input[type="color"] {
     text-align: center;
     font-size: 40px;
     font-weight: bold;
-    color: rgb(139, 107, 35);
+    color: #3498db;
     top: 20px;
     left: 20px;
     margin: 0;
@@ -449,18 +402,15 @@ input[type="color"] {
     margin-bottom: 30px;*/
 }
 
-
 /*-------------------Dragging Classes-----------------------------------*/
 .dragging {
     opacity: 0.4;
 }
 
-
 .drag-over {
     transform: scale(1.05);
     filter: brightness(0.9)
 }
-
 
 /*-------------------Toggle Switch--------------------------------------*/
 .switch {
@@ -470,13 +420,11 @@ input[type="color"] {
     height: 34px;
 }
 
-
 .switch input {
     opacity: 0;
     width: 0;
     height: 0;
 }
-
 
 .slider {
     position: absolute;
@@ -489,7 +437,6 @@ input[type="color"] {
     -webkit-transition: .4s;
     transition: .4s;
 }
-
 
 .slider:before {
     position: absolute;
@@ -508,16 +455,13 @@ input[type="color"] {
     border-radius: 50%;
 }
 
-
 input:checked+.slider {
     background-color: white;
 }
 
-
 input:focus+.slider {
     box-shadow: 0 0 1px #2196F3;
 }
-
 
 input:checked+.slider:before {
     -webkit-transform: translateX(26px);
@@ -526,17 +470,14 @@ input:checked+.slider:before {
     transform: translateX(26px);
 }
 
-
 /*Makes Toggle Round*/
 .slider.round {
     border-radius: 34px;
 }
 
-
 .slider.round:before {
     border-radius: 50%;
 }
-
 
 /*-------------------------Dark Theme-----------------------------------*/
 /*Toggle Switch Bar*/
@@ -546,13 +487,11 @@ input:checked+.slider:before {
     right: 20px;
 }
 
-
 /*Dark Mode Body*/
 body.darkmode {
     background-color: rgb(26, 26, 26);
     color: rgb(255, 255, 255);
 }
-
 
 /*Dark Mode Headers*/
 body.darkmode h1,
@@ -560,12 +499,10 @@ body.darkmode h2 {
     color: rgb(212, 175, 55);
 }
 
-
 /*Dark Mode Label*/
 body.darkmode label {
     color: rgb(255, 255, 255);
 }
-
 
 /*Dark Mode Textboxes*/
 body.darkmode input {
@@ -574,7 +511,6 @@ body.darkmode input {
     border-color: rgb(212, 175, 55);
 }
 
-
 /*Dark Mode Show Password Button*/
 body.darkmode .togglebuttons {
     background-color: rgb(51, 51, 51);
@@ -582,24 +518,20 @@ body.darkmode .togglebuttons {
     border-color: rgb(212, 175, 55);
 }
 
-
 /*Dark Mode Show Password Button When Hovering*/
 body.darkmode .togglebuttons:hover {
     background-color: rgb(55, 55, 55);
 }
-
 
 /*Dark Mode Add Class Box*/
 body.darkmode .addbox {
     background-color: rgb(68, 68, 68);
 }
 
-
 /*Dark Mode Add Class Box When Hovering*/
 body.darkmode .addbox:hover {
     background-color: rgb(102, 102, 102);
 }
-
 
 /*Dark Mode Class Box*/
 body.darkmode .classcard {
@@ -607,30 +539,25 @@ body.darkmode .classcard {
     border-color: rgb(212, 175, 55);
 }
 
-
 /*Dark Mode Class Box Text*/
 body.darkmode .classcard p {
     color: white;
 }
-
 
 /*Dark Mode Class Letter*/
 body.darkmode .classletter {
     color: rgb(212, 175, 55);
 }
 
-
 /*Dark Mode Class Title*/
 .body.darkmode .cardtitle {
     color: rgb(212, 175, 55);
 }
 
-
 /*Dark Mode Class Box Edit Button*/
 body.darkmode .cardedit .carddelete {
     color: rgb(212, 175, 55);
 }
-
 
 /*Dark Mode Class Box Delete Button*/
 body.darkmode .modalcontent {
@@ -638,8 +565,24 @@ body.darkmode .modalcontent {
     border-color: rgb(212, 175, 55);
 }
 
-
 /*Dark Mode Display Current Date*/
 body.darkmode .datedisplay {
-    color: rgb(212, 175, 55);
+    color: #3498db;
 }
+
+body.darkmode .portal-container {
+    background-color: #2d2d2d;
+}
+
+body.darkmode label {
+    color: #ffffff !important;
+}
+
+.eye-icon {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+        }

@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MathTrack - Portal</title>
     <link href="styles.css" rel="stylesheet" />
     <style>
-        h1{
+        h1 {
             font-size: 50px;
         }
 
-
-        label{
+        label {
             color: rgb(139, 107, 35);
         }
-        /* Specific layout rules for the new portal dashboard */
+
         .portal-container {
             max-width: 450px;
             margin: 60px auto;
@@ -22,9 +22,9 @@
             background-color: var(--card-bg, #fff);
             padding: 40px 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-       
+
         .link-row {
             display: flex;
             justify-content: space-between;
@@ -33,7 +33,6 @@
             margin-bottom: 30px;
         }
 
-
         .forgot-link {
             color: var(--accent, #3498db);
             text-decoration: none;
@@ -41,11 +40,9 @@
             font-weight: bold;
         }
 
-
         .forgot-link:hover {
             text-decoration: underline;
         }
-
 
         .large-btn-row {
             display: flex;
@@ -53,13 +50,11 @@
             margin-top: 25px;
         }
 
-
         .large-btn {
             flex: 1;
             padding: 15px;
             font-size: 1.1em;
         }
-
 
         /* Password Wrapper for the Eye Icon */
         .password-wrapper {
@@ -68,24 +63,10 @@
             align-items: center;
         }
 
-
-        .eye-icon {
-            position: absolute;
-            right: 10px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2em;
-        }
-
-
-        body.darkmode label{
-            color: rgb(212, 175, 55);;
-        }
     </style>
 </head>
-<body>
 
+<body>
 
     <div class="themewrapper" style="position: absolute; top: 20px; right: 20px;">
         <label class="switch">
@@ -94,35 +75,31 @@
         </label>
     </div>
 
-
     <div class="portal-container">
         <h1 class="welcomeheader">MathTrack</h1>
         <h2 class="subtitle">Teacher Portal</h2>
-
 
         <div class="signupinput" style="text-align: left; margin-top: 20px;">
             <label for="loginUser">Username:</label>
             <input type="text" id="loginUser" placeholder="Enter your username" autocomplete="username">
         </div>
 
-
         <div class="signupinput" style="text-align: left;">
             <label for="loginPin">4-Digit PIN:</label>
             <div class="password-wrapper">
-                <input type="password" id="loginPin" placeholder="e.g. 1234" maxlength="4" autocomplete="current-password">
+                <input type="password" id="loginPin" placeholder="e.g. 1234" maxlength="4"
+                    autocomplete="current-password">
                 <button type="button" class="eye-icon" onclick="togglePassword()">👁️</button>
             </div>
         </div>
 
-
         <div class="link-row">
             <a href="recovery.html" class="forgot-link">Forgot Password?</a>
-            <button class="buttons" onclick="window.location.href='signup.html'" style="margin: 0; padding: 8px 15px;">Create Account</button>
+            <button class="buttons" onclick="window.location.href='signup.html'"
+                style="margin: 0; padding: 8px 15px;">Create Account</button>
         </div>
 
-
         <hr style="border: 0; border-top: 1px solid var(--border-color, #ccc);">
-
 
         <div class="large-btn-row">
             <button class="buttons large-btn" onclick="window.location.href='credits.html'">Credits</button>
@@ -130,9 +107,8 @@
         </div>
     </div>
 
-
     <script>
-        // --- 1. Theme Logic ---
+    
         const themeToggle = document.getElementById('theme-toggle');
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('darkmode');
@@ -143,9 +119,8 @@
             localStorage.setItem('theme', document.body.classList.contains('darkmode') ? 'dark' : 'light');
         });
 
-
         // --- 2. Show/Hide Password ---
-        function togglePassword() {
+       function togglePassword() {
             const pinInput = document.getElementById('loginPin');
             const eyeIcon = pinInput.nextElementSibling;
             if (pinInput.type === "password") {
@@ -157,50 +132,51 @@
             }
         }
 
-
         // --- 3. Auto-Login Trigger ---
         const pinField = document.getElementById('loginPin');
         const userField = document.getElementById('loginUser');
 
-
-        pinField.addEventListener('input', function() {
-            // Force the field to only accept numbers
+        pinField.addEventListener('input', function () {
             this.value = this.value.replace(/[^0-9]/g, '');
 
-
-            // The moment the field hits exactly 4 digits, trigger the login
             if (this.value.length === 4) {
-               
-                // Optional: Ensure they typed a username first
-                if (userField.value.trim() === "") {
-                    alert("Please enter a username before entering your PIN.");
-                    this.value = ""; // Clear the PIN
-                    userField.focus(); // Jump back to the username box
+                const typedEmail = userField.value.trim().toLowerCase();
+
+                if (typedEmail === "") {
+                    alert("Please enter your email (username) first.");
+                    this.value = "";
+                    userField.focus();
                     return;
                 }
 
+                // Check our local "database" of users
+                const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
+                const account = users[typedEmail];
 
-                // Briefly dim the screen to give a "loading" effect, then redirect
-                document.body.style.opacity = '0.5';
-                document.body.style.transition = 'opacity 0.2s ease';
-               
-                setTimeout(() => {
-                    window.location.href = "select.html";
-                }, 250);
+                if (account && account.pin === this.value) {
+                    // Success! Log them in.
+                    localStorage.setItem('currentUser', JSON.stringify(account));
+
+                    document.body.style.opacity = '0.5';
+                    document.body.style.transition = 'opacity 0.2s ease';
+                    setTimeout(() => { window.location.href = "select.html"; }, 250);
+                } else {
+                    // Failure!
+                    alert("Incorrect email or PIN.");
+                    this.value = ""; // Clear the PIN so they can try again
+                }
             }
         });
 
-
-        // --- 4. Quit Application ---
-        function quitApp() {
-            // Browsers only allow Javascript to close tabs that Javascript originally opened.
-            // If the user opened it manually, this will fall back to an alert or redirect.
+        function quitApp() { //Function To Close Tab
             if (confirm("Close MathTrack Portal?")) {
                 window.close();
-                // Fallback for strict browsers
                 document.body.innerHTML = "<h1 style='text-align:center; margin-top:50px;'>You may now close this tab.</h1>";
             }
         }
+
     </script>
+
 </body>
+
 </html>
