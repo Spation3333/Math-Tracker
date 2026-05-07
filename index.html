@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,11 +11,9 @@
             font-size: 50px;
         }
 
-
         label {
             color: rgb(139, 107, 35);
         }
-
 
         .portal-container {
             max-width: 450px;
@@ -28,21 +25,16 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-
         /* Password Wrapper for the Eye Icon */
         .password-wrapper {
             position: relative;
             display: flex;
             align-items: center;
         }
-
-
     </style>
 </head>
 
-
 <body>
-
 
     <div class="themewrapper" style="position: absolute; top: 20px; right: 20px;">
         <label class="switch">
@@ -51,17 +43,14 @@
         </label>
     </div>
 
-
     <div class="portal-container">
         <h1 class="welcomeheader">MathTrack</h1>
         <h2 class="subtitle">Teacher Portal</h2>
-
 
         <div class="signupinput" style="text-align: left; margin-top: 20px;">
             <label for="loginUser">Username:</label>
             <input type="text" id="loginUser" placeholder="Enter your username" autocomplete="username">
         </div>
-
 
         <div class="signupinput" style="text-align: left;">
             <label for="loginPin">4-Digit PIN:</label>
@@ -72,16 +61,13 @@
             </div>
         </div>
 
-
         <div class="linkrow">
             <a href="recovery.html" class="forgotlink">Forgot Password?</a>
             <button class="buttons" onclick="window.location.href='signup.html'"
                 style="margin: 0; padding: 8px 15px;">Create Account</button>
         </div>
 
-
         <hr style="border: 0; border-top: 1px solid var(--border-color, #ccc);">
-
 
         <div class="mainbuttonsrow">
             <button class="buttons mainbuttons" onclick="window.location.href='credits.html'">Credits</button>
@@ -89,9 +75,8 @@
         </div>
     </div>
 
-
     <script>
-   
+
         const themeToggle = document.getElementById('theme-toggle');
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('darkmode');
@@ -102,9 +87,8 @@
             localStorage.setItem('theme', document.body.classList.contains('darkmode') ? 'dark' : 'light');
         });
 
-
         //Show/Hide Password
-       function togglePassword() {
+        function togglePassword() {
             const pinInput = document.getElementById('loginPin');
             const eyeIcon = pinInput.nextElementSibling;
             if (pinInput.type === "password") {
@@ -116,19 +100,15 @@
             }
         }
 
-
         //Auto-Login Trigger
         const pinField = document.getElementById('loginPin');
         const userField = document.getElementById('loginUser');
 
-
         pinField.addEventListener('input', function () {
             this.value = this.value.replace(/[^0-9]/g, '');
 
-
             if (this.value.length === 4) {
                 const typedEmail = userField.value.trim().toLowerCase();
-
 
                 if (typedEmail === "") {
                     alert("Please enter your email (username) first.");
@@ -136,7 +116,6 @@
                     userField.focus();
                     return;
                 }
-
 
                 const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
                 const account = users[typedEmail];
@@ -156,7 +135,6 @@
             }
         });
 
-
         function quitApp() { //Function To Close Tab
             if (confirm("Close MathTrack Portal?")) {
                 window.close();
@@ -164,11 +142,8 @@
             }
         }
 
-
     </script>
 
-
 </body>
-
 
 </html>
