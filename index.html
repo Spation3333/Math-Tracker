@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,18 +12,12 @@
             font-size: 50px;
         }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
         label {
             color: rgb(139, 107, 35);
         }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
         .portal-container {
             max-width: 450px;
             margin: 60px auto;
@@ -37,39 +28,6 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-<<<<<<< HEAD
-=======
-        .link-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            margin-bottom: 30px;
-        }
-
-        .forgot-link {
-            color: var(--accent, #3498db);
-            text-decoration: none;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
-
-        .forgot-link:hover {
-            text-decoration: underline;
-        }
-
-        .large-btn-row {
-            display: flex;
-            gap: 15px;
-            margin-top: 25px;
-        }
-
-        .large-btn {
-            flex: 1;
-            padding: 15px;
-            font-size: 1.1em;
-        }
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 
         /* Password Wrapper for the Eye Icon */
         .password-wrapper {
@@ -78,7 +36,6 @@
             align-items: center;
         }
 
-<<<<<<< HEAD
 
     </style>
 </head>
@@ -87,13 +44,6 @@
 <body>
 
 
-=======
-    </style>
-</head>
-
-<body>
-
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
     <div class="themewrapper" style="position: absolute; top: 20px; right: 20px;">
         <label class="switch">
             <input type="checkbox" id="theme-toggle">
@@ -101,27 +51,18 @@
         </label>
     </div>
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
     <div class="portal-container">
         <h1 class="welcomeheader">MathTrack</h1>
         <h2 class="subtitle">Teacher Portal</h2>
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
         <div class="signupinput" style="text-align: left; margin-top: 20px;">
             <label for="loginUser">Username:</label>
             <input type="text" id="loginUser" placeholder="Enter your username" autocomplete="username">
         </div>
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
         <div class="signupinput" style="text-align: left;">
             <label for="loginPin">4-Digit PIN:</label>
             <div class="password-wrapper">
@@ -131,19 +72,13 @@
             </div>
         </div>
 
-<<<<<<< HEAD
 
         <div class="linkrow">
             <a href="recovery.html" class="forgotlink">Forgot Password?</a>
-=======
-        <div class="link-row">
-            <a href="recovery.html" class="forgot-link">Forgot Password?</a>
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
             <button class="buttons" onclick="window.location.href='signup.html'"
                 style="margin: 0; padding: 8px 15px;">Create Account</button>
         </div>
 
-<<<<<<< HEAD
 
         <hr style="border: 0; border-top: 1px solid var(--border-color, #ccc);">
 
@@ -157,18 +92,6 @@
 
     <script>
    
-=======
-        <hr style="border: 0; border-top: 1px solid var(--border-color, #ccc);">
-
-        <div class="large-btn-row">
-            <button class="buttons large-btn" onclick="window.location.href='credits.html'">Credits</button>
-            <button class="buttons cancelbutton large-btn" onclick="quitApp()">Quit</button>
-        </div>
-    </div>
-
-    <script>
-    
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
         const themeToggle = document.getElementById('theme-toggle');
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('darkmode');
@@ -179,12 +102,8 @@
             localStorage.setItem('theme', document.body.classList.contains('darkmode') ? 'dark' : 'light');
         });
 
-<<<<<<< HEAD
 
         //Show/Hide Password
-=======
-        // --- 2. Show/Hide Password ---
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
        function togglePassword() {
             const pinInput = document.getElementById('loginPin');
             const eyeIcon = pinInput.nextElementSibling;
@@ -197,7 +116,6 @@
             }
         }
 
-<<<<<<< HEAD
 
         //Auto-Login Trigger
         const pinField = document.getElementById('loginPin');
@@ -212,18 +130,6 @@
                 const typedEmail = userField.value.trim().toLowerCase();
 
 
-=======
-        // --- 3. Auto-Login Trigger ---
-        const pinField = document.getElementById('loginPin');
-        const userField = document.getElementById('loginUser');
-
-        pinField.addEventListener('input', function () {
-            this.value = this.value.replace(/[^0-9]/g, '');
-
-            if (this.value.length === 4) {
-                const typedEmail = userField.value.trim().toLowerCase();
-
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
                 if (typedEmail === "") {
                     alert("Please enter your email (username) first.");
                     this.value = "";
@@ -231,7 +137,6 @@
                     return;
                 }
 
-<<<<<<< HEAD
 
                 const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
                 const account = users[typedEmail];
@@ -241,36 +146,17 @@
                     localStorage.setItem('currentUser', JSON.stringify(account));
 
 
-=======
-                // Check our local "database" of users
-                const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
-                const account = users[typedEmail];
-
-                if (account && account.pin === this.value) {
-                    // Success! Log them in.
-                    localStorage.setItem('currentUser', JSON.stringify(account));
-
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
                     document.body.style.opacity = '0.5';
                     document.body.style.transition = 'opacity 0.2s ease';
                     setTimeout(() => { window.location.href = "select.html"; }, 250);
                 } else {
-<<<<<<< HEAD
                     alert("Incorrect email or PIN.");
                     this.value = "";
-=======
-                    // Failure!
-                    alert("Incorrect email or PIN.");
-                    this.value = ""; // Clear the PIN so they can try again
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
                 }
             }
         });
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
         function quitApp() { //Function To Close Tab
             if (confirm("Close MathTrack Portal?")) {
                 window.close();
@@ -278,7 +164,6 @@
             }
         }
 
-<<<<<<< HEAD
 
     </script>
 
@@ -286,10 +171,4 @@
 </body>
 
 
-=======
-    </script>
-
-</body>
-
->>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 </html>
