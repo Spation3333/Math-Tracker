@@ -9,7 +9,10 @@ body {
     box-sizing: border-box;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*---------------------------Headers------------------------------------*/
 /*Titles*/
 h1 {
@@ -18,7 +21,10 @@ h1 {
     font-size: 100px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Subtitles*/
 h2 {
     color: rgb(139, 107, 35);
@@ -26,7 +32,10 @@ h2 {
     font-size: 50px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*------------------------Navigation and Buttons------------------------*/
 /*Navigation Bar*/
 .nav {
@@ -38,7 +47,10 @@ h2 {
     width: fit-content;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Buttons*/
 .buttons {
     padding: 12px 30px;
@@ -48,6 +60,7 @@ h2 {
     text-decoration: none;
 }
 
+<<<<<<< HEAD
 
 /*Buttons on Main Page*/
 .mainbuttons {
@@ -57,19 +70,33 @@ h2 {
 }
 
 
+=======
+/*Buttons on Main Page*/
+.mainbuttons {
+    padding: 24px 60px;
+    font-size: 40px;
+}
+
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Button When Hovering*/
 .buttons:hover {
     background-color: rgb(212, 175, 55);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Buttons That Go Back to Previous Page*/
 .backbuttons {
     margin-top: auto;
     align-self: flex-start;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Shows or Hides Password Button*/
 .togglebuttons {
     margin-left: 10px;
@@ -83,26 +110,38 @@ h2 {
     border-radius: 50%;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Show or Hide Button When Hovering*/
 .togglebuttons:hover {
     background-color: #ddd;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Cancel Button*/
 .cancelbutton {
     background-color: rgb(85, 85, 85);
     border: none;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Cancel Button When Hovering*/
 .cancelbutton:hover {
     background-color: rgb(51, 51, 51);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*----------------------------Label and Input---------------------------*/
 /*Labels*/
 label {
@@ -112,7 +151,10 @@ label {
     text-align: left;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Textboxes*/
 input {
     font-weight: bold;
@@ -124,7 +166,10 @@ input {
     box-sizing: border-box;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 input[type="color"] {
     width: 100%;
     height: 40px;
@@ -135,6 +180,7 @@ input[type="color"] {
     background-color: white;
 }
 
+<<<<<<< HEAD
 
 /*---------------------------------Signup Page--------------------------*/
 .mainbuttonsrow {
@@ -144,12 +190,18 @@ input[type="color"] {
 }
 
 
+=======
+/*---------------------------------Signup Page--------------------------*/
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Signup Title*/
 .signupheader {
     margin-bottom: 50px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*The Signup Form Itself*/
 .signupform {
     display: flex;
@@ -162,7 +214,10 @@ input[type="color"] {
     margin-top: 0;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Signup Inputs*/
 .signupinput {
     display: flex;
@@ -170,7 +225,10 @@ input[type="color"] {
     gap: 8px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Signup Label Text*/
 .signupinput label {
     width: 160px;
@@ -178,20 +236,29 @@ input[type="color"] {
     margin-right: 15px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .signupspace {
     width: 160px;
     margin-right: 15px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*--------------------------------Login Page----------------------------*/
 /*Login Title*/
 .loginheader {
     margin-bottom: 50px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*The Login Form Itself*/
 .loginform {
     display: flex;
@@ -201,14 +268,20 @@ input[type="color"] {
     gap: 15px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .loginform .label-spacer {
     width: 100px;
     margin-right: 15px;
     flex-shrink: 0;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Login Inputs*/
 .logininput {
     display: flex;
@@ -219,19 +292,28 @@ input[type="color"] {
     margin: 0;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .password-wrapper {
     display: flex;
     align-items: center;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .bottom-row {
     margin-top: 10px;
     gap: 20px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .loginform .bottom-row {
     width: 520px;
     justify-content: flex-start;
@@ -239,14 +321,20 @@ input[type="color"] {
     margin-top: 10px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Login Textboxes*/
 .logininput input {
     width: 250px;
     flex-shrink: 0;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Login Label Text*/
 .logininput label {
     width: 100px;
@@ -255,6 +343,7 @@ input[type="color"] {
     flex-shrink: 0;
 }
 
+<<<<<<< HEAD
 
 /*---------------------------Recovery Page------------------------------*/
 .forgotlink {
@@ -279,6 +368,9 @@ input[type="color"] {
 }
 
 
+=======
+/*---------------------------Recovery Page------------------------------*/
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*The Login Form Itself*/
 .recoveryform {
     display: flex;
@@ -291,7 +383,10 @@ input[type="color"] {
     gap: 20px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*The Login Form Itself*/
 .recoveryinput {
     display: flex;
@@ -301,20 +396,29 @@ input[type="color"] {
     width: 100%;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*--------------------------Class Selection Page------------------------*/
 .welcomeheader {
     /*margin-top: 5px;*/
     margin-bottom: 50px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .subtitle {
     margin-top: 0;
     margin-bottom: 5px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .newclass {
     display: flex;
     flex-wrap: wrap;
@@ -327,7 +431,10 @@ input[type="color"] {
     margin-right: auto;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Create Class Button*/
 .addbox {
     display: flex;
@@ -344,13 +451,19 @@ input[type="color"] {
     transition: 0.3s;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Create Class Button When Hovering*/
 .addbox:hover {
     background-color: rgb(102, 102, 102);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .classcard {
     position: relative;
     display: flex;
@@ -365,9 +478,13 @@ input[type="color"] {
     background-color: #f9f9f9;
 }
 
+<<<<<<< HEAD
 
 .cardedit,
 .carddelete {
+=======
+.cardedit, .carddelete {
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
     position: absolute;
     top: 10px;
     padding: 4px 8px;
@@ -376,6 +493,7 @@ input[type="color"] {
     background-color: white;
 }
 
+<<<<<<< HEAD
 
 .cardedit {
     left: 10px;
@@ -386,6 +504,10 @@ input[type="color"] {
     right: 10px;
 }
 
+=======
+.cardedit { left: 10px; }
+.carddelete { right: 10px; }
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 
 .class-title {
     text-align: center;
@@ -397,7 +519,10 @@ input[type="color"] {
     margin-bottom: 15px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .classcard p {
     text-align: left;
     width: 100%;
@@ -407,7 +532,10 @@ input[type="color"] {
     color: black;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .cardwrapper {
     display: flex;
     flex-direction: column;
@@ -415,7 +543,10 @@ input[type="color"] {
     gap: 10px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Class Letter*/
 .classletter {
     font-size: 28px;
@@ -423,7 +554,10 @@ input[type="color"] {
     color: rgb(139, 107, 35);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .bottomnav {
     display: flex;
     justify-content: space-between;
@@ -432,7 +566,10 @@ input[type="color"] {
     padding-top: 40px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .modal {
     display: none;
     position: fixed;
@@ -446,7 +583,10 @@ input[type="color"] {
     align-items: center;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .modalcontent {
     background-color: white;
     padding: 30px;
@@ -457,7 +597,10 @@ input[type="color"] {
     gap: 15px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .modalactions {
     display: flex;
     justify-content: center;
@@ -465,13 +608,19 @@ input[type="color"] {
     margin-top: 20px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .databaseEdit {
     margin-top: auto;
     align-self: flex-end;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*-------------------Current Date---------------------------------------*/
 /*Displays Current Date*/
 .datedisplay {
@@ -487,19 +636,28 @@ input[type="color"] {
     margin-bottom: 30px;*/
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*-------------------Dragging Classes-----------------------------------*/
 .dragging {
     opacity: 0.4;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .drag-over {
     transform: scale(1.05);
     filter: brightness(0.9)
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*-------------------Toggle Switch--------------------------------------*/
 .switch {
     position: relative;
@@ -508,14 +666,20 @@ input[type="color"] {
     height: 34px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .switch input {
     opacity: 0;
     width: 0;
     height: 0;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .slider {
     position: absolute;
     cursor: pointer;
@@ -528,7 +692,10 @@ input[type="color"] {
     transition: .4s;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .slider:before {
     position: absolute;
     content: "☀️";
@@ -546,17 +713,26 @@ input[type="color"] {
     border-radius: 50%;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 input:checked+.slider {
     background-color: white;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 input:focus+.slider {
     box-shadow: 0 0 1px #2196F3;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 input:checked+.slider:before {
     -webkit-transform: translateX(26px);
     content: "🌙";
@@ -564,18 +740,27 @@ input:checked+.slider:before {
     transform: translateX(26px);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Makes Toggle Round*/
 .slider.round {
     border-radius: 34px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 .slider.round:before {
     border-radius: 50%;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*-------------------------Dark Theme-----------------------------------*/
 /*Toggle Switch Bar*/
 .themewrapper {
@@ -584,27 +769,39 @@ input:checked+.slider:before {
     right: 20px;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Dark Mode Body*/
 body.darkmode {
     background-color: rgb(26, 26, 26);
     color: rgb(255, 255, 255);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Dark Mode Headers*/
 body.darkmode h1,
 body.darkmode h2 {
     color: rgb(212, 175, 55);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Dark Mode Label*/
 body.darkmode label {
     color: rgb(255, 255, 255);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Dark Mode Textboxes*/
 body.darkmode input {
     background-color: rgb(51, 51, 51);
@@ -612,7 +809,10 @@ body.darkmode input {
     border-color: rgb(212, 175, 55);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Dark Mode Show Password Button*/
 body.darkmode .togglebuttons {
     background-color: rgb(51, 51, 51);
@@ -620,78 +820,115 @@ body.darkmode .togglebuttons {
     border-color: rgb(212, 175, 55);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Dark Mode Show Password Button When Hovering*/
 body.darkmode .togglebuttons:hover {
     background-color: rgb(55, 55, 55);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Dark Mode Add Class Box*/
 body.darkmode .addbox {
     background-color: rgb(68, 68, 68);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Dark Mode Add Class Box When Hovering*/
 body.darkmode .addbox:hover {
     background-color: rgb(102, 102, 102);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Dark Mode Class Box*/
 body.darkmode .classcard {
     background-color: rgb(51, 51, 51);
     border-color: rgb(212, 175, 55);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Dark Mode Class Box Text*/
 body.darkmode .classcard p {
     color: white;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Dark Mode Class Letter*/
 body.darkmode .classletter {
     color: rgb(212, 175, 55);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Dark Mode Class Title*/
 .body.darkmode .cardtitle {
     color: rgb(212, 175, 55);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Dark Mode Class Box Edit Button*/
 body.darkmode .cardedit .carddelete {
     color: rgb(212, 175, 55);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Dark Mode Class Box Delete Button*/
 body.darkmode .modalcontent {
     background-color: rgb(34, 34, 34);
     border-color: rgb(212, 175, 55);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 /*Dark Mode Display Current Date*/
 body.darkmode .datedisplay {
     color: #3498db;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 body.darkmode .portal-container {
     background-color: #2d2d2d;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
 body.darkmode label {
     color: #ffffff !important;
 }
 
+<<<<<<< HEAD
 
 .eye-icon {
     position: absolute;
@@ -701,3 +938,13 @@ body.darkmode label {
     cursor: pointer;
     font-size: 1.2em;
 }
+=======
+.eye-icon {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+>>>>>>> 5ef86dac68c6895e96081190d71777c0c0f2eb67
