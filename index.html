@@ -87,7 +87,6 @@
             localStorage.setItem('theme', document.body.classList.contains('darkmode') ? 'dark' : 'light');
         });
 
-        //Show/Hide Password
         function togglePassword() {
             const pinInput = document.getElementById('loginPin');
             const eyeIcon = pinInput.nextElementSibling;
@@ -100,7 +99,6 @@
             }
         }
 
-        //Auto-Login Trigger
         const pinField = document.getElementById('loginPin');
         const userField = document.getElementById('loginUser');
 
@@ -120,10 +118,8 @@
                 const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
                 const account = users[typedEmail];
 
-
                 if (account && account.pin === this.value) {
                     localStorage.setItem('currentUser', JSON.stringify(account));
-
 
                     document.body.style.opacity = '0.5';
                     document.body.style.transition = 'opacity 0.2s ease';

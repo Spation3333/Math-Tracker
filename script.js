@@ -1,11 +1,9 @@
 const themeToggle = document.getElementById('theme-toggle');
 const body = document.body;
 
-
 function togglePassword(inputId) { //function to Show and Hide Password
     const password = document.getElementById(inputId); //Password That is in Textbox
     const toggleButton = password.nextElementSibling; //Toggle Switch
-
 
     if (password.type === "password") { //Checks Whether Password is Hidden or Showing
         password.type = "text"; //Password Shows Dots
@@ -16,12 +14,10 @@ function togglePassword(inputId) { //function to Show and Hide Password
     }
 }
 
-
 if (localStorage.getItem('theme') === 'dark') {
     body.classList.add('darkmode');
     if (themeToggle) themeToggle.checked = true;
 }
-
 
 if (themeToggle) {
     themeToggle.addEventListener('change', function () {
@@ -35,7 +31,6 @@ if (themeToggle) {
     });
 }
 
-
 window.addEventListener('DOMContentLoaded', function () {
     if (document.getElementById('newclass')) {
         updateClass();
@@ -45,20 +40,16 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-
 function displayDate() {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     document.getElementById('currentdate').textContent = new Date().toLocaleDateString('en-US', options);
 }
 
-
 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
 
 if (!currentUser && window.location.pathname.includes('select.html')) {
     window.location.href = 'index.html';
 }
-
 
 window.addEventListener('DOMContentLoaded', function () {
     if (currentUser && document.getElementById('welcome-header')) {
@@ -66,11 +57,9 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-
 const storageKey = currentUser ? `savedClasses_${currentUser.email}` : 'savedClasses';
 let classData = JSON.parse(localStorage.getItem(storageKey)) || [];
 let dragStart;
-
 
 function toggleCustomColor(type) {
     const select = document.getElementById(`${type}-color-select`);
@@ -83,13 +72,11 @@ function toggleCustomColor(type) {
     }
 }
 
-
 function getFinalColor(type) {
     const select = document.getElementById(`${type}-color-select`);
     const custom = document.getElementById(`${type}-color-custom`);
     return select.value === 'custom' ? custom.value : select.value;
 }
-
 
 function setDropdownColor(type, savedColor) {
     const select = document.getElementById(`${type}-color-select`);
@@ -111,13 +98,11 @@ function setDropdownColor(type, savedColor) {
     }
 }
 
-
 function openClass(editIndex = -1) {
     const modal = document.getElementById('modal');
     const title = document.getElementById('modalheader');
     const indexTracker = document.getElementById('edit-index');
     modal.style.display = 'flex';
-
 
     if (editIndex >= 0) {
         title.textContent = "Edit Class";
@@ -140,11 +125,9 @@ function openClass(editIndex = -1) {
     }
 }
 
-
 function closeClass() {
     document.getElementById('modal').style.display = 'none';
 }
-
 
 function saveClass() {
     const name = document.getElementById('classname').value;
@@ -155,9 +138,7 @@ function saveClass() {
     const textColor = getFinalColor('text');
     const editIndex = parseInt(document.getElementById('edit-index').value);
 
-
     const currentStudents = editIndex >= 0 ? classData[editIndex].students : 0;
-
 
     const newClass = {
         name: name,
@@ -169,19 +150,16 @@ function saveClass() {
         textColor: textColor
     };
 
-
     if (editIndex >= 0) {
         classData[editIndex] = newClass;
     } else if (classData.length < 4) {
         classData.push(newClass);
     }
 
-
     localStorage.setItem(storageKey, JSON.stringify(classData));
     closeClass();
     updateClass();
 }
-
 
 function deleteClass(index) {
     if (confirm("Delete this class?")) {
@@ -191,18 +169,15 @@ function deleteClass(index) {
     }
 }
 
-
 function updateClass() {
     const grid = document.getElementById('newclass');
     if (!grid) return;
     grid.innerHTML = '';
 
-
     for (let i = 0; i < classData.length; i++) {
         const wrapper = document.createElement('div');
         wrapper.className = 'cardwrapper';
         wrapper.draggable = true;
-
 
         wrapper.addEventListener('dragstart', function () { dragStartIndex = i; this.classList.add('dragging'); });
         wrapper.addEventListener('dragend', function () { this.classList.remove('dragging'); });
@@ -217,22 +192,17 @@ function updateClass() {
             updateClass();
         });
 
-
         const letter = document.createElement('div');
         letter.className = 'cardletter';
         letter.textContent = String.fromCharCode(65 + i);
-
 
         const card = document.createElement('div');
         card.className = 'classcard';
         card.style.backgroundColor = classData[i].bgColor || '#f9f9f9';
 
-
         const countId = `student-count-${i}`;
 
-
         const uniqueDbClassName = currentUser.email + "_" + classData[i].name;
-
 
         card.innerHTML = `
             <button class="buttons cardedit" onclick="event.stopPropagation(); openClass(${i})">✎</button>
@@ -248,11 +218,9 @@ function updateClass() {
             </div>
         `;
 
-
         wrapper.appendChild(letter);
         wrapper.appendChild(card);
         grid.appendChild(wrapper);
-
 
         fetch(`http://localhost:3000/api/data/${encodeURIComponent(uniqueDbClassName)}`)
             .then(res => res.json())
@@ -266,7 +234,6 @@ function updateClass() {
                 document.getElementById(countId).textContent = "Server Offline";
             });
     }
-
 
     if (classData.length < 4) {
         const addBoxWrapper = document.createElement('div');

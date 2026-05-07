@@ -1,74 +1,473 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MathTrack - Class Gradebook</title>
     <style>
-        :root { --bg-color: #f4f7f6; --text-color: #333; --card-bg: white; --border-color: #ccc; --primary: #2c3e50; --accent: #3498db; --success: #27ae60; --danger: #e74c3c; --input-bg: #fff; }
-        body.darkmode { --bg-color: #1a1a1a; --text-color: #f4f4f4; --card-bg: #2d2d2d; --border-color: #444; --primary: #ecf0f1; --accent: #2980b9; --input-bg: #444; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 40px; background-color: var(--bg-color); color: var(--text-color); transition: background 0.3s, color 0.3s; }
-        .container { max-width: 1200px; margin: auto; background: var(--card-bg); padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-        .header-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px; }
-        .date-display { font-weight: bold; margin: 0; color: var(--accent); }
-        .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: black; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: "☀️"; display: flex; justify-content: center; align-items: center; font-size: 14px; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: black; transition: .4s; border-radius: 50%; }
-        input:checked+.slider { background-color: white; }
-        input:checked+.slider:before { transform: translateX(26px); content: "🌙"; }
-        .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
-        .btn { padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; transition: 0.2s; }
-        .btn:hover { opacity: 0.8; }
-        body.darkmode .btn { color: black; }
-        .btn-success { background: var(--success); }
-        .btn-danger { background: var(--danger); }
-        .btn-primary { background: var(--accent); }
-        .import-section { border: 2px dashed var(--border-color); padding: 20px; text-align: center; border-radius: 8px; margin-bottom: 20px; background: var(--bg-color); }
-        .nav-link { color: var(--accent); text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 15px; }
-        .class-nav-bar { display: flex; gap: 10px; margin-bottom: 25px; }
-        .btn-class-nav { flex: 1; padding: 10px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
-        body.darkmode .btn-class-nav { color: black; }
-        .units-section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid var(--border-color); }
-        .unit-container { display: flex; gap: 15px; flex-wrap: wrap; }
-        .unit-box { background-color: var(--card-bg); border: 2px solid rgb(139, 107, 35); color: rgb(139, 107, 35); padding: 15px 25px; border-radius: 8px; font-weight: bold; position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-        body.darkmode .unit-box { border-color: rgb(212, 175, 55); color: rgb(212, 175, 55); }
-        .unit-box:hover { background-color: rgba(139, 107, 35, 0.1); }
-        .unit-box.active { background-color: rgb(139, 107, 35); color: white; }
-        body.darkmode .unit-box.active { background-color: rgb(212, 175, 55); color: black; }
-        .unit-add-box { background-color: #a9a9a9; color: white; font-size: 24px; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 8px; padding: 0 25px; cursor: pointer; transition: 0.3s; }
-        .unit-delete { position: absolute; top: -10px; right: -10px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        
-        /* Table Layout for Roster */
-        .table-responsive { overflow-x: auto; margin-top: 10px; padding-bottom: 15px; border-radius: 8px; }
-        .roster-table { width: 100%; border-collapse: collapse; min-width: 800px; background: var(--card-bg); }
-        .roster-table th, .roster-table td { border: 1px solid var(--border-color); padding: 10px; vertical-align: top; }
-        .roster-table th { background: var(--bg-color); text-align: center; }
-        .student-cell { width: 350px; min-width: 320px; padding: 0 !important; }
-        .mark-cell { width: 100px; text-align: center; vertical-align: middle !important; }
-        .mark-input { width: 100%; box-sizing: border-box; text-align: center; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-weight: bold; }
-        .lesson-header { display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative; }
-        .lesson-date { font-size: 0.8em; padding: 2px 4px; width: 100%; text-align: center; box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 3px; background: var(--input-bg); color: var(--text-color); }
-        .add-col-controls { display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: center; height: 100%; }
-        .btn-add-lesson { background: #95a5a6; color: white; font-size: 0.8em; padding: 5px; width: 100%; border: none; border-radius: 4px; cursor: pointer; }
-        .col-delete { position: absolute; top: -12px; right: -12px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; z-index: 10; }
-        .col-delete:hover { opacity: 0.8; }
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: white;
+            --border-color: #ccc;
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --input-bg: #fff;
+        }
 
-        /* Student Accordion */
-        .student-card { border: none; margin: 0; border-radius: 0; background: transparent; overflow: hidden; }
-        .student-header { padding: 15px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.2s; }
-        .student-header:hover { background: var(--bg-color); }
-        .student-actions { display: flex; gap: 8px; }
-        .student-details { padding: 15px; border-top: 1px solid var(--border-color); background: var(--bg-color); display: none; }
-        .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        .form-group { flex: 1; display: flex; flex-direction: column; }
-        .form-group label { font-weight: bold; margin-bottom: 5px; font-size: 0.8em; }
-        .form-group input { padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-size: 0.9em; }
-        .parent-email-row { display: flex; align-items: center; margin-bottom: 5px; }
-        .parent-email-row input { flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); }
-        .btn-add-circle { width: 28px; height: 28px; border-radius: 50%; background-color: #95a5a6; color: white; border: none; font-size: 18px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        body.darkmode {
+            --bg-color: #1a1a1a;
+            --text-color: #f4f4f4;
+            --card-bg: #2d2d2d;
+            --border-color: #444;
+            --primary: #ecf0f1;
+            --accent: #2980b9;
+            --input-bg: #444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .date-display {
+            font-weight: bold;
+            margin: 0;
+            color: var(--accent);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: black;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "☀️";
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: black;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: white;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+            content: "🌙";
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+
+        body.darkmode .btn {
+            color: black;
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+        }
+
+        .import-section {
+            border: 2px dashed var(--border-color);
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: var(--bg-color);
+        }
+
+        .nav-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .class-nav-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .btn-class-nav {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            transition: 0.2s;
+        }
+
+        body.darkmode .btn-class-nav {
+            color: black;
+        }
+
+        .units-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .unit-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .unit-box {
+            background-color: var(--card-bg);
+            border: 2px solid rgb(139, 107, 35);
+            color: rgb(139, 107, 35);
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        body.darkmode .unit-box {
+            border-color: rgb(212, 175, 55);
+            color: rgb(212, 175, 55);
+        }
+
+        .unit-box:hover {
+            background-color: rgba(139, 107, 35, 0.1);
+        }
+
+        .unit-box.active {
+            background-color: rgb(139, 107, 35);
+            color: white;
+        }
+
+        body.darkmode .unit-box.active {
+            background-color: rgb(212, 175, 55);
+            color: black;
+        }
+
+        .unit-add-box {
+            background-color: #a9a9a9;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            padding: 0 25px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .unit-delete {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 10px;
+            padding-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .roster-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+            background: var(--card-bg);
+        }
+
+        .roster-table th,
+        .roster-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            vertical-align: top;
+        }
+
+        .roster-table th {
+            background: var(--bg-color);
+            text-align: center;
+        }
+
+        .student-cell {
+            width: 350px;
+            min-width: 320px;
+            padding: 0 !important;
+        }
+
+        .mark-cell {
+            width: 100px;
+            text-align: center;
+            vertical-align: middle !important;
+        }
+
+        .mark-input {
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-weight: bold;
+        }
+
+        .lesson-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            position: relative;
+        }
+
+        .lesson-date {
+            font-size: 0.8em;
+            padding: 2px 4px;
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .add-col-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .btn-add-lesson {
+            background: #95a5a6;
+            color: white;
+            font-size: 0.8em;
+            padding: 5px;
+            width: 100%;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .col-delete {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            z-index: 10;
+        }
+
+        .col-delete:hover {
+            opacity: 0.8;
+        }
+
+        .student-card {
+            border: none;
+            margin: 0;
+            border-radius: 0;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        .student-header {
+            padding: 15px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .student-header:hover {
+            background: var(--bg-color);
+        }
+
+        .student-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .student-details {
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-color);
+            display: none;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.8em;
+        }
+
+        .form-group input {
+            padding: 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 0.9em;
+        }
+
+        .parent-email-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .parent-email-row input {
+            flex: 1;
+            padding: 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .btn-add-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #95a5a6;
+            color: white;
+            border: none;
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
     </style>
 </head>
+
 <body>
     <p id="currentdate" class="date-display" style="position: absolute; top: 15px; left: 20px;"></p>
 
@@ -77,7 +476,8 @@
             <h1 style="margin: 0;">MathTrack Progress</h1>
             <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="font-size: 0.9em; font-weight: bold;">Dark Mode</span>
-                <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider round"></span></label>
+                <label class="switch"><input type="checkbox" id="theme-toggle"><span
+                        class="slider round"></span></label>
             </div>
         </div>
 
@@ -85,7 +485,8 @@
         <div id="class-nav-bar" class="class-nav-bar"></div>
 
         <div class="controls">
-            <h2 style="margin: 0;">Viewing: <span id="current-class-label" style="color: var(--accent);">Loading...</span></h2>
+            <h2 style="margin: 0;">Viewing: <span id="current-class-label"
+                    style="color: var(--accent);">Loading...</span></h2>
             <div>
                 <button class="btn btn-success" onclick="emailAllStudents()">📧 Email Grades (Current Unit)</button>
                 <span id="emailStatus" style="margin-left: 10px;"></span>
@@ -105,7 +506,7 @@
 
         <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 1.3em;">2. Class Gradebook</h3>
         <div id="roster-container" class="table-responsive">
-            </div>
+        </div>
     </div>
 
     <script>
@@ -115,18 +516,17 @@
         const storageKey = `savedClasses_${currentUser.email}`;
         let classData = JSON.parse(localStorage.getItem(storageKey)) || [];
         let currentClass = "Unknown Class";
-        
-        let unitsData = [];
-        let activeUnitIndex = 0; 
 
-        // Gradebook Caches
-        let classLessonsData = {}; 
-        let classMarksData = {};   
-        let studentsData = [];     
+        let unitsData = [];
+        let activeUnitIndex = 0;
+
+        let classLessonsData = {};
+        let classMarksData = {};
+        let studentsData = [];
 
         window.onload = () => {
             document.getElementById('currentdate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            
+
             const themeToggle = document.getElementById('theme-toggle');
             if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('darkmode'); themeToggle.checked = true; }
             themeToggle.addEventListener('change', function () {
@@ -171,7 +571,6 @@
             }
         }
 
-        // --- UNIT LOGIC ---
         function initUnits() {
             const unitStorageKey = `units_${currentClass}`;
             unitsData = JSON.parse(localStorage.getItem(unitStorageKey)) || ["Unit 1"];
@@ -191,18 +590,17 @@
                 const delBtn = document.createElement('button');
                 delBtn.className = 'unit-delete';
                 delBtn.innerText = '×';
-                
-                // DELETION & AUTO-RENUMBERING LOGIC
+
                 delBtn.onclick = (e) => {
                     e.stopPropagation();
                     if (confirm(`Delete this unit and all its marks?`)) {
                         unitsData.splice(index, 1);
-                        
+
                         // Automatically renumber remaining units
-                        for(let i = 0; i < unitsData.length; i++){
+                        for (let i = 0; i < unitsData.length; i++) {
                             unitsData[i] = `Unit ${i + 1}`;
                         }
-                        
+
                         delete classLessonsData[index];
                         localStorage.setItem(`units_${currentClass}`, JSON.stringify(unitsData));
                         localStorage.setItem(`lessons_${currentClass}`, JSON.stringify(classLessonsData));
@@ -214,7 +612,7 @@
                 unitDiv.appendChild(delBtn);
                 container.appendChild(unitDiv);
             });
-            
+
             if (unitsData.length < 10) {
                 const addBox = document.createElement('div');
                 addBox.className = 'unit-add-box';
@@ -230,11 +628,10 @@
 
         function selectUnit(index) {
             activeUnitIndex = index;
-            renderUnits(); 
-            renderRosterTable(); 
+            renderUnits();
+            renderRosterTable();
         }
 
-        // --- DATA & TABLE LOGIC ---
         async function loadStudentsData() {
             try {
                 const response = await fetch(`http://localhost:3000/api/data/${encodeURIComponent(currentClass)}`);
@@ -293,16 +690,15 @@
             classLessonsData[activeUnitIndex].lessons[lessonIndex].date = dateStr;
             localStorage.setItem(`lessons_${currentClass}`, JSON.stringify(classLessonsData));
         }
-        
+
         function updateTestDate(dateStr) {
             classLessonsData[activeUnitIndex].testDate = dateStr;
             localStorage.setItem(`lessons_${currentClass}`, JSON.stringify(classLessonsData));
         }
 
-        // --- NEW GRADE UI LOGIC ---
         function handleDropdownChange(selectElement, studentId, markKey) {
             const sliderContainer = selectElement.parentElement.querySelector('.custom-slider-container');
-            
+
             if (selectElement.value === 'custom') {
                 sliderContainer.style.display = 'block';
                 const slider = sliderContainer.querySelector('input[type="range"]');
@@ -330,7 +726,7 @@
         function buildMarkCellHTML(studentId, markKey, markVal, isLate) {
             let selectVal = markVal;
             let showSlider = false;
-            
+
             // Standard preset marks logic
             const standardMarks = ['0', '25', '50', '75', '100', ''];
             if (markVal !== '' && !standardMarks.includes(String(markVal))) {
@@ -361,7 +757,6 @@
             </td>`;
         }
 
-
         function renderRosterTable() {
             const container = document.getElementById('roster-container');
             if (studentsData.length === 0) {
@@ -373,9 +768,8 @@
             const unitData = classLessonsData[activeUnitIndex];
             const unitNum = activeUnitIndex + 1;
 
-            // BUILD HEADER
             let thHTML = `<th style="text-align:left;">Student Details</th>`;
-            
+
             unitData.lessons.forEach((l, idx) => {
                 thHTML += `
                 <th>
@@ -401,10 +795,9 @@
             let btnHTML = '';
             if (unitData.lessons.length < 12) btnHTML += `<button class="btn-add-lesson" onclick="addLesson()">+ Lesson</button>`;
             if (!unitData.hasTest) btnHTML += `<button class="btn-add-lesson" style="background:var(--danger);" onclick="addTest()">+ Test</button>`;
-            
+
             thHTML += `<th style="width: 80px;"><div class="add-col-controls">${btnHTML}</div></th>`;
 
-            // BUILD BODY
             let tbodyHTML = '';
             studentsData.forEach(student => {
                 const nameParts = student.name ? student.name.split(' ') : ["Unknown"];
@@ -440,7 +833,6 @@
                         </div>
                     </td>`;
 
-                // Render Lesson Grade Cells with New UI
                 unitData.lessons.forEach(l => {
                     const markKey = `l${l.id}`;
                     const markVal = sMarks[markKey] || '';
@@ -448,21 +840,19 @@
                     trHTML += buildMarkCellHTML(student.id, markKey, markVal, isLate);
                 });
 
-                // Render Test Grade Cell with New UI
                 if (unitData.hasTest) {
                     const markVal = sMarks['test'] || '';
                     const isLate = sMarks['test_late'] || false;
                     trHTML += buildMarkCellHTML(student.id, 'test', markVal, isLate);
                 }
 
-                trHTML += `<td></td></tr>`; 
+                trHTML += `<td></td></tr>`;
                 tbodyHTML += trHTML;
             });
 
             container.innerHTML = `<table class="roster-table"><thead><tr>${thHTML}</tr></thead><tbody>${tbodyHTML}</tbody></table>`;
         }
 
-        // --- STUDENT MANAGER ---
         function toggleStudentDetails(id) {
             const div = document.getElementById(`details-${id}`);
             div.style.display = div.style.display === "block" ? "none" : "block";
@@ -489,7 +879,6 @@
             } catch (err) { alert("Error saving."); }
         }
 
-        // --- EMAIL LOGIC ---
         function buildGradeMessage(student) {
             const unitName = unitsData[activeUnitIndex];
             const unitNum = activeUnitIndex + 1;
@@ -497,8 +886,8 @@
             const sMarks = (classMarksData[student.id] && classMarksData[student.id][activeUnitIndex]) || {};
 
             let text = `Hello ${student.name},\n\nHere is the latest grade report for ${unitName}:\n\n`;
-            
-            if(unitData.lessons.length === 0 && !unitData.hasTest) return text + "No assignments recorded yet.";
+
+            if (unitData.lessons.length === 0 && !unitData.hasTest) return text + "No assignments recorded yet.";
 
             unitData.lessons.forEach(l => {
                 const mark = sMarks[`l${l.id}`] || "Pending";
@@ -513,20 +902,20 @@
                 const dStr = unitData.testDate ? ` (${unitData.testDate})` : "";
                 text += `• Unit Test${dStr}:  ${isLate}${mark}\n`;
             }
-            return text + "\nKeep up the hard work!";
+            return text + "\nKeep up the hard work!\nBest Regards\nMB";
         }
 
         async function emailIndividualStudent(event, id) {
             event.stopPropagation();
             const btn = event.target;
             const student = studentsData.find(s => s.id === id);
-            
+
             const messageBody = buildGradeMessage(student);
             const subj = `MathTrack Grades: ${unitsData[activeUnitIndex]}`;
 
             const oldText = btn.innerText; btn.innerText = "...";
             try {
-                const response = await fetch(`http://localhost:3000/send-individual/${id}`, { 
+                const response = await fetch(`http://localhost:3000/send-individual/${id}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ subject: subj, text: messageBody })
@@ -539,10 +928,10 @@
         async function emailAllStudents() {
             const status = document.getElementById('emailStatus');
             status.innerText = "Generating reports...";
-            
+
             const messagesPayload = {};
             const subj = `MathTrack Class Update: ${unitsData[activeUnitIndex]}`;
-            
+
             studentsData.forEach(student => {
                 messagesPayload[student.id] = {
                     subject: subj,
@@ -552,7 +941,7 @@
 
             try {
                 status.innerText = "Sending to server...";
-                const response = await fetch(`http://localhost:3000/send-all/${encodeURIComponent(currentClass)}`, { 
+                const response = await fetch(`http://localhost:3000/send-all/${encodeURIComponent(currentClass)}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ messages: messagesPayload })
@@ -562,7 +951,6 @@
             setTimeout(() => status.innerText = "", 4000);
         }
 
-        // --- CSV IMPORT ---
         async function handleCSV() {
             const fileInput = document.getElementById('csv-file');
             const file = fileInput.files[0];
@@ -574,12 +962,11 @@
                 for (let row of rows) {
                     const cols = row.split(',');
                     if (cols.length < 3) continue;
-                    
+
                     const email = cols[2].replace(/"/g, '').trim();
-                    
-                    // FIXED: This specifically ignores Google Classroom's "Date" and "Points" rows
-                    if (!email.includes('@')) continue; 
-                    
+
+                    if (!email.includes('@')) continue;
+
                     await fetch('http://localhost:3000/api/add', {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -604,5 +991,7 @@
             }
         }
     </script>
+
 </body>
+
 </html>
