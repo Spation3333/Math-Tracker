@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathTrack - Sign Up</title>
+    <link href="styles.css" rel="stylesheet" />
+    <style>
+        .portal-container {
+            max-width: 500px;
+            margin: 60px auto;
+            background-color: var(--card-bg, #fff);
+            padding: 40px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+
+        .input-group label {
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+        }
+
+
+        .name-row {
+            display: flex;
+            gap: 15px;
+        }
+
+
+        .rules-box {
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            text-align: left;
+        }
+
+
+        body.darkmode .rules-box {
+            background: #333;
+            border-color: rgb(212, 175, 55);
+        }
+
+
+        .rule {
+            color: #e74c3c;
+            margin: 3px 0;
+        }
+
+
+        .rule.valid {
+            color: #27ae60;
+        }
+
+
+        .btn-full {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="themewrapper" style="position: absolute; top: 20px; right: 20px;">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider round"></span>
+        </label>
+    </div>
+
+
+    <div class="portal-container">
+        <h1 class="welcomeheader" style="margin-bottom: 10px; font-size: 40px;">Create Account</h1>
+        <p style="margin-bottom: 30px; opacity: 0.8;">Join the MathTrack Portal</p>
+
+
+        <div class="name-row">
+            <div class="input-group" style="flex: 1;">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" placeholder="e.g. Jane">
+            </div>
+            <div class="input-group" style="flex: 1;">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" placeholder="e.g. Doe">
+            </div>
+        </div>
+
+
+        <div class="input-group">
+            <label for="email">Email Address (Username)</label>
+            <input type="email" id="email" placeholder="teacher@school.com">
+        </div>
+
+        <div class="name-row">
+            <div class="input-group" style="flex: 1; position: relative;">
+                <label for="pin">4-Digit PIN</label>
+                <input type="password" id="pin" placeholder="1234" maxlength="4">
+                <!-- Main PIN Toggle -->
+                <span id="togglePin"
+                    style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
+            </div>
+            <div class="input-group" style="flex: 1; position: relative;">
+                <label for="confPin">Confirm PIN</label>
+                <input type="password" id="confPin" placeholder="1234" maxlength="4">
+                <!-- Confirm PIN Toggle -->
+                <span id="toggleConfPin"
+                    style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
+            </div>
+        </div>
+
+        <div class="rules-box" id="rulesBox">
+            <div id="rule-length" class="rule">❌ Must be exactly 4 characters</div>
+            <div id="rule-number" class="rule">❌ Must contain only numbers</div>
+            <div id="rule-match" class="rule">❌ PINs must match</div>
+        </div>
+
+
+        <button class="buttons btn-full" id="signupBtn" onclick="createAccount()" disabled style="opacity: 0.5;">Create
+            Account & Login</button>
+
+
+        <a href="index.html"
+            style="display: block; margin-top: 20px; color: rgb(139, 107, 35); font-weight: bold; text-decoration: none;">←
+            Back to Login</a>
+    </div>
+
+
+    <script>
+
+
+        const themeToggle = document.getElementById('theme-toggle');
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('darkmode');
+            themeToggle.checked = true;
+        }
+        themeToggle.addEventListener('change', () => {
+            document.body.classList.toggle('darkmode');
+            localStorage.setItem('theme', document.body.classList.contains('darkmode') ? 'dark' : 'light');
+        });
+
+
+        const pinInput = document.getElementById('pin');
+        const confPinInput = document.getElementById('confPin');
+        const btn = document.getElementById('signupBtn');
+
+
+        function validateForm() {
+            const pin = pinInput.value;
+            const conf = confPinInput.value;
+
+
+            let isLengthValid = pin.length === 4;
+            let isNumValid = /^\d+$/.test(pin);
+            let isMatchValid = (pin === conf) && pin.length > 0;
+
+
+            document.getElementById('rule-length').className = isLengthValid ? 'rule valid' : 'rule';
+            document.getElementById('rule-length').innerText = isLengthValid ? '✅ Must be exactly 4 characters' : '❌ Must be exactly 4 characters';
+
+
+            document.getElementById('rule-number').className = isNumValid && pin.length > 0 ? 'rule valid' : 'rule';
+            document.getElementById('rule-number').innerText = isNumValid && pin.length > 0 ? '✅ Must contain only numbers' : '❌ Must contain only numbers';
+
+
+            document.getElementById('rule-match').className = isMatchValid ? 'rule valid' : 'rule';
+            document.getElementById('rule-match').innerText = isMatchValid ? '✅ PINs must match' : '❌ PINs must match';
+
+
+            const first = document.getElementById('firstName').value.trim();
+            const last = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+
+
+            if (isLengthValid && isNumValid && isMatchValid && first !== "" && last !== "" && email !== "") {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            } else {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+            }
+        }
+
+
+        pinInput.addEventListener('input', validateForm);
+        confPinInput.addEventListener('input', validateForm);
+        document.getElementById('firstName').addEventListener('input', validateForm);
+        document.getElementById('lastName').addEventListener('input', validateForm);
+        document.getElementById('email').addEventListener('input', validateForm);
+
+
+        function createAccount() {
+            const userObj = {
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                email: document.getElementById('email').value.trim().toLowerCase(),
+                pin: document.getElementById('pin').value
+            };
+
+
+            const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
+
+
+            if (users[userObj.email]) {
+                alert("An account with this email already exists!");
+                return;
+            }
+
+
+            users[userObj.email] = userObj;
+            localStorage.setItem('mathTrackUsers', JSON.stringify(users));
+
+
+            localStorage.setItem('currentUser', JSON.stringify(userObj));
+            window.location.href = 'select.html';
+        }
+
+        const togglePin = document.getElementById('togglePin');
+
+        togglePin.addEventListener('click', function () {
+            const type = pinInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            pinInput.setAttribute('type', type);
+            this.textContent = type === 'password' ? '👁️' : '🔒'; // Changed monkey to lock
+        });
+
+        // Logic for the Confirm PIN Toggle
+        const toggleConfPin = document.getElementById('toggleConfPin');
+
+        toggleConfPin.addEventListener('click', function () {
+            const type = confPinInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confPinInput.setAttribute('type', type);
+            this.textContent = type === 'password' ? '👁️' : '🔒'; // Changed monkey to lock
+        });
+    </script>
+</body>
+
+
+</html>

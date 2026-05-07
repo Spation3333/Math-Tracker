@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathTrack - Portal</title>
+    <link href="styles.css" rel="stylesheet" />
+    <style>
+        h1 {
+            font-size: 50px;
+        }
+
+
+        label {
+            color: rgb(139, 107, 35);
+        }
+
+
+        .portal-container {
+            max-width: 450px;
+            margin: 60px auto;
+            text-align: center;
+            background-color: var(--card-bg, #fff);
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+
+        /* Password Wrapper for the Eye Icon */
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+
+    </style>
+</head>
+
+
+<body>
+
+
+    <div class="themewrapper" style="position: absolute; top: 20px; right: 20px;">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider round"></span>
+        </label>
+    </div>
+
+
+    <div class="portal-container">
+        <h1 class="welcomeheader">MathTrack</h1>
+        <h2 class="subtitle">Teacher Portal</h2>
+
+
+        <div class="signupinput" style="text-align: left; margin-top: 20px;">
+            <label for="loginUser">Username:</label>
+            <input type="text" id="loginUser" placeholder="Enter your username" autocomplete="username">
+        </div>
+
+
+        <div class="signupinput" style="text-align: left;">
+            <label for="loginPin">4-Digit PIN:</label>
+            <div class="password-wrapper">
+                <input type="password" id="loginPin" placeholder="e.g. 1234" maxlength="4"
+                    autocomplete="current-password">
+                <button type="button" class="eye-icon" onclick="togglePassword()">👁️</button>
+            </div>
+        </div>
+
+
+        <div class="linkrow">
+            <a href="recovery.html" class="forgotlink">Forgot Password?</a>
+            <button class="buttons" onclick="window.location.href='signup.html'"
+                style="margin: 0; padding: 8px 15px;">Create Account</button>
+        </div>
+
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color, #ccc);">
+
+
+        <div class="mainbuttonsrow">
+            <button class="buttons mainbuttons" onclick="window.location.href='credits.html'">Credits</button>
+            <button class="buttons cancelbutton mainbuttons" onclick="quitApp()">Quit</button>
+        </div>
+    </div>
+
+
+    <script>
+   
+        const themeToggle = document.getElementById('theme-toggle');
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('darkmode');
+            themeToggle.checked = true;
+        }
+        themeToggle.addEventListener('change', () => {
+            document.body.classList.toggle('darkmode');
+            localStorage.setItem('theme', document.body.classList.contains('darkmode') ? 'dark' : 'light');
+        });
+
+
+        //Show/Hide Password
+       function togglePassword() {
+            const pinInput = document.getElementById('loginPin');
+            const eyeIcon = pinInput.nextElementSibling;
+            if (pinInput.type === "password") {
+                pinInput.type = "text";
+                eyeIcon.textContent = "🔒";
+            } else {
+                pinInput.type = "password";
+                eyeIcon.textContent = "👁️";
+            }
+        }
+
+
+        //Auto-Login Trigger
+        const pinField = document.getElementById('loginPin');
+        const userField = document.getElementById('loginUser');
+
+
+        pinField.addEventListener('input', function () {
+            this.value = this.value.replace(/[^0-9]/g, '');
+
+
+            if (this.value.length === 4) {
+                const typedEmail = userField.value.trim().toLowerCase();
+
+
+                if (typedEmail === "") {
+                    alert("Please enter your email (username) first.");
+                    this.value = "";
+                    userField.focus();
+                    return;
+                }
+
+
+                const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
+                const account = users[typedEmail];
+
+
+                if (account && account.pin === this.value) {
+                    localStorage.setItem('currentUser', JSON.stringify(account));
+
+
+                    document.body.style.opacity = '0.5';
+                    document.body.style.transition = 'opacity 0.2s ease';
+                    setTimeout(() => { window.location.href = "select.html"; }, 250);
+                } else {
+                    alert("Incorrect email or PIN.");
+                    this.value = "";
+                }
+            }
+        });
+
+
+        function quitApp() { //Function To Close Tab
+            if (confirm("Close MathTrack Portal?")) {
+                window.close();
+                document.body.innerHTML = "<h1 style='text-align:center; margin-top:50px;'>You may now close this tab.</h1>";
+            }
+        }
+
+
+    </script>
+
+
+</body>
+
+
+</html>
