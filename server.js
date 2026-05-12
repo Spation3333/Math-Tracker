@@ -6,15 +6,6 @@ const nodemailer = require('nodemailer');
 
 const app = express();
 
-// --- EMAIL SETUP ---
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'owensirrichard@gmail.com',
-        pass: 'eanr zmoa tdjs ypzl' 
-    }
-});
-
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
@@ -36,9 +27,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 const getRecipients = (student) => {
     const list = [];
-    if (student.student_email && student.student_email.trim()) {
-        list.push(student.student_email.trim());
-    }
+    if (student.student_email && student.student_email.trim()) list.push(student.student_email.trim());
     if (student.guardian_email && student.guardian_email.trim()) {
         const parents = student.guardian_email.split(',').map(e => e.trim()).filter(Boolean);
         list.push(...parents);
@@ -46,35 +35,48 @@ const getRecipients = (student) => {
     return [...new Set(list)];
 };
 
-// 1. POST: Send Individual Email
+// 1. POST: Send Individual Email (Dynamic Auth)
 app.post('/send-individual/:id', (req, res) => {
     const { id } = req.params;
-    const { subject, text } = req.body; 
+    const { subject, text, senderEmail, senderPassword } = req.body;
+
+    if (!senderEmail || !senderPassword) return res.status(400).json({ error: "App password missing from profile!" });
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: { user: senderEmail, pass: senderPassword }
+    });
 
     db.get("SELECT * FROM Students WHERE id = ?", [id], (err, student) => {
         if (err || !student) return res.status(404).json({ error: "Student not found." });
-
         const recipients = getRecipients(student);
         if (recipients.length === 0) return res.status(400).json({ error: "No email addresses found." });
 
         const mailOptions = {
-            from: 'owensirrichard@gmail.com',
-            to: recipients, 
+            from: senderEmail,
+            to: recipients,
             subject: subject || `MathTrack Progress Update`,
             text: text || `Hello ${student.name},\n\nThis is an update regarding your MathTrack progress.`
         };
 
         transporter.sendMail(mailOptions, (error) => {
-            if (error) return res.status(500).json({ error: "Failed to send" });
+            if (error) return res.status(500).json({ error: "Failed to send. Check App Password." });
             res.json({ message: "Emails sent to student and guardian!" });
         });
     });
 });
 
-// 2. POST: Send Bulk Class Emails
+// 2. POST: Send Bulk Class Emails (Dynamic Auth)
 app.post('/send-all/:class_name', (req, res) => {
     const className = req.params.class_name;
-    const messages = req.body.messages || {}; 
+    const { messages, senderEmail, senderPassword } = req.body;
+
+    if (!senderEmail || !senderPassword) return res.status(400).json({ error: "App password missing from profile!" });
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: { user: senderEmail, pass: senderPassword }
+    });
 
     db.all("SELECT * FROM Students WHERE class_name = ?", [className], (err, rows) => {
         if (err || rows.length === 0) return res.status(404).json({ error: "No students found." });
@@ -84,7 +86,7 @@ app.post('/send-all/:class_name', (req, res) => {
             if (recipients.length > 0) {
                 const customMsg = messages[student.id] || {};
                 const mailOptions = {
-                    from: 'owensirrichard@gmail.com',
+                    from: senderEmail,
                     to: recipients,
                     subject: customMsg.subject || `MathTrack Bulk Update: ${className}`,
                     text: customMsg.text || `Hello ${student.name},\n\nThis is a progress notification for your class.`
@@ -99,44 +101,39 @@ app.post('/send-all/:class_name', (req, res) => {
 // --- STANDARD API ROUTES ---
 app.post('/api/add', (req, res) => {
     const { name, student_email, guardian_email, class_name } = req.body;
-    db.run(`INSERT INTO Students (name, student_email, guardian_email, class_name) VALUES (?, ?, ?, ?)`, 
-    [name, student_email, guardian_email, class_name], (err) => {
-        res.json({ status: "Success" });
-    });
+    db.run(`INSERT INTO Students (name, student_email, guardian_email, class_name) VALUES (?, ?, ?, ?)`,
+        [name, student_email, guardian_email, class_name], (err) => res.json({ status: "Success" }));
 });
 
 app.get('/api/data/:class_name', (req, res) => {
-    db.all("SELECT * FROM Students WHERE class_name = ?", [req.params.class_name], (err, rows) => {
-        res.json({ data: rows });
-    });
+    db.all("SELECT * FROM Students WHERE class_name = ?", [req.params.class_name], (err, rows) => res.json({ data: rows }));
 });
 
 app.put('/api/update/:id', (req, res) => {
     const { name, student_email, guardian_email } = req.body;
-    db.run("UPDATE Students SET name = ?, student_email = ?, guardian_email = ? WHERE id = ?", 
-    [name, student_email, guardian_email, req.params.id], (err) => {
-        res.json({ status: "Updated" });
-    });
+    db.run("UPDATE Students SET name = ?, student_email = ?, guardian_email = ? WHERE id = ?",
+        [name, student_email, guardian_email, req.params.id], (err) => res.json({ status: "Updated" }));
 });
 
 app.delete('/api/delete/:id', (req, res) => {
-    db.run("DELETE FROM Students WHERE id = ?", [req.params.id], (err) => {
-        res.json({ status: "Deleted" });
+    db.run("DELETE FROM Students WHERE id = ?", [req.params.id], (err) => res.json({ status: "Deleted" }));
+});
+
+app.delete('/api/delete-class/:class_name', (req, res) => {
+    db.run("DELETE FROM Students WHERE class_name = ?", [req.params.class_name], function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ status: "Deleted", rowsAffected: this.changes });
     });
 });
 
-// --- DELETE ENTIRE CLASS ROSTER ROUTE ---
-app.delete('/api/delete-class/:class_name', (req, res) => {
-    const targetClass = req.params.class_name;
-    console.log(`[SERVER] Received request to delete entire roster for class: ${targetClass}`);
-    
-    db.run("DELETE FROM Students WHERE class_name = ?", [targetClass], function(err) {
-        if (err) {
-            console.error(`[SERVER] Error deleting class ${targetClass}:`, err.message);
-            return res.status(500).json({ error: err.message });
-        }
-        console.log(`[SERVER] Successfully deleted ${this.changes} students from ${targetClass}.`);
-        res.json({ status: "Deleted", rowsAffected: this.changes });
+// NEW: MIGRATION ROUTE IF EMAIL IS CHANGED
+app.put('/api/migrate-email', (req, res) => {
+    const { oldEmail, newEmail } = req.body;
+    // Updates "oldEmail_ClassName" to "newEmail_ClassName" in the database safely
+    const sql = `UPDATE Students SET class_name = ? || substr(class_name, length(?) + 1) WHERE class_name LIKE ? || '_%'`;
+    db.run(sql, [newEmail, oldEmail, oldEmail], function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ status: "Migrated", rows: this.changes });
     });
 });
 

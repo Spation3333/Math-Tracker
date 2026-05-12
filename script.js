@@ -1,16 +1,15 @@
 const themeToggle = document.getElementById('theme-toggle');
 const body = document.body;
 
-function togglePassword(inputId) { //function to Show and Hide Password
-    const password = document.getElementById(inputId); //Password That is in Textbox
-    const toggleButton = password.nextElementSibling; //Toggle Switch
-
-    if (password.type === "password") { //Checks Whether Password is Hidden or Showing
-        password.type = "text"; //Password Shows Dots
-        toggleButton.textContent = "🔒"; //Button Displays Hide
-    } else { //Otherwise
-        password.type = "password"; //Shows Full Password
-        toggleButton.textContent = "👁️"; //Button Displays Show
+function togglePassword(inputId) {
+    const password = document.getElementById(inputId);
+    const toggleButton = password.nextElementSibling;
+    if (password.type === "password") {
+        password.type = "text";
+        toggleButton.textContent = "🔒";
+    } else {
+        password.type = "password";
+        toggleButton.textContent = "👁️";
     }
 }
 
@@ -32,12 +31,8 @@ if (themeToggle) {
 }
 
 window.addEventListener('DOMContentLoaded', function () {
-    if (document.getElementById('newclass')) {
-        updateClass();
-    }
-    if (document.getElementById('currentdate')) {
-        displayDate();
-    }
+    if (document.getElementById('newclass')) updateClass();
+    if (document.getElementById('currentdate')) displayDate();
 });
 
 function displayDate() {
@@ -51,11 +46,85 @@ if (!currentUser && window.location.pathname.includes('select.html')) {
     window.location.href = 'index.html';
 }
 
+// PROFILE SETUP
 window.addEventListener('DOMContentLoaded', function () {
-    if (currentUser && document.getElementById('welcome-header')) {
-        document.getElementById('welcome-header').textContent = `Welcome ${currentUser.firstName} ${currentUser.lastName}!`;
+    if (currentUser) {
+        if (document.getElementById('welcome-header')) {
+            document.getElementById('welcome-header').textContent = `Welcome ${currentUser.firstName} ${currentUser.lastName}!`;
+        }
+        if (document.getElementById('profile-name')) {
+            document.getElementById('profile-name').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+            document.getElementById('profile-email').textContent = currentUser.email;
+        }
+        // Apply dark mode coloring for specific names
+        if (document.body.classList.contains('darkmode') && document.getElementById('profile-name')) {
+            document.getElementById('profile-name').style.color = "rgb(212, 175, 55)";
+        }
     }
 });
+
+// PROFILE MODAL LOGIC
+function openProfileModal() {
+    document.getElementById('prof-fname').value = currentUser.firstName;
+    document.getElementById('prof-lname').value = currentUser.lastName;
+    document.getElementById('prof-email').value = currentUser.email;
+    document.getElementById('prof-apppass').value = currentUser.appPassword || '';
+    document.getElementById('prof-pin').value = '';
+    document.getElementById('profile-modal').style.display = 'flex';
+}
+
+function closeProfileModal() {
+    document.getElementById('profile-modal').style.display = 'none';
+}
+
+async function saveProfile() {
+    const pin = document.getElementById('prof-pin').value;
+    if (pin !== currentUser.pin) return alert("Incorrect PIN! Cannot save changes.");
+
+    const newFname = document.getElementById('prof-fname').value.trim();
+    const newLname = document.getElementById('prof-lname').value.trim();
+    const newEmail = document.getElementById('prof-email').value.trim().toLowerCase();
+    const newAppPass = document.getElementById('prof-apppass').value.trim();
+
+    if (!newFname || !newLname || !newEmail || !newAppPass) return alert("All fields are required.");
+
+    const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
+
+    if (newEmail !== currentUser.email && users[newEmail]) return alert("Email already in use!");
+
+    const oldEmail = currentUser.email;
+
+    if (newEmail !== oldEmail) {
+        try {
+            await fetch('http://localhost:3000/api/migrate-email', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ oldEmail, newEmail })
+            });
+        } catch (e) { console.error("DB Migration Error", e); }
+
+        const keysToMigrate = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.includes(oldEmail)) keysToMigrate.push(key);
+        }
+        keysToMigrate.forEach(key => {
+            const newKey = key.replace(oldEmail, newEmail);
+            localStorage.setItem(newKey, localStorage.getItem(key));
+            localStorage.removeItem(key);
+        });
+    }
+
+    delete users[oldEmail];
+    const updatedUser = { firstName: newFname, lastName: newLname, email: newEmail, appPassword: newAppPass, pin: currentUser.pin };
+    users[newEmail] = updatedUser;
+
+    localStorage.setItem('mathTrackUsers', JSON.stringify(users));
+    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+
+    alert("Profile updated successfully!");
+    window.location.reload();
+}
 
 const storageKey = currentUser ? `savedClasses_${currentUser.email}` : 'savedClasses';
 let classData = JSON.parse(localStorage.getItem(storageKey)) || [];

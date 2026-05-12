@@ -29,10 +29,86 @@ window.onload = () => {
     classLessonsData = JSON.parse(localStorage.getItem(`lessons_${currentClass}`)) || {};
     classMarksData = JSON.parse(localStorage.getItem(`marks_${currentClass}`)) || {};
 
+    renderProfileBox();
     renderClassNav();
     initUnits();
     loadStudentsData();
 };
+
+// --- PROFILE LOGIC ---
+function renderProfileBox() {
+    if (document.getElementById('profile-name')) {
+        document.getElementById('profile-name').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+        document.getElementById('profile-email').textContent = currentUser.email;
+    }
+}
+
+function openProfileModal() {
+    document.getElementById('prof-fname').value = currentUser.firstName;
+    document.getElementById('prof-lname').value = currentUser.lastName;
+    document.getElementById('prof-email').value = currentUser.email;
+    document.getElementById('prof-apppass').value = currentUser.appPassword || '';
+    document.getElementById('prof-pin').value = '';
+    document.getElementById('profile-modal').style.display = 'flex';
+}
+
+function closeProfileModal() {
+    document.getElementById('profile-modal').style.display = 'none';
+}
+
+async function saveProfile() {
+    const pin = document.getElementById('prof-pin').value;
+    if (pin !== currentUser.pin) return alert("Incorrect PIN! Cannot save changes.");
+
+    const newFname = document.getElementById('prof-fname').value.trim();
+    const newLname = document.getElementById('prof-lname').value.trim();
+    const newEmail = document.getElementById('prof-email').value.trim().toLowerCase();
+    const newAppPass = document.getElementById('prof-apppass').value.trim();
+
+    if (!newFname || !newLname || !newEmail || !newAppPass) return alert("All fields are required.");
+
+    const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
+
+    if (newEmail !== currentUser.email && users[newEmail]) return alert("Email already in use!");
+
+    const oldEmail = currentUser.email;
+
+    // Perform migrations if the email address changed
+    if (newEmail !== oldEmail) {
+        try {
+            await fetch('http://localhost:3000/api/migrate-email', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ oldEmail, newEmail })
+            });
+        } catch (e) { console.error("DB Migration Error", e); }
+
+        const keysToMigrate = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.includes(oldEmail)) keysToMigrate.push(key);
+        }
+        keysToMigrate.forEach(key => {
+            const newKey = key.replace(oldEmail, newEmail);
+            localStorage.setItem(newKey, localStorage.getItem(key));
+            localStorage.removeItem(key);
+        });
+    }
+
+    delete users[oldEmail];
+    const updatedUser = { firstName: newFname, lastName: newLname, email: newEmail, appPassword: newAppPass, pin: currentUser.pin };
+    users[newEmail] = updatedUser;
+
+    localStorage.setItem('mathTrackUsers', JSON.stringify(users));
+    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+
+    alert("Profile updated successfully!");
+
+    // Redirect to the new URL hash if email changed so the page reloads correctly
+    const currentClassName = currentClass.replace(oldEmail + "_", "");
+    window.location.href = `studentList.html?class=${encodeURIComponent(newEmail + "_" + currentClassName)}`;
+}
+
 
 function renderClassNav() {
     const navBar = document.getElementById('class-nav-bar');
@@ -316,7 +392,6 @@ function renderRosterTable() {
     const unitData = classLessonsData[activeUnitIndex];
     const unitNum = activeUnitIndex + 1;
 
-    // BUILD HEADER
     let thHTML = `<th style="text-align:left;">Student Details</th>`;
 
     unitData.lessons.forEach((l, idx) => {
@@ -348,7 +423,6 @@ function renderRosterTable() {
     thHTML += `<th style="width: 80px;"><div class="add-col-controls">${btnHTML}</div></th>`;
     thHTML += `<th style="min-width: 250px;"><div class="lesson-header"><span>Teacher Notes</span></div></th>`;
 
-    // BUILD BODY
     let tbodyHTML = '';
     studentsData.forEach(student => {
         const nameParts = student.name ? student.name.split(' ') : ["Unknown"];
@@ -384,7 +458,6 @@ function renderRosterTable() {
                         </div>
                     </td>`;
 
-        // Render Lesson Grade Cells with New UI
         unitData.lessons.forEach(l => {
             const markKey = `l${l.id}`;
             const markVal = sMarks[markKey] || '';
@@ -393,7 +466,6 @@ function renderRosterTable() {
             trHTML += buildMarkCellHTML(student.id, markKey, markVal, isLate, isCustom);
         });
 
-        // Render Test Grade Cell with New UI
         if (unitData.hasTest) {
             const markVal = sMarks['test'] || '';
             const isLate = sMarks['test_late'] || false;
@@ -403,7 +475,6 @@ function renderRosterTable() {
 
         trHTML += `<td></td>`;
 
-        // Render Notes Cell
         const studentNote = sMarks['notes'] || '';
         trHTML += `<td style="vertical-align: top;">
                     <textarea class="mark-input" style="width: 100%; height: 100px; resize: vertical; text-align: left; font-weight: normal; font-family: inherit;" 
@@ -471,7 +542,6 @@ function buildGradeMessage(student) {
         }
     }
 
-    // APPEND TEACHER NOTE WITHOUT PREFIX
     if (sMarks['notes'] && sMarks['notes'].trim() !== '') {
         text += `\n${sMarks['notes']}\n`;
     }
@@ -492,7 +562,12 @@ async function emailIndividualStudent(event, id) {
         const response = await fetch(`http://localhost:3000/send-individual/${id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ subject: subj, text: messageBody })
+            body: JSON.stringify({
+                subject: subj,
+                text: messageBody,
+                senderEmail: currentUser.email,
+                senderPassword: currentUser.appPassword
+            })
         });
         btn.innerText = response.ok ? "Sent!" : "Fail";
     } catch (err) { btn.innerText = "Err"; }
@@ -518,9 +593,13 @@ async function emailAllStudents() {
         const response = await fetch(`http://localhost:3000/send-all/${encodeURIComponent(currentClass)}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ messages: messagesPayload })
+            body: JSON.stringify({
+                messages: messagesPayload,
+                senderEmail: currentUser.email,
+                senderPassword: currentUser.appPassword
+            })
         });
-        status.innerText = response.ok ? "✅ All grades dispatched!" : "❌ Server failed to send.";
+        status.innerText = response.ok ? "✅ All grades dispatched!" : "❌ Failed. Check App Password.";
     } catch (err) { status.innerText = "❌ Server offline."; }
     setTimeout(() => status.innerText = "", 4000);
 }
@@ -570,7 +649,6 @@ async function deleteClassRoster() {
         try {
             const response = await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(currentClass)}`, { method: 'DELETE' });
             if (response.ok) {
-                alert("Roster cleared!");
                 loadStudentsData();
             } else {
                 alert("Failed to delete roster. Check server console.");

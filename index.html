@@ -21,7 +21,6 @@
 </head>
 
 <body>
-
     <div class="themewrapper" style="position: absolute; top: 20px; right: 20px;">
         <label class="switch">
             <input type="checkbox" id="theme-toggle">
@@ -33,12 +32,7 @@
         <h1 class="welcomeheader" style="font-size: 50px;">MathTrack</h1>
         <h2 class="subtitle">Teacher Portal</h2>
 
-        <div class="signupinput" style="text-align: left; margin-top: 20px;">
-            <label for="loginUser">Username:</label>
-            <input type="text" id="loginUser" placeholder="Enter your username" autocomplete="username">
-        </div>
-
-        <div class="signupinput" style="text-align: left;">
+        <div class="signupinput" style="text-align: left; margin-top: 30px;">
             <label for="loginPin">4-Digit PIN:</label>
             <div class="passwordwrapper">
                 <input type="password" id="loginPin" placeholder="e.g. 1234" maxlength="4"
@@ -62,7 +56,6 @@
     </div>
 
     <script>
-
         const themeToggle = document.getElementById('theme-toggle');
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('darkmode');
@@ -86,46 +79,41 @@
         }
 
         const pinField = document.getElementById('loginPin');
-        const userField = document.getElementById('loginUser');
 
         pinField.addEventListener('input', function () {
             this.value = this.value.replace(/[^0-9]/g, '');
 
             if (this.value.length === 4) {
-                const typedEmail = userField.value.trim().toLowerCase();
+                const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
+                let account = null;
 
-                if (typedEmail === "") {
-                    alert("Please enter your email (username) first.");
-                    this.value = "";
-                    userField.focus();
-                    return;
+                // Find user by PIN only
+                for (let email in users) {
+                    if (users[email].pin === this.value) {
+                        account = users[email];
+                        break;
+                    }
                 }
 
-                const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
-                const account = users[typedEmail];
-
-                if (account && account.pin === this.value) {
+                if (account) {
                     localStorage.setItem('currentUser', JSON.stringify(account));
-
                     document.body.style.opacity = '0.5';
                     document.body.style.transition = 'opacity 0.2s ease';
                     setTimeout(() => { window.location.href = "select.html"; }, 250);
                 } else {
-                    alert("Incorrect email or PIN.");
+                    alert("Incorrect PIN.");
                     this.value = "";
                 }
             }
         });
 
-        function quitApp() { //Function To Close Tab
+        function quitApp() {
             if (confirm("Close MathTrack Portal?")) {
                 window.close();
                 document.body.innerHTML = "<h1 style='text-align:center; margin-top:50px;'>You may now close this tab.</h1>";
             }
         }
-
     </script>
-
 </body>
 
 </html>
