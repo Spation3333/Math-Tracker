@@ -46,7 +46,7 @@ const getRecipients = (student) => {
     return [...new Set(list)];
 };
 
-// 1. POST: Send Individual Email (Accepts custom subject and text)
+// 1. POST: Send Individual Email
 app.post('/send-individual/:id', (req, res) => {
     const { id } = req.params;
     const { subject, text } = req.body; 
@@ -71,10 +71,10 @@ app.post('/send-individual/:id', (req, res) => {
     });
 });
 
-// 2. POST: Send Bulk Class Emails (Accepts customized messages mapped by student ID)
+// 2. POST: Send Bulk Class Emails
 app.post('/send-all/:class_name', (req, res) => {
     const className = req.params.class_name;
-    const messages = req.body.messages || {}; // Maps student ID to their specific grades message
+    const messages = req.body.messages || {}; 
 
     db.all("SELECT * FROM Students WHERE class_name = ?", [className], (err, rows) => {
         if (err || rows.length === 0) return res.status(404).json({ error: "No students found." });
@@ -122,6 +122,21 @@ app.put('/api/update/:id', (req, res) => {
 app.delete('/api/delete/:id', (req, res) => {
     db.run("DELETE FROM Students WHERE id = ?", [req.params.id], (err) => {
         res.json({ status: "Deleted" });
+    });
+});
+
+// --- DELETE ENTIRE CLASS ROSTER ROUTE ---
+app.delete('/api/delete-class/:class_name', (req, res) => {
+    const targetClass = req.params.class_name;
+    console.log(`[SERVER] Received request to delete entire roster for class: ${targetClass}`);
+    
+    db.run("DELETE FROM Students WHERE class_name = ?", [targetClass], function(err) {
+        if (err) {
+            console.error(`[SERVER] Error deleting class ${targetClass}:`, err.message);
+            return res.status(500).json({ error: err.message });
+        }
+        console.log(`[SERVER] Successfully deleted ${this.changes} students from ${targetClass}.`);
+        res.json({ status: "Deleted", rowsAffected: this.changes });
     });
 });
 
