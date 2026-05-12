@@ -5,16 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MathTrack - Portal</title>
+    <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
     <link href="styles.css" rel="stylesheet" />
     <style>
-        h1 {
-            font-size: 50px;
-        }
-
-        label {
-            color: rgb(139, 107, 35);
-        }
-
         .portal-container {
             max-width: 450px;
             margin: 60px auto;
@@ -23,13 +16,6 @@
             padding: 40px 30px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Password Wrapper for the Eye Icon */
-        .password-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
         }
     </style>
 </head>
@@ -44,7 +30,7 @@
     </div>
 
     <div class="portal-container">
-        <h1 class="welcomeheader">MathTrack</h1>
+        <h1 class="welcomeheader" style="font-size: 50px;">MathTrack</h1>
         <h2 class="subtitle">Teacher Portal</h2>
 
         <div class="signupinput" style="text-align: left; margin-top: 20px;">
@@ -54,7 +40,7 @@
 
         <div class="signupinput" style="text-align: left;">
             <label for="loginPin">4-Digit PIN:</label>
-            <div class="password-wrapper">
+            <div class="passwordwrapper">
                 <input type="password" id="loginPin" placeholder="e.g. 1234" maxlength="4"
                     autocomplete="current-password">
                 <button type="button" class="eye-icon" onclick="togglePassword()">👁️</button>

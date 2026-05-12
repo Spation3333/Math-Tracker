@@ -128,6 +128,12 @@ input[type="color"] {
     margin-top: 25px;
 }
 
+.passwordwrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
 /*Signup Title*/
 .signupheader {
     margin-bottom: 50px;
@@ -193,11 +199,6 @@ input[type="color"] {
     justify-content: flex-start;
     width: 520px;
     margin: 0;
-}
-
-.password-wrapper {
-    display: flex;
-    align-items: center;
 }
 
 .bottom-row {
