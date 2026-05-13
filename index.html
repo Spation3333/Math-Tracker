@@ -17,10 +17,20 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
+        /* Custom spacing to pull H1 and H2 closer together */
+        .welcomeheader {
+            margin-bottom: 0px; 
+            font-size: 50px;
+        }
+        .subtitle {
+            margin-top: 5px; 
+            font-size: 45px;
+        }
     </style>
 </head>
 
 <body>
+
     <div class="themewrapper" style="position: absolute; top: 20px; right: 20px;">
         <label class="switch">
             <input type="checkbox" id="theme-toggle">
@@ -29,25 +39,25 @@
     </div>
 
     <div class="portal-container">
-        <h1 class="welcomeheader" style="font-size: 50px;">MathTrack</h1>
-        <h2 class="subtitle">Teacher Portal</h2>
+        <h1 class="welcomeheader">MathTrack</h1>
+        <h2 class="subtitle" style="margin-bottom: 30px;">Teacher Portal</h2>
 
-        <div class="signupinput" style="text-align: left; margin-top: 30px;">
-            <label for="loginPin">4-Digit PIN:</label>
-            <div class="passwordwrapper">
-                <input type="password" id="loginPin" placeholder="e.g. 1234" maxlength="4"
-                    autocomplete="current-password">
-                <button type="button" class="eye-icon" onclick="togglePassword()">👁️</button>
+        <div style="display: flex; flex-direction: column; align-items: stretch; max-width: 300px; margin: 0 auto 30px auto;">
+            <div class="signupinput" style="text-align: left; margin-bottom: 10px;">
+                <label for="loginPin">4-Digit PIN:</label>
+                <div class="passwordwrapper" style="position: relative;">
+                    <input type="password" id="loginPin" placeholder="e.g. 1234" maxlength="4" autocomplete="current-password" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
+                    <button type="button" class="eye-icon" onclick="togglePassword()" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0;">👁️</button>
+                </div>
+            </div>
+
+            <div class="linkrow" style="display: flex; justify-content: space-between; align-items: center;">
+                <a href="recovery.html" class="forgotlink" style="font-size: 0.9em;">Forgot PIN?</a>
+                <button class="buttons" onclick="window.location.href='signup.html'" style="margin: 0; padding: 6px 12px; font-size: 0.9em;">Create Account</button>
             </div>
         </div>
 
-        <div class="linkrow">
-            <a href="recovery.html" class="forgotlink">Forgot Password?</a>
-            <button class="buttons" onclick="window.location.href='signup.html'"
-                style="margin: 0; padding: 8px 15px;">Create Account</button>
-        </div>
-
-        <hr style="border: 0; border-top: 1px solid var(--border-color, #ccc);">
+        <hr style="border: 0; border-top: 1px solid var(--border-color, #ccc); margin-bottom: 10px; margin-top: 0px;">
 
         <div class="mainbuttonsrow">
             <button class="buttons mainbuttons" onclick="window.location.href='credits.html'">Credits</button>
@@ -107,7 +117,7 @@
             }
         });
 
-        function quitApp() {
+        function quitApp() { 
             if (confirm("Close MathTrack Portal?")) {
                 window.close();
                 document.body.innerHTML = "<h1 style='text-align:center; margin-top:50px;'>You may now close this tab.</h1>";

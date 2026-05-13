@@ -31,8 +31,6 @@
         .date-widget-text { font-weight: bold; color: rgb(139, 107, 35); font-size: 1.1em; margin: 0; }
         body.darkmode .date-widget-text { color: rgb(212, 175, 55); }
 
-        .theme-widget { position: absolute; top: 100px; right: 20px; z-index: 100; display: flex; align-items: center; gap: 10px; }
-
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modalcontent { background-color: var(--card-bg); padding: 30px; border-radius: 10px; border: 3px solid rgb(139, 107, 35); display: flex; flex-direction: column; gap: 15px; }
         .signupinput { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -51,25 +49,29 @@
         <div id="profile-email" style="font-size: 0.85em; color: gray;"></div>
     </div>
 
-    <div class="theme-widget">
-        <span style="font-size: 0.9em; font-weight: bold;">Dark Mode</span>
-        <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider round"></span></label>
-    </div>
 
     <div class="container" style="margin-top: 130px;">
         <div class="header-bar">
             <h1 style="margin: 0;">MathTrack Progress</h1>
         </div>
 
-        <a href="select.html" class="nav-link">← Back to Classes</a>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <a href="select.html" class="nav-link" style="margin-bottom: 0;">← Back to Classes</a>
+            
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 0.9em; font-weight: bold;">Dark Mode</span>
+                <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider round"></span></label>
+            </div>
+        </div>
+
         <div id="class-nav-bar" class="class-nav-bar"></div>
 
         <div class="controls">
             <h2 style="margin: 0;">Viewing: <span id="current-class-label" style="color: var(--accent);">Loading...</span></h2>
 
             <div style="display: flex; flex-direction: column; gap: 10px; min-width: 250px;">
-                <button class="btn btn-success" style="width: 100%;" onclick="emailAllStudents()">📧 Email Class</button>
-                <button class="btn btn-danger" style="width: 100%;" onclick="deleteClassRoster()">🗑️ Delete Class</button>
+                <button class="btn btn-success" style="width: 100%;" onclick="emailAllStudents()">📧 Email Grades (Current Unit)</button>
+                <button class="btn btn-danger" style="width: 100%;" onclick="deleteClassRoster()">🗑️ Delete Entire Roster</button>
                 <span id="emailStatus" style="text-align: center;"></span>
             </div>
         </div>
