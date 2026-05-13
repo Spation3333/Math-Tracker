@@ -12,6 +12,27 @@ let classLessonsData = {};
 let classMarksData = {};
 let studentsData = [];
 
+function attachEyeToggles() {
+    const toggleApp = document.getElementById('toggleProfApp');
+    const togglePin = document.getElementById('toggleProfPin');
+    if (toggleApp) {
+        toggleApp.addEventListener('click', function() {
+            const input = document.getElementById('prof-apppass');
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            this.textContent = type === 'password' ? '👁️' : '🔒';
+        });
+    }
+    if (togglePin) {
+        togglePin.addEventListener('click', function() {
+            const input = document.getElementById('prof-pin');
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            this.textContent = type === 'password' ? '👁️' : '🔒';
+        });
+    }
+}
+
 window.onload = () => {
     document.getElementById('currentdate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
@@ -30,6 +51,7 @@ window.onload = () => {
     classMarksData = JSON.parse(localStorage.getItem(`marks_${currentClass}`)) || {};
 
     renderProfileBox();
+    attachEyeToggles(); // Enable the eye toggles
     renderClassNav();
     initUnits();
     loadStudentsData();
@@ -49,6 +71,13 @@ function openProfileModal() {
     document.getElementById('prof-email').value = currentUser.email;
     document.getElementById('prof-apppass').value = currentUser.appPassword || '';
     document.getElementById('prof-pin').value = '';
+    
+    // Reset types back to password upon opening
+    document.getElementById('prof-apppass').setAttribute('type', 'password');
+    document.getElementById('prof-pin').setAttribute('type', 'password');
+    document.getElementById('toggleProfApp').textContent = '👁️';
+    document.getElementById('toggleProfPin').textContent = '👁️';
+
     document.getElementById('profile-modal').style.display = 'flex';
 }
 
@@ -68,12 +97,11 @@ async function saveProfile() {
     if (!newFname || !newLname || !newEmail || !newAppPass) return alert("All fields are required.");
 
     const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
-
+    
     if (newEmail !== currentUser.email && users[newEmail]) return alert("Email already in use!");
 
     const oldEmail = currentUser.email;
-
-    // Perform migrations if the email address changed
+    
     if (newEmail !== oldEmail) {
         try {
             await fetch('http://localhost:3000/api/migrate-email', {
@@ -81,7 +109,7 @@ async function saveProfile() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ oldEmail, newEmail })
             });
-        } catch (e) { console.error("DB Migration Error", e); }
+        } catch(e) { console.error("DB Migration Error", e); }
 
         const keysToMigrate = [];
         for (let i = 0; i < localStorage.length; i++) {
@@ -98,13 +126,12 @@ async function saveProfile() {
     delete users[oldEmail];
     const updatedUser = { firstName: newFname, lastName: newLname, email: newEmail, appPassword: newAppPass, pin: currentUser.pin };
     users[newEmail] = updatedUser;
-
+    
     localStorage.setItem('mathTrackUsers', JSON.stringify(users));
     localStorage.setItem('currentUser', JSON.stringify(updatedUser));
 
     alert("Profile updated successfully!");
-
-    // Redirect to the new URL hash if email changed so the page reloads correctly
+    
     const currentClassName = currentClass.replace(oldEmail + "_", "");
     window.location.href = `studentList.html?class=${encodeURIComponent(newEmail + "_" + currentClassName)}`;
 }
@@ -226,7 +253,7 @@ function addLesson() {
 }
 
 function deleteLesson(lessonIndex) {
-    if (confirm("Are you sure you want to delete this lesson? The remaining lessons and grades will be shifted down.")) {
+    if (confirm("Are you sure you want to delete this lesson?")) {
         ensureUnitStructure();
         const lessons = classLessonsData[activeUnitIndex].lessons;
         const deletedId = lessons[lessonIndex].id;
@@ -562,8 +589,8 @@ async function emailIndividualStudent(event, id) {
         const response = await fetch(`http://localhost:3000/send-individual/${id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                subject: subj,
+            body: JSON.stringify({ 
+                subject: subj, 
                 text: messageBody,
                 senderEmail: currentUser.email,
                 senderPassword: currentUser.appPassword
@@ -593,7 +620,7 @@ async function emailAllStudents() {
         const response = await fetch(`http://localhost:3000/send-all/${encodeURIComponent(currentClass)}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+            body: JSON.stringify({ 
                 messages: messagesPayload,
                 senderEmail: currentUser.email,
                 senderPassword: currentUser.appPassword
@@ -638,14 +665,14 @@ async function handleCSV() {
 
 async function deleteStudent(event, id) {
     event.stopPropagation();
-    if (confirm("Remove this student?")) {
+    //if (confirm("Remove this student?")) {
         await fetch(`http://localhost:3000/api/delete/${id}`, { method: 'DELETE' });
         loadStudentsData();
-    }
+    //}
 }
 
 async function deleteClassRoster() {
-    if (confirm("Are you sure you want to delete EVERY student in this roster? This cannot be undone.")) {
+    if (confirm("Are You Sure You Want To Delete Entire Class?")) {
         try {
             const response = await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(currentClass)}`, { method: 'DELETE' });
             if (response.ok) {

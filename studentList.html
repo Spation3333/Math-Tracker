@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,98 +7,69 @@
     <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
     <link href="studentStyles.css" rel="stylesheet" />
     <style>
-        .profile-widget {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            cursor: pointer;
-            background: var(--card-bg, #fff);
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-            text-align: left;
+        /* Unified Top Widget Styling for Date & Profile */
+        .top-widget { 
+            position: absolute; 
+            top: 20px; 
+            background: var(--card-bg, #fff); 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            border: 2px solid var(--border-color); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            z-index: 100; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            height: 65px; 
+            box-sizing: border-box;
         }
+        body.darkmode .top-widget { background: #2d2d2d; border-color: rgb(212, 175, 55); }
+        
+        .profile-widget { right: 20px; cursor: pointer; text-align: right; border-color: rgb(139, 107, 35); }
+        .date-widget { left: 20px; text-align: left; border-color: rgb(139, 107, 35); }
+        
+        .date-widget-text { font-weight: bold; color: rgb(139, 107, 35); font-size: 1.1em; margin: 0; }
+        body.darkmode .date-widget-text { color: rgb(212, 175, 55); }
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
+        .theme-widget { position: absolute; top: 100px; right: 20px; z-index: 100; display: flex; align-items: center; gap: 10px; }
 
-        .modalcontent {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 10px;
-            border: 3px solid rgb(139, 107, 35);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .signupinput {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .signupinput label {
-            font-weight: bold;
-            width: 140px;
-            text-align: left;
-        }
-
-        .signupinput input {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background: var(--input-bg);
-            color: var(--text-color);
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modalcontent { background-color: var(--card-bg); padding: 30px; border-radius: 10px; border: 3px solid rgb(139, 107, 35); display: flex; flex-direction: column; gap: 15px; }
+        .signupinput { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .signupinput label { font-weight: bold; width: 140px; text-align: left; }
+        .signupinput input { flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; }
     </style>
 </head>
-
 <body>
 
-    <div class="profile-widget" onclick="openProfileModal()">
+    <div class="top-widget date-widget">
+        <p id="currentdate" class="date-widget-text"></p>
+    </div>
+
+    <div class="top-widget profile-widget" onclick="openProfileModal()">
         <div id="profile-name" style="font-weight: bold; font-size: 1.1em; color: var(--accent);"></div>
         <div id="profile-email" style="font-size: 0.85em; color: gray;"></div>
     </div>
 
-    <p id="currentdate" class="date-display" style="position: absolute; top: 80px; left: 20px;"></p>
+    <div class="theme-widget">
+        <span style="font-size: 0.9em; font-weight: bold;">Dark Mode</span>
+        <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider round"></span></label>
+    </div>
 
-    <div class="container" style="margin-top: 50px;">
+    <div class="container" style="margin-top: 130px;">
         <div class="header-bar">
             <h1 style="margin: 0;">MathTrack Progress</h1>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="font-size: 0.9em; font-weight: bold;">Dark Mode</span>
-                <label class="switch"><input type="checkbox" id="theme-toggle"><span
-                        class="slider round"></span></label>
-            </div>
         </div>
 
         <a href="select.html" class="nav-link">← Back to Classes</a>
         <div id="class-nav-bar" class="class-nav-bar"></div>
 
         <div class="controls">
-            <h2 style="margin: 0;">Viewing: <span id="current-class-label"
-                    style="color: var(--accent);">Loading...</span></h2>
+            <h2 style="margin: 0;">Viewing: <span id="current-class-label" style="color: var(--accent);">Loading...</span></h2>
 
             <div style="display: flex; flex-direction: column; gap: 10px; min-width: 250px;">
-                <button class="btn btn-success" style="width: 100%;" onclick="emailAllStudents()">📧 Email Grades
-                    (Current Unit)</button>
-                <button class="btn btn-danger" style="width: 100%;" onclick="deleteClassRoster()">🗑️ Delete Entire
-                    Roster</button>
+                <button class="btn btn-success" style="width: 100%;" onclick="emailAllStudents()">📧 Email Class</button>
+                <button class="btn btn-danger" style="width: 100%;" onclick="deleteClassRoster()">🗑️ Delete Class</button>
                 <span id="emailStatus" style="text-align: center;"></span>
             </div>
         </div>
@@ -122,18 +92,28 @@
     <div id="profile-modal" class="modal">
         <div class="modalcontent" style="max-width: 450px; width: 100%;">
             <h2 style="margin-top:0;">Edit Profile</h2>
-            <div class="signupinput"><label>First Name:</label><input type="text" id="prof-fname"></div>
-            <div class="signupinput"><label>Last Name:</label><input type="text" id="prof-lname"></div>
-            <div class="signupinput"><label>Username:</label><input type="email" id="prof-email"></div>
-            <div class="signupinput"><label>App Password:</label><input type="password" id="prof-apppass"></div>
-
-            <hr style="width:100%; border: 0; border-top: 1px solid var(--border-color, #ccc); margin: 20px 0;">
-
-            <div class="signupinput">
-                <label style="color:var(--danger, red);">Confirm PIN:</label>
-                <input type="password" id="prof-pin" maxlength="4" placeholder="To save changes">
+            <div class="signupinput" style="justify-content: space-between;"><label>First Name:</label><input type="text" id="prof-fname"></div>
+            <div class="signupinput" style="justify-content: space-between;"><label>Last Name:</label><input type="text" id="prof-lname"></div>
+            <div class="signupinput" style="justify-content: space-between;"><label>Username:</label><input type="email" id="prof-email"></div>
+            
+            <div class="signupinput" style="justify-content: space-between;">
+                <label>App Password:</label>
+                <div style="position: relative; flex: 1;">
+                    <input type="password" id="prof-apppass" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
+                    <span id="toggleProfApp" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
+                </div>
             </div>
-
+            
+            <hr style="width:100%; border: 0; border-top: 1px solid var(--border-color, #ccc); margin: 20px 0;">
+            
+            <div class="signupinput" style="justify-content: space-between;">
+                <label style="color:var(--danger, red);">Confirm PIN:</label>
+                <div style="position: relative; flex: 1;">
+                    <input type="password" id="prof-pin" maxlength="4" placeholder="To save changes" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
+                    <span id="toggleProfPin" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
+                </div>
+            </div>
+            
             <div style="margin-top: 20px; display: flex; justify-content: center; gap: 15px;">
                 <button class="btn btn-primary" onclick="saveProfile()">Change</button>
                 <button class="btn btn-danger cancelbutton" onclick="closeProfileModal()">Cancel</button>
@@ -144,5 +124,4 @@
     <script src="studentScript.js"></script>
 
 </body>
-
 </html>
