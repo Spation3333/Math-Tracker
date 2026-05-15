@@ -93,8 +93,8 @@
             </h2>
 
             <div style="display: flex; flex-direction: column; gap: 10px; min-width: 250px;">
-                <button class="btn btn-success" style="width: 100%;" onclick="emailAllStudents()">📧 Email Class</button>
-                <button class="btn btn-danger" style="width: 100%;" onclick="deleteClassRoster()">🗑️ Delete Class</button>
+                <button class="btn btn-success" style="width: 100%;" onclick="emailAllStudents()">📧 Email Grades (Current Unit)</button>
+                <button class="btn btn-danger" style="width: 100%;" onclick="deleteClassRoster()">🗑️ Delete Entire Roster</button>
                 <span id="emailStatus" style="text-align: center;"></span>
             </div>
         </div>
@@ -134,14 +134,15 @@
             <div class="signupinput" style="justify-content: space-between;">
                 <label style="color:var(--danger, red);">Confirm PIN:</label>
                 <div style="position: relative; flex: 1;">
-                    <input type="password" id="prof-pin" maxlength="4" placeholder="To save changes" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
+                    <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
                     <span id="toggleProfPin" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
                 </div>
             </div>
             
-            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 15px;">
-                <button class="btn btn-primary" onclick="saveProfile()">Change</button>
+            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
                 <button class="btn btn-danger cancelbutton" onclick="closeProfileModal()">Cancel</button>
+                <button class="btn btn-danger" style="background-color: #c0392b;" onclick="deleteAccount()">Delete Account</button>
             </div>
         </div>
     </div>

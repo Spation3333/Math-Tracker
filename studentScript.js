@@ -16,7 +16,7 @@ function attachEyeToggles() {
     const toggleApp = document.getElementById('toggleProfApp');
     const togglePin = document.getElementById('toggleProfPin');
     if (toggleApp) {
-        toggleApp.addEventListener('click', function () {
+        toggleApp.addEventListener('click', function() {
             const input = document.getElementById('prof-apppass');
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
@@ -24,7 +24,7 @@ function attachEyeToggles() {
         });
     }
     if (togglePin) {
-        togglePin.addEventListener('click', function () {
+        togglePin.addEventListener('click', function() {
             const input = document.getElementById('prof-pin');
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
@@ -45,16 +45,16 @@ window.onload = () => {
 
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('class')) currentClass = urlParams.get('class');
-
+    
     // Set the invisible class name input field
     const classInput = document.getElementById('current-class-input');
     classInput.value = currentClass.replace(currentUser.email + "_", "");
-
+    
     // Listener for renaming class
-    classInput.addEventListener('change', async function () {
+    classInput.addEventListener('change', async function() {
         const newRawName = this.value.trim();
         const oldRawName = currentClass.replace(currentUser.email + "_", "");
-
+        
         if (!newRawName || newRawName === oldRawName) {
             this.value = oldRawName;
             return;
@@ -86,7 +86,7 @@ window.onload = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ oldClassName: currentClass, newClassName: newDbName })
             });
-        } catch (e) {
+        } catch(e) {
             console.error("DB Rename error", e);
         }
 
@@ -103,7 +103,7 @@ window.onload = () => {
     classMarksData = JSON.parse(localStorage.getItem(`marks_${currentClass}`)) || {};
 
     renderProfileBox();
-    attachEyeToggles();
+    attachEyeToggles(); 
     renderClassNav();
     initUnits();
     loadStudentsData();
@@ -123,11 +123,12 @@ function openProfileModal() {
     document.getElementById('prof-email').value = currentUser.email;
     document.getElementById('prof-apppass').value = currentUser.appPassword || '';
     document.getElementById('prof-pin').value = '';
-
+    
+    // Reset types back to password upon opening
     document.getElementById('prof-apppass').setAttribute('type', 'password');
     document.getElementById('prof-pin').setAttribute('type', 'password');
-    document.getElementById('toggleProfApp').textContent = '👁️';
-    document.getElementById('toggleProfPin').textContent = '👁️';
+    if (document.getElementById('toggleProfApp')) document.getElementById('toggleProfApp').textContent = '👁️';
+    if (document.getElementById('toggleProfPin')) document.getElementById('toggleProfPin').textContent = '👁️';
 
     document.getElementById('profile-modal').style.display = 'flex';
 }
@@ -148,11 +149,11 @@ async function saveProfile() {
     if (!newFname || !newLname || !newEmail || !newAppPass) return alert("All fields are required.");
 
     const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
-
+    
     if (newEmail !== currentUser.email && users[newEmail]) return alert("Email already in use!");
 
     const oldEmail = currentUser.email;
-
+    
     if (newEmail !== oldEmail) {
         try {
             await fetch('http://localhost:3000/api/migrate-email', {
@@ -160,7 +161,7 @@ async function saveProfile() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ oldEmail, newEmail })
             });
-        } catch (e) { console.error("DB Migration Error", e); }
+        } catch(e) { console.error("DB Migration Error", e); }
 
         const keysToMigrate = [];
         for (let i = 0; i < localStorage.length; i++) {
@@ -177,14 +178,57 @@ async function saveProfile() {
     delete users[oldEmail];
     const updatedUser = { firstName: newFname, lastName: newLname, email: newEmail, appPassword: newAppPass, pin: currentUser.pin };
     users[newEmail] = updatedUser;
-
+    
     localStorage.setItem('mathTrackUsers', JSON.stringify(users));
     localStorage.setItem('currentUser', JSON.stringify(updatedUser));
 
     alert("Profile updated successfully!");
-
+    
     const currentClassName = currentClass.replace(oldEmail + "_", "");
     window.location.href = `studentList.html?class=${encodeURIComponent(newEmail + "_" + currentClassName)}`;
+}
+
+// FULL ACCOUNT DELETION LOGIC
+async function deleteAccount() {
+    const pin = document.getElementById('prof-pin').value;
+    if (!pin) return alert("Please enter your PIN to authorize account deletion.");
+    if (pin !== currentUser.pin) return alert("Incorrect PIN! Cannot delete account.");
+
+    if (confirm("WARNING: Are you absolutely sure you want to delete your account? This will permanently erase all your classes, students, and grades. This action CANNOT be undone.")) {
+        
+        const email = currentUser.email;
+        const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
+        const storageKey = `savedClasses_${email}`;
+        const userClasses = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+        // Delete all students from the backend database for each class
+        for (let i = 0; i < userClasses.length; i++) {
+            const uniqueDbClassName = email + "_" + userClasses[i].name;
+            try {
+                await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(uniqueDbClassName)}`, { method: 'DELETE' });
+            } catch(e) {
+                console.error("Error deleting class from database:", e);
+            }
+        }
+
+        // Remove all local storage data tied to this user's email
+        const keysToDelete = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.includes(email)) {
+                keysToDelete.push(key);
+            }
+        }
+        keysToDelete.forEach(k => localStorage.removeItem(k));
+
+        // Remove the user profile and current session
+        delete users[email];
+        localStorage.setItem('mathTrackUsers', JSON.stringify(users));
+        localStorage.removeItem('currentUser');
+
+        alert("Account permanently deleted.");
+        window.location.href = 'index.html';
+    }
 }
 
 
@@ -380,7 +424,7 @@ function toggleCustomView(checkbox, studentId, markKey) {
 
     if (checkbox.checked) {
         radioGroup.style.display = 'none';
-        sliderGroup.style.display = 'flex';
+        sliderGroup.style.display = 'flex'; 
         const slider = sliderGroup.querySelector('input[type="range"]');
         updateMark(studentId, markKey, slider.value);
     } else {
@@ -508,19 +552,19 @@ function renderRosterTable() {
     let tbodyHTML = '';
     studentsData.forEach(student => {
         const nameParts = student.name ? student.name.split(' ') : ["Unknown"];
-        const fName = nameParts[0];
+        const fName = nameParts[0]; 
         const lName = nameParts.slice(1).join(' ');
         const sMarks = (classMarksData[student.id] && classMarksData[student.id][activeUnitIndex]) || {};
 
         let parsedContacts = [];
         if (student.contacts_info) {
-            try { parsedContacts = JSON.parse(student.contacts_info); } catch (e) { }
+            try { parsedContacts = JSON.parse(student.contacts_info); } catch(e) {}
         } else if (student.guardian_email) {
-            student.guardian_email.split(',').forEach(e => parsedContacts.push({ name: '', rel: '', email: e.trim() }));
+            student.guardian_email.split(',').forEach(e => parsedContacts.push({name: '', rel: '', email: e.trim()}));
         }
 
         let contactsDisplayHtml = '';
-
+        
         if (student.student_email && student.student_email.trim() !== '') {
             contactsDisplayHtml += `<div style="font-size: 0.8em; margin-top: 2px; line-height: 1.3;">
                 <span style="color: gray;">${student.student_email.trim()}</span>
@@ -528,7 +572,7 @@ function renderRosterTable() {
         }
 
         parsedContacts.forEach(c => {
-            if (c.email || c.name) {
+            if(c.email || c.name) {
                 contactsDisplayHtml += `<div style="font-size: 0.8em; margin-top: 6px; line-height: 1.3;">
                     <span style="font-weight: bold; color: var(--text-color);">${c.name || 'Guardian'} ${c.rel ? `(${c.rel})` : ''}</span><br>
                     <span style="color: gray;">${c.email || 'No email'}</span>
@@ -536,7 +580,7 @@ function renderRosterTable() {
             }
         });
 
-        if (parsedContacts.length === 0) parsedContacts.push({ name: '', rel: '', email: '' });
+        if (parsedContacts.length === 0) parsedContacts.push({name: '', rel: '', email: ''});
 
         let parentEditHtml = '';
         parsedContacts.forEach(c => {
@@ -618,7 +662,7 @@ function toggleStudentDetails(id) {
 
 function addParentInput(id) {
     const container = document.getElementById(`parent-container-${id}`);
-    const newRow = document.createElement('div');
+    const newRow = document.createElement('div'); 
     newRow.className = 'parent-email-row';
     newRow.style.cssText = 'display: flex; gap: 5px; margin-bottom: 5px;';
     newRow.innerHTML = `
@@ -633,17 +677,17 @@ async function saveStudentChanges(id) {
     const fname = document.getElementById(`fname-${id}`).value.trim();
     const lname = document.getElementById(`lname-${id}`).value.trim();
     const sEmail = document.getElementById(`semail-${id}`).value.trim();
-
+    
     const parentRows = document.getElementById(`parent-container-${id}`).querySelectorAll('.parent-email-row');
     let contactsList = [];
     let emailList = [];
-
+    
     parentRows.forEach(row => {
         let name = row.querySelector('.parent-name-input').value.trim();
         let rel = row.querySelector('.parent-rel-input').value.trim();
         let email = row.querySelector('.parent-email-input').value.trim();
         if (email || name) {
-            contactsList.push({ name, rel, email });
+            contactsList.push({name, rel, email});
             if (email) emailList.push(email);
         }
     });
@@ -654,9 +698,9 @@ async function saveStudentChanges(id) {
     try {
         await fetch(`http://localhost:3000/api/update/${id}`, {
             method: 'PUT', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name: `${fname} ${lname}`.trim(),
-                student_email: sEmail,
+            body: JSON.stringify({ 
+                name: `${fname} ${lname}`.trim(), 
+                student_email: sEmail, 
                 guardian_email: guardian_email,
                 contacts_info: contacts_info
             })
@@ -673,11 +717,11 @@ function buildGradeMessage(studentName, recipientName, isStudent, studentId) {
     const sMarks = (classMarksData[studentId] && classMarksData[studentId][activeUnitIndex]) || {};
 
     let text = "";
-
+    
     if (isStudent) {
-        text += `Hello ${studentName}, here is your progress this week:\n\n`;
+        text += `Hey ${studentName}, here is your progress this week:\n\n`;
     } else {
-        text += `Hello Families,\n\nHere is this week's update on your child's homework completion\n\n`;
+        text += `Hey ${recipientName}, here is your student's progress this week:\n\n`;
     }
 
     if (unitData.lessons.length === 0 && !unitData.hasTest) {
@@ -713,9 +757,9 @@ async function emailIndividualStudent(event, id) {
     const student = studentsData.find(s => s.id === id);
 
     const oldText = btn.innerText; btn.innerText = "...";
-
+    
     let emailsToSend = [];
-
+    
     if (student.student_email && student.student_email.trim()) {
         emailsToSend.push({
             to: student.student_email.trim(),
@@ -726,9 +770,9 @@ async function emailIndividualStudent(event, id) {
 
     let parsedContacts = [];
     if (student.contacts_info) {
-        try { parsedContacts = JSON.parse(student.contacts_info); } catch (e) { }
+        try { parsedContacts = JSON.parse(student.contacts_info); } catch(e) {}
     } else if (student.guardian_email) {
-        student.guardian_email.split(',').forEach(e => parsedContacts.push({ name: '', rel: '', email: e.trim() }));
+        student.guardian_email.split(',').forEach(e => parsedContacts.push({name: '', rel: '', email: e.trim()}));
     }
 
     parsedContacts.forEach(c => {
@@ -752,7 +796,7 @@ async function emailIndividualStudent(event, id) {
         const response = await fetch(`http://localhost:3000/api/send-emails`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+            body: JSON.stringify({ 
                 emailsToSend: emailsToSend,
                 senderEmail: currentUser.email,
                 senderPassword: currentUser.appPassword
@@ -780,9 +824,9 @@ async function emailAllStudents() {
 
         let parsedContacts = [];
         if (student.contacts_info) {
-            try { parsedContacts = JSON.parse(student.contacts_info); } catch (e) { }
+            try { parsedContacts = JSON.parse(student.contacts_info); } catch(e) {}
         } else if (student.guardian_email) {
-            student.guardian_email.split(',').forEach(e => parsedContacts.push({ name: '', rel: '', email: e.trim() }));
+            student.guardian_email.split(',').forEach(e => parsedContacts.push({name: '', rel: '', email: e.trim()}));
         }
 
         parsedContacts.forEach(c => {
@@ -808,7 +852,7 @@ async function emailAllStudents() {
         const response = await fetch(`http://localhost:3000/api/send-emails`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+            body: JSON.stringify({ 
                 emailsToSend: emailsToSend,
                 senderEmail: currentUser.email,
                 senderPassword: currentUser.appPassword
@@ -828,13 +872,13 @@ async function handleCSV() {
     const reader = new FileReader();
     reader.onload = async (e) => {
         const rows = e.target.result.split('\n');
-
+        
         let startIndex = 1;
         let headers = [];
-
-        for (let i = 0; i < rows.length; i++) {
+        
+        for(let i = 0; i < rows.length; i++) {
             let rowLower = rows[i].toLowerCase();
-            if (rowLower.includes('last name') && rowLower.includes('first name')) {
+            if(rowLower.includes('last name') && rowLower.includes('first name')) {
                 headers = rows[i].split(',').map(h => h.replace(/"/g, '').trim().toLowerCase().replace(/\s+/g, ' '));
                 startIndex = i + 1;
                 break;
@@ -844,44 +888,44 @@ async function handleCSV() {
         let hIdx = { sLast: -1, sFirst: -1, sEmail: -1, c1Rel: -1, c1Last: -1, c1First: -1, c1Email: -1, c2Rel: -1, c2Last: -1, c2First: -1, c2Email: -1 };
 
         headers.forEach((h, idx) => {
-            if (h === 'last name' && hIdx.sLast === -1) hIdx.sLast = idx;
-            else if (h === 'first name' && hIdx.sFirst === -1) hIdx.sFirst = idx;
-            else if ((h.includes('student') && h.includes('email')) || h === 'email address') hIdx.sEmail = idx;
-            else if (h.includes('1st') && h.includes('relationship')) hIdx.c1Rel = idx;
-            else if (h.includes('1st') && h.includes('last name')) hIdx.c1Last = idx;
-            else if (h.includes('1st') && h.includes('first name')) hIdx.c1First = idx;
-            else if (h.includes('1st') && h.includes('email')) hIdx.c1Email = idx;
-            else if (h.includes('2nd') && h.includes('relationship')) hIdx.c2Rel = idx;
-            else if (h.includes('2nd') && h.includes('last name')) hIdx.c2Last = idx;
-            else if (h.includes('2nd') && h.includes('first name')) hIdx.c2First = idx;
-            else if (h.includes('2nd') && h.includes('email')) hIdx.c2Email = idx;
+            if(h === 'last name' && hIdx.sLast === -1) hIdx.sLast = idx;
+            else if(h === 'first name' && hIdx.sFirst === -1) hIdx.sFirst = idx;
+            else if((h.includes('student') && h.includes('email')) || h === 'email address') hIdx.sEmail = idx;
+            else if(h.includes('1st') && h.includes('relationship')) hIdx.c1Rel = idx;
+            else if(h.includes('1st') && h.includes('last name')) hIdx.c1Last = idx;
+            else if(h.includes('1st') && h.includes('first name')) hIdx.c1First = idx;
+            else if(h.includes('1st') && h.includes('email')) hIdx.c1Email = idx;
+            else if(h.includes('2nd') && h.includes('relationship')) hIdx.c2Rel = idx;
+            else if(h.includes('2nd') && h.includes('last name')) hIdx.c2Last = idx;
+            else if(h.includes('2nd') && h.includes('first name')) hIdx.c2First = idx;
+            else if(h.includes('2nd') && h.includes('email')) hIdx.c2Email = idx;
         });
 
-        if (hIdx.sLast === -1) hIdx.sLast = 1;
-        if (hIdx.sFirst === -1) hIdx.sFirst = 2;
-        if (hIdx.c1Rel === -1) hIdx.c1Rel = 3;
-        if (hIdx.c1Last === -1) hIdx.c1Last = 4;
-        if (hIdx.c1First === -1) hIdx.c1First = 5;
-        if (hIdx.c1Email === -1) hIdx.c1Email = 6;
-        if (hIdx.c2Rel === -1) hIdx.c2Rel = 7;
-        if (hIdx.c2Last === -1) hIdx.c2Last = 8;
-        if (hIdx.c2First === -1) hIdx.c2First = 9;
-        if (hIdx.c2Email === -1) hIdx.c2Email = 10;
+        if(hIdx.sLast === -1) hIdx.sLast = 1;
+        if(hIdx.sFirst === -1) hIdx.sFirst = 2;
+        if(hIdx.c1Rel === -1) hIdx.c1Rel = 3;
+        if(hIdx.c1Last === -1) hIdx.c1Last = 4;
+        if(hIdx.c1First === -1) hIdx.c1First = 5;
+        if(hIdx.c1Email === -1) hIdx.c1Email = 6;
+        if(hIdx.c2Rel === -1) hIdx.c2Rel = 7;
+        if(hIdx.c2Last === -1) hIdx.c2Last = 8;
+        if(hIdx.c2First === -1) hIdx.c2First = 9;
+        if(hIdx.c2Email === -1) hIdx.c2Email = 10;
 
         for (let i = startIndex; i < rows.length; i++) {
             const row = rows[i];
-            if (!row.trim()) continue;
-
-            const cols = row.split(',');
-            if (cols.length < 3) continue;
+            if(!row.trim()) continue;
+            
+            const cols = row.split(','); 
+            if(cols.length < 3) continue;
 
             let safeGet = (idx) => (cols[idx] ? cols[idx].replace(/"/g, '').trim() : '');
 
             let lastName = safeGet(hIdx.sLast);
             let firstName = safeGet(hIdx.sFirst);
             let studentEmail = hIdx.sEmail !== -1 ? safeGet(hIdx.sEmail) : '';
-
-            if (!lastName && !firstName) continue;
+            
+            if (!lastName && !firstName) continue; 
             let studentName = `${firstName} ${lastName}`.trim();
 
             let contacts = [];

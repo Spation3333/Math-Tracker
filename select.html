@@ -31,7 +31,7 @@
         .date-widget-text { font-weight: bold; color: rgb(139, 107, 35); font-size: 1.1em; margin: 0; }
         body.darkmode .date-widget-text { color: rgb(212, 175, 55); }
 
-        /* Moved Theme Widget to Bottom Right */
+        /* Theme Widget to Bottom Right */
         .theme-widget-bottom { position: absolute; bottom: 20px; right: 20px; z-index: 100; display: flex; align-items: center; gap: 10px; }
         .bottomnav { position: absolute; bottom: 20px; left: 20px; z-index: 100;}
     </style>
@@ -48,7 +48,7 @@
     </div>
 
 
-    <h1 id="welcome-header" class="welcomeheader" style="margin-top: 100px;">Welcome Ms. Bourassa!</h1>
+    <h1 id="welcome-header" class="welcomeheader" style="margin-top: 130px;">Welcome Ms. Bourassa!</h1>
     <h2 class="subtitle">Select your class:</h2>
 
     <div class="newclass" id="newclass"></div>
@@ -115,14 +115,15 @@
             <div class="signupinput" style="justify-content: space-between;">
                 <label style="color:var(--danger, red);">Confirm PIN:</label>
                 <div style="position: relative; flex: 1;">
-                    <input type="password" id="prof-pin" maxlength="4" placeholder="To save changes" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
+                    <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
                     <span id="toggleProfPin" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
                 </div>
             </div>
             
-            <div class="modalaction" style="margin-top: 20px; display: flex; justify-content: center; gap: 15px;">
-                <button class="buttons" onclick="saveProfile()">Change</button>
+            <div class="modalaction" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                <button class="buttons" onclick="saveProfile()">Save Changes</button>
                 <button class="buttons cancelbutton" onclick="closeProfileModal()">Cancel</button>
+                <button class="buttons" style="background-color: #e74c3c; color: white;" onclick="deleteAccount()">Delete Account</button>
             </div>
         </div>
     </div>

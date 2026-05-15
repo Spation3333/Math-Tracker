@@ -95,8 +95,8 @@ function openProfileModal() {
     // Reset types back to password upon opening
     document.getElementById('prof-apppass').setAttribute('type', 'password');
     document.getElementById('prof-pin').setAttribute('type', 'password');
-    document.getElementById('toggleProfApp').textContent = '👁️';
-    document.getElementById('toggleProfPin').textContent = '👁️';
+    if (document.getElementById('toggleProfApp')) document.getElementById('toggleProfApp').textContent = '👁️';
+    if (document.getElementById('toggleProfPin')) document.getElementById('toggleProfPin').textContent = '👁️';
 
     document.getElementById('profile-modal').style.display = 'flex';
 }
@@ -152,6 +152,49 @@ async function saveProfile() {
 
     alert("Profile updated successfully!");
     window.location.reload();
+}
+
+// FULL ACCOUNT DELETION LOGIC
+async function deleteAccount() {
+    const pin = document.getElementById('prof-pin').value;
+    if (!pin) return alert("Please enter your PIN to authorize account deletion.");
+    if (pin !== currentUser.pin) return alert("Incorrect PIN! Cannot delete account.");
+
+    if (confirm("WARNING: Are you absolutely sure you want to delete your account? This will permanently erase all your classes, students, and grades. This action CANNOT be undone.")) {
+        
+        const email = currentUser.email;
+        const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
+        const storageKey = `savedClasses_${email}`;
+        const userClasses = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+        // Delete all students from the backend database for each class
+        for (let i = 0; i < userClasses.length; i++) {
+            const uniqueDbClassName = email + "_" + userClasses[i].name;
+            try {
+                await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(uniqueDbClassName)}`, { method: 'DELETE' });
+            } catch(e) {
+                console.error("Error deleting class from database:", e);
+            }
+        }
+
+        // Remove all local storage data tied to this user's email
+        const keysToDelete = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.includes(email)) {
+                keysToDelete.push(key);
+            }
+        }
+        keysToDelete.forEach(k => localStorage.removeItem(k));
+
+        // Remove the user profile and current session
+        delete users[email];
+        localStorage.setItem('mathTrackUsers', JSON.stringify(users));
+        localStorage.removeItem('currentUser');
+
+        alert("Account permanently deleted.");
+        window.location.href = 'index.html';
+    }
 }
 
 const storageKey = currentUser ? `savedClasses_${currentUser.email}` : 'savedClasses';
