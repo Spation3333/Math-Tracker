@@ -7,7 +7,6 @@
     <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
     <link href="studentStyles.css" rel="stylesheet" />
     <style>
-        /* Unified Top Widget Styling for Date & Profile */
         .top-widget { 
             position: absolute; 
             top: 20px; 
@@ -36,6 +35,28 @@
         .signupinput { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .signupinput label { font-weight: bold; width: 140px; text-align: left; }
         .signupinput input { flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; }
+
+        /* Invisible Editable Class Name Styling */
+        .inline-class-edit {
+            background: transparent;
+            border: none;
+            border-bottom: 2px dashed transparent;
+            color: var(--accent);
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: bold;
+            outline: none;
+            padding: 0 5px;
+            width: 350px;
+            transition: all 0.2s;
+        }
+        .inline-class-edit:hover, .inline-class-edit:focus {
+            border-bottom: 2px dashed var(--accent);
+            background: rgba(0,0,0,0.05);
+        }
+        body.darkmode .inline-class-edit:hover, body.darkmode .inline-class-edit:focus {
+            background: rgba(255,255,255,0.1);
+        }
     </style>
 </head>
 <body>
@@ -48,7 +69,6 @@
         <div id="profile-name" style="font-weight: bold; font-size: 1.1em; color: var(--accent);"></div>
         <div id="profile-email" style="font-size: 0.85em; color: gray;"></div>
     </div>
-
 
     <div class="container" style="margin-top: 130px;">
         <div class="header-bar">
@@ -67,11 +87,14 @@
         <div id="class-nav-bar" class="class-nav-bar"></div>
 
         <div class="controls">
-            <h2 style="margin: 0;">Viewing: <span id="current-class-label" style="color: var(--accent);">Loading...</span></h2>
+            <h2 style="margin: 0; display: flex; align-items: center; gap: 5px;">
+                Viewing: 
+                <input type="text" id="current-class-input" class="inline-class-edit" value="Loading..." title="Click to rename class">
+            </h2>
 
             <div style="display: flex; flex-direction: column; gap: 10px; min-width: 250px;">
-                <button class="btn btn-success" style="width: 100%;" onclick="emailAllStudents()">📧 Email Grades (Current Unit)</button>
-                <button class="btn btn-danger" style="width: 100%;" onclick="deleteClassRoster()">🗑️ Delete Entire Roster</button>
+                <button class="btn btn-success" style="width: 100%;" onclick="emailAllStudents()">📧 Email Class</button>
+                <button class="btn btn-danger" style="width: 100%;" onclick="deleteClassRoster()">🗑️ Delete Class</button>
                 <span id="emailStatus" style="text-align: center;"></span>
             </div>
         </div>
