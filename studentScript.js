@@ -135,7 +135,6 @@ async function saveProfile() {
     window.location.href = `studentList.html?class=${encodeURIComponent(newEmail + "_" + currentClassName)}`;
 }
 
-
 function renderClassNav() {
     const navBar = document.getElementById('class-nav-bar');
     navBar.innerHTML = '';
@@ -328,7 +327,7 @@ function toggleCustomView(checkbox, studentId, markKey) {
 
     if (checkbox.checked) {
         radioGroup.style.display = 'none';
-        sliderGroup.style.display = 'block';
+        sliderGroup.style.display = 'flex'; // Use flex to maintain vertical alignment
         const slider = sliderGroup.querySelector('input[type="range"]');
         updateMark(studentId, markKey, slider.value);
     } else {
@@ -375,29 +374,37 @@ function buildMarkCellHTML(studentId, markKey, markVal, isLate, isCustom) {
     }
 
     const radios = ['0', '25', '50', '75', '100'].map(val => `
-                <label style="display: flex; flex-direction: column; align-items: center; cursor: pointer;">
-                    <input type="radio" style="margin: 0 0 2px 0; cursor: pointer;" name="mark_${studentId}_${markKey}" value="${val}" ${String(markVal) === val && !showSlider ? 'checked' : ''} onchange="updateMark(${studentId}, '${markKey}', this.value)">
-                    ${val}
-                </label>
-            `).join('');
+        <label style="display: flex; flex-direction: column; align-items: center; cursor: pointer;">
+            <input type="radio" style="margin: 0; cursor: pointer;" name="mark_${studentId}_${markKey}" value="${val}" ${String(markVal) === val && !showSlider ? 'checked' : ''} onchange="updateMark(${studentId}, '${markKey}', this.value)">
+            <span>${val}</span>
+        </label>
+    `).join('');
 
     return `<td class="mark-cell">
-                <div class="mark-cell-wrapper" style="display: flex; flex-direction: column; gap: 8px; align-items: center; min-width: 140px;">
-                    <div style="display: flex; justify-content: space-between; width: 100%; font-size: 0.75em; padding: 0 5px;">
-                        <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                            <input type="checkbox" ${isLate ? 'checked' : ''} onchange="updateLateStatus(${studentId}, '${markKey}', this.checked)"> Late
-                        </label>
-                        <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                            <input type="checkbox" ${showSlider ? 'checked' : ''} onchange="toggleCustomView(this, ${studentId}, '${markKey}')"> Custom
-                        </label>
-                    </div>
-                    <div class="radio-group-container" style="display: ${showSlider ? 'none' : 'flex'}; gap: 8px; justify-content: center; width: 100%; font-size: 0.75em;">
-                        ${radios}
-                    </div>
-                    <div class="custom-slider-container" style="display: ${showSlider ? 'block' : 'none'}; width: 100%; text-align: center;">
-                        <input type="range" min="0" max="100" value="${markVal || 50}" style="width: 100%; cursor: pointer;" 
-                            oninput="this.nextElementSibling.innerText = this.value; updateMark(${studentId}, '${markKey}', this.value)">
-                        <span style="font-weight: bold; font-size: 0.85em; color: var(--accent);">${markVal || 50}</span>
+                <div class="mark-cell-wrapper" style="display: flex; align-items: center; justify-content: center; min-width: 180px; font-size: 0.75em;">
+                    <div style="display: flex; flex-direction: row; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center;">
+                        
+                        <div style="display: flex; gap: 8px; border-right: 1px solid var(--border-color); padding-right: 10px;">
+                            <label style="display: flex; flex-direction: column; align-items: center; cursor: pointer; color: var(--danger);">
+                                <input type="checkbox" style="margin: 0; cursor: pointer;" ${isLate ? 'checked' : ''} onchange="updateLateStatus(${studentId}, '${markKey}', this.checked)">
+                                <span>Late</span>
+                            </label>
+                            <label style="display: flex; flex-direction: column; align-items: center; cursor: pointer; color: var(--accent);">
+                                <input type="checkbox" style="margin: 0; cursor: pointer;" ${showSlider ? 'checked' : ''} onchange="toggleCustomView(this, ${studentId}, '${markKey}')">
+                                <span>Custom</span>
+                            </label>
+                        </div>
+                        
+                        <div class="radio-group-container" style="display: ${showSlider ? 'none' : 'flex'}; gap: 8px;">
+                            ${radios}
+                        </div>
+                        
+                        <div class="custom-slider-container" style="display: ${showSlider ? 'flex' : 'none'}; flex-direction: column; align-items: center; width: 90px;">
+                            <input type="range" min="0" max="100" value="${markVal || 50}" style="width: 100%; cursor: pointer; margin: 0;" 
+                                oninput="this.nextElementSibling.innerText = this.value; updateMark(${studentId}, '${markKey}', this.value)">
+                            <span style="font-weight: bold; font-size: 1.1em; color: var(--accent); margin-top: 2px;">${markVal || 50}</span>
+                        </div>
+
                     </div>
                 </div>
             </td>`;
@@ -448,10 +455,10 @@ function renderRosterTable() {
     let tbodyHTML = '';
     studentsData.forEach(student => {
         const nameParts = student.name ? student.name.split(' ') : ["Unknown"];
-        const fName = nameParts[0]; const lName = nameParts.slice(1).join(' ');
+        const fName = nameParts[0]; 
+        const lName = nameParts.slice(1).join(' ');
         const sMarks = (classMarksData[student.id] && classMarksData[student.id][activeUnitIndex]) || {};
 
-        // Parse expanded contact logic
         let parsedContacts = [];
         if (student.contacts_info) {
             try { parsedContacts = JSON.parse(student.contacts_info); } catch(e) {}
@@ -461,6 +468,14 @@ function renderRosterTable() {
 
         // Build the Display HTML for underneath the student name
         let contactsDisplayHtml = '';
+        
+        // Removed the "Student" heading, leaving just the email in grey
+        if (student.student_email && student.student_email.trim() !== '') {
+            contactsDisplayHtml += `<div style="font-size: 0.8em; margin-top: 2px; line-height: 1.3;">
+                <span style="color: gray;">${student.student_email.trim()}</span>
+            </div>`;
+        }
+
         parsedContacts.forEach(c => {
             if(c.email || c.name) {
                 contactsDisplayHtml += `<div style="font-size: 0.8em; margin-top: 6px; line-height: 1.3;">
@@ -470,10 +485,8 @@ function renderRosterTable() {
             }
         });
 
-        // Ensure at least one empty row for editing if completely empty
         if (parsedContacts.length === 0) parsedContacts.push({name: '', rel: '', email: ''});
 
-        // Build the Edit Inputs for the expanded accordion
         let parentEditHtml = '';
         parsedContacts.forEach(c => {
             parentEditHtml += `
@@ -570,7 +583,6 @@ async function saveStudentChanges(id) {
     const lname = document.getElementById(`lname-${id}`).value.trim();
     const sEmail = document.getElementById(`semail-${id}`).value.trim();
     
-    // Parse out all the specific contact boxes
     const parentRows = document.getElementById(`parent-container-${id}`).querySelectorAll('.parent-email-row');
     let contactsList = [];
     let emailList = [];
@@ -653,7 +665,6 @@ async function emailIndividualStudent(event, id) {
     
     let emailsToSend = [];
     
-    // 1. Setup specific email for Student
     if (student.student_email && student.student_email.trim()) {
         emailsToSend.push({
             to: student.student_email.trim(),
@@ -662,7 +673,6 @@ async function emailIndividualStudent(event, id) {
         });
     }
 
-    // 2. Setup specific emails for Contacts
     let parsedContacts = [];
     if (student.contacts_info) {
         try { parsedContacts = JSON.parse(student.contacts_info); } catch(e) {}
@@ -709,7 +719,6 @@ async function emailAllStudents() {
     let emailsToSend = [];
 
     studentsData.forEach(student => {
-        // 1. Setup specific email for Student
         if (student.student_email && student.student_email.trim()) {
             emailsToSend.push({
                 to: student.student_email.trim(),
@@ -718,7 +727,6 @@ async function emailAllStudents() {
             });
         }
 
-        // 2. Setup specific emails for Contacts
         let parsedContacts = [];
         if (student.contacts_info) {
             try { parsedContacts = JSON.parse(student.contacts_info); } catch(e) {}
@@ -770,14 +778,44 @@ async function handleCSV() {
     reader.onload = async (e) => {
         const rows = e.target.result.split('\n');
         
-        // Smarter dynamic starting row detection
         let startIndex = 1;
-        for(let i=0; i<rows.length; i++) {
-            if(rows[i].includes('Last Name') && rows[i].includes('First Name')) {
+        let headers = [];
+        
+        for(let i = 0; i < rows.length; i++) {
+            let rowLower = rows[i].toLowerCase();
+            if(rowLower.includes('last name') && rowLower.includes('first name')) {
+                headers = rows[i].split(',').map(h => h.replace(/"/g, '').trim().toLowerCase().replace(/\s+/g, ' '));
                 startIndex = i + 1;
                 break;
             }
         }
+
+        let hIdx = { sLast: -1, sFirst: -1, sEmail: -1, c1Rel: -1, c1Last: -1, c1First: -1, c1Email: -1, c2Rel: -1, c2Last: -1, c2First: -1, c2Email: -1 };
+
+        headers.forEach((h, idx) => {
+            if(h === 'last name' && hIdx.sLast === -1) hIdx.sLast = idx;
+            else if(h === 'first name' && hIdx.sFirst === -1) hIdx.sFirst = idx;
+            else if((h.includes('student') && h.includes('email')) || h === 'email address') hIdx.sEmail = idx;
+            else if(h.includes('1st') && h.includes('relationship')) hIdx.c1Rel = idx;
+            else if(h.includes('1st') && h.includes('last name')) hIdx.c1Last = idx;
+            else if(h.includes('1st') && h.includes('first name')) hIdx.c1First = idx;
+            else if(h.includes('1st') && h.includes('email')) hIdx.c1Email = idx;
+            else if(h.includes('2nd') && h.includes('relationship')) hIdx.c2Rel = idx;
+            else if(h.includes('2nd') && h.includes('last name')) hIdx.c2Last = idx;
+            else if(h.includes('2nd') && h.includes('first name')) hIdx.c2First = idx;
+            else if(h.includes('2nd') && h.includes('email')) hIdx.c2Email = idx;
+        });
+
+        if(hIdx.sLast === -1) hIdx.sLast = 1;
+        if(hIdx.sFirst === -1) hIdx.sFirst = 2;
+        if(hIdx.c1Rel === -1) hIdx.c1Rel = 3;
+        if(hIdx.c1Last === -1) hIdx.c1Last = 4;
+        if(hIdx.c1First === -1) hIdx.c1First = 5;
+        if(hIdx.c1Email === -1) hIdx.c1Email = 6;
+        if(hIdx.c2Rel === -1) hIdx.c2Rel = 7;
+        if(hIdx.c2Last === -1) hIdx.c2Last = 8;
+        if(hIdx.c2First === -1) hIdx.c2First = 9;
+        if(hIdx.c2Email === -1) hIdx.c2Email = 10;
 
         for (let i = startIndex; i < rows.length; i++) {
             const row = rows[i];
@@ -786,54 +824,47 @@ async function handleCSV() {
             const cols = row.split(','); 
             if(cols.length < 3) continue;
 
-            let lastName = cols[1] ? cols[1].replace(/"/g, '').trim() : '';
-            let firstName = cols[2] ? cols[2].replace(/"/g, '').trim() : '';
+            let safeGet = (idx) => (cols[idx] ? cols[idx].replace(/"/g, '').trim() : '');
+
+            let lastName = safeGet(hIdx.sLast);
+            let firstName = safeGet(hIdx.sFirst);
+            let studentEmail = hIdx.sEmail !== -1 ? safeGet(hIdx.sEmail) : '';
+            
             if (!lastName && !firstName) continue; 
             let studentName = `${firstName} ${lastName}`.trim();
 
             let contacts = [];
             let emails = [];
 
-            // Contact 1 extraction
-            if(cols.length > 9 && cols[9]) {
-                let email1 = cols[9].replace(/"/g, '').trim();
-                if (email1.includes('@')) {
-                    contacts.push({
-                        rel: cols[3] ? cols[3].replace(/"/g, '').trim() : '',
-                        name: `${cols[7] ? cols[7].replace(/"/g, '').trim() : ''} ${cols[5] ? cols[5].replace(/"/g, '').trim() : ''}`.trim(),
-                        email: email1
-                    });
-                    emails.push(email1);
-                }
+            let c1EmailVal = safeGet(hIdx.c1Email);
+            let c1FirstVal = safeGet(hIdx.c1First);
+            let c1LastVal = safeGet(hIdx.c1Last);
+            if (c1EmailVal.includes('@') || c1FirstVal || c1LastVal) {
+                contacts.push({
+                    rel: safeGet(hIdx.c1Rel),
+                    name: `${c1FirstVal} ${c1LastVal}`.trim(),
+                    email: c1EmailVal
+                });
+                if (c1EmailVal.includes('@')) emails.push(c1EmailVal);
             }
 
-            // Contact 2 extraction
-            if(cols.length > 17 && cols[17]) {
-                let email2 = cols[17].replace(/"/g, '').trim();
-                if (email2.includes('@')) {
-                    contacts.push({
-                        rel: cols[11] ? cols[11].replace(/"/g, '').trim() : '',
-                        name: `${cols[15] ? cols[15].replace(/"/g, '').trim() : ''} ${cols[13] ? cols[13].replace(/"/g, '').trim() : ''}`.trim(),
-                        email: email2
-                    });
-                    emails.push(email2);
-                }
-            }
-
-            // Fallback for simple normal CSVs just in case
-            if (contacts.length === 0 && emails.length === 0) {
-               let possibleEmail = cols.find(c => c && c.includes('@'));
-               if (possibleEmail) {
-                   emails.push(possibleEmail.replace(/"/g, '').trim());
-                   contacts.push({ rel: '', name: '', email: possibleEmail.replace(/"/g, '').trim() });
-               }
+            let c2EmailVal = safeGet(hIdx.c2Email);
+            let c2FirstVal = safeGet(hIdx.c2First);
+            let c2LastVal = safeGet(hIdx.c2Last);
+            if (c2EmailVal.includes('@') || c2FirstVal || c2LastVal) {
+                contacts.push({
+                    rel: safeGet(hIdx.c2Rel),
+                    name: `${c2FirstVal} ${c2LastVal}`.trim(),
+                    email: c2EmailVal
+                });
+                if (c2EmailVal.includes('@')) emails.push(c2EmailVal);
             }
 
             await fetch('http://localhost:3000/api/add', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: studentName,
-                    student_email: "", // Completely optional
+                    student_email: studentEmail,
                     guardian_email: emails.join(','),
                     contacts_info: JSON.stringify(contacts),
                     class_name: currentClass
