@@ -6,8 +6,10 @@ const nodemailer = require('nodemailer');
 
 const app = express();
 
+// Increase JSON limit to 50mb to allow for base64 image uploads in emails
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(__dirname));
 
 const dbPath = path.join(__dirname, 'world.db');
@@ -27,7 +29,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
     }
 });
 
-// --- NEW UNIFIED EMAIL ENDPOINT ---
+// --- NEW UNIFIED EMAIL ENDPOINT WITH ATTACHMENT SUPPORT ---
 app.post('/api/send-emails', (req, res) => {
     const { emailsToSend, senderEmail, senderPassword } = req.body;
 
@@ -43,7 +45,8 @@ app.post('/api/send-emails', (req, res) => {
             from: senderEmail,
             to: mail.to,
             subject: mail.subject,
-            text: mail.text
+            text: mail.text,
+            attachments: mail.attachments || [] // Injects images if they exist
         });
     });
 
@@ -89,7 +92,6 @@ app.delete('/api/delete-class/:class_name', (req, res) => {
     });
 });
 
-// NEW: RENAME CLASS ROUTE
 app.put('/api/rename-class', (req, res) => {
     const { oldClassName, newClassName } = req.body;
     db.run("UPDATE Students SET class_name = ? WHERE class_name = ?", [newClassName, oldClassName], function (err) {

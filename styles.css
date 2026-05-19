@@ -94,7 +94,7 @@ h2 {
 /*----------------------------Label and Input---------------------------*/
 /*Labels*/
 label {
-    font-size: 19px;
+    font-size: 18px;
     font-weight: bold;
     color: rgb(0, 0, 0);
     text-align: left;
@@ -271,7 +271,7 @@ input[type="color"] {
 /*--------------------------Class Selection Page------------------------*/
 .welcomeheader {
     /*margin-top: 5px;*/
-    margin-bottom: 50px;
+    margin-bottom: 45px;
 }
 
 .subtitle {

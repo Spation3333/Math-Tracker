@@ -16,7 +16,7 @@ function attachEyeToggles() {
     const toggleApp = document.getElementById('toggleProfApp');
     const togglePin = document.getElementById('toggleProfPin');
     if (toggleApp) {
-        toggleApp.addEventListener('click', function() {
+        toggleApp.addEventListener('click', function () {
             const input = document.getElementById('prof-apppass');
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
@@ -24,7 +24,7 @@ function attachEyeToggles() {
         });
     }
     if (togglePin) {
-        togglePin.addEventListener('click', function() {
+        togglePin.addEventListener('click', function () {
             const input = document.getElementById('prof-pin');
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
@@ -45,16 +45,14 @@ window.onload = () => {
 
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('class')) currentClass = urlParams.get('class');
-    
-    // Set the invisible class name input field
+
     const classInput = document.getElementById('current-class-input');
     classInput.value = currentClass.replace(currentUser.email + "_", "");
-    
-    // Listener for renaming class
-    classInput.addEventListener('change', async function() {
+
+    classInput.addEventListener('change', async function () {
         const newRawName = this.value.trim();
         const oldRawName = currentClass.replace(currentUser.email + "_", "");
-        
+
         if (!newRawName || newRawName === oldRawName) {
             this.value = oldRawName;
             return;
@@ -62,14 +60,12 @@ window.onload = () => {
 
         const newDbName = currentUser.email + "_" + newRawName;
 
-        // Update class array
         const classIndex = classData.findIndex(c => c.name === oldRawName);
         if (classIndex !== -1) {
             classData[classIndex].name = newRawName;
             localStorage.setItem(storageKey, JSON.stringify(classData));
         }
 
-        // Migrate local storage keys
         const keysToMigrate = ['lessons', 'marks', 'units'];
         keysToMigrate.forEach(prefix => {
             const oldStr = localStorage.getItem(`${prefix}_${currentClass}`);
@@ -79,18 +75,16 @@ window.onload = () => {
             }
         });
 
-        // Migrate Backend DB
         try {
             await fetch('http://localhost:3000/api/rename-class', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ oldClassName: currentClass, newClassName: newDbName })
             });
-        } catch(e) {
+        } catch (e) {
             console.error("DB Rename error", e);
         }
 
-        // Update state and URL invisibly
         currentClass = newDbName;
         const url = new URL(window.location);
         url.searchParams.set('class', newDbName);
@@ -103,7 +97,7 @@ window.onload = () => {
     classMarksData = JSON.parse(localStorage.getItem(`marks_${currentClass}`)) || {};
 
     renderProfileBox();
-    attachEyeToggles(); 
+    attachEyeToggles();
     renderClassNav();
     initUnits();
     loadStudentsData();
@@ -123,8 +117,7 @@ function openProfileModal() {
     document.getElementById('prof-email').value = currentUser.email;
     document.getElementById('prof-apppass').value = currentUser.appPassword || '';
     document.getElementById('prof-pin').value = '';
-    
-    // Reset types back to password upon opening
+
     document.getElementById('prof-apppass').setAttribute('type', 'password');
     document.getElementById('prof-pin').setAttribute('type', 'password');
     if (document.getElementById('toggleProfApp')) document.getElementById('toggleProfApp').textContent = '👁️';
@@ -149,11 +142,11 @@ async function saveProfile() {
     if (!newFname || !newLname || !newEmail || !newAppPass) return alert("All fields are required.");
 
     const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
-    
+
     if (newEmail !== currentUser.email && users[newEmail]) return alert("Email already in use!");
 
     const oldEmail = currentUser.email;
-    
+
     if (newEmail !== oldEmail) {
         try {
             await fetch('http://localhost:3000/api/migrate-email', {
@@ -161,7 +154,7 @@ async function saveProfile() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ oldEmail, newEmail })
             });
-        } catch(e) { console.error("DB Migration Error", e); }
+        } catch (e) { console.error("DB Migration Error", e); }
 
         const keysToMigrate = [];
         for (let i = 0; i < localStorage.length; i++) {
@@ -178,40 +171,37 @@ async function saveProfile() {
     delete users[oldEmail];
     const updatedUser = { firstName: newFname, lastName: newLname, email: newEmail, appPassword: newAppPass, pin: currentUser.pin };
     users[newEmail] = updatedUser;
-    
+
     localStorage.setItem('mathTrackUsers', JSON.stringify(users));
     localStorage.setItem('currentUser', JSON.stringify(updatedUser));
 
     alert("Profile updated successfully!");
-    
+
     const currentClassName = currentClass.replace(oldEmail + "_", "");
     window.location.href = `studentList.html?class=${encodeURIComponent(newEmail + "_" + currentClassName)}`;
 }
 
-// FULL ACCOUNT DELETION LOGIC
 async function deleteAccount() {
     const pin = document.getElementById('prof-pin').value;
     if (!pin) return alert("Please enter your PIN to authorize account deletion.");
     if (pin !== currentUser.pin) return alert("Incorrect PIN! Cannot delete account.");
 
     if (confirm("WARNING: Are you absolutely sure you want to delete your account? This will permanently erase all your classes, students, and grades. This action CANNOT be undone.")) {
-        
+
         const email = currentUser.email;
         const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
         const storageKey = `savedClasses_${email}`;
         const userClasses = JSON.parse(localStorage.getItem(storageKey)) || [];
 
-        // Delete all students from the backend database for each class
         for (let i = 0; i < userClasses.length; i++) {
             const uniqueDbClassName = email + "_" + userClasses[i].name;
             try {
                 await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(uniqueDbClassName)}`, { method: 'DELETE' });
-            } catch(e) {
+            } catch (e) {
                 console.error("Error deleting class from database:", e);
             }
         }
 
-        // Remove all local storage data tied to this user's email
         const keysToDelete = [];
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
@@ -221,7 +211,6 @@ async function deleteAccount() {
         }
         keysToDelete.forEach(k => localStorage.removeItem(k));
 
-        // Remove the user profile and current session
         delete users[email];
         localStorage.setItem('mathTrackUsers', JSON.stringify(users));
         localStorage.removeItem('currentUser');
@@ -230,7 +219,6 @@ async function deleteAccount() {
         window.location.href = 'index.html';
     }
 }
-
 
 function renderClassNav() {
     const navBar = document.getElementById('class-nav-bar');
@@ -266,27 +254,32 @@ function initUnits() {
 }
 
 function renderUnits() {
-    const container = document.getElementById('units-container');
-    container.innerHTML = '';
+    // FIXED: Now looks for 'units-container' to match the HTML ID correctly
+    const unitsContainer = document.getElementById('units-container');
+    if (!unitsContainer) return;
+    unitsContainer.innerHTML = '';
+    
     unitsData.forEach((unitName, index) => {
-        const unitDiv = document.createElement('div');
-        unitDiv.className = `unit-box ${index === activeUnitIndex ? 'active' : ''}`;
-        unitDiv.innerText = unitName;
-        unitDiv.onclick = () => selectUnit(index);
-
+        let unitDiv = document.createElement('div');
+        unitDiv.className = 'unit-box' + (index === activeUnitIndex ? ' active' : '');
+        
+        let d = new Date(unitName + "T00:00:00");
+        unitDiv.innerText = isNaN(d) ? unitName : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        
+        unitDiv.onclick = () => {
+            activeUnitIndex = index;
+            renderUnits();
+            renderRosterTable();
+        };
+        
+        // Include the delete button for weeks
         const delBtn = document.createElement('button');
         delBtn.className = 'unit-delete';
         delBtn.innerText = '×';
-
         delBtn.onclick = (e) => {
             e.stopPropagation();
-            if (confirm(`Delete this unit and all its marks?`)) {
+            if (confirm(`Delete this week and all its marks?`)) {
                 unitsData.splice(index, 1);
-
-                for (let i = 0; i < unitsData.length; i++) {
-                    unitsData[i] = `Unit ${i + 1}`;
-                }
-
                 delete classLessonsData[index];
                 localStorage.setItem(`units_${currentClass}`, JSON.stringify(unitsData));
                 localStorage.setItem(`lessons_${currentClass}`, JSON.stringify(classLessonsData));
@@ -296,20 +289,33 @@ function renderUnits() {
             }
         };
         unitDiv.appendChild(delBtn);
-        container.appendChild(unitDiv);
+        
+        unitsContainer.appendChild(unitDiv);
     });
 
-    if (unitsData.length < 10) {
-        const addBox = document.createElement('div');
-        addBox.className = 'unit-add-box';
-        addBox.innerText = '+';
-        addBox.onclick = () => {
-            unitsData.push(`Unit ${unitsData.length + 1}`);
-            localStorage.setItem(`units_${currentClass}`, JSON.stringify(unitsData));
-            renderUnits();
-        };
-        container.appendChild(addBox);
-    }
+    let addBox = document.createElement('div');
+    addBox.className = 'unit-add-box';
+    addBox.innerText = '+';
+    addBox.onclick = () => {
+        let nextMonday;
+        if (unitsData.length > 0) {
+            let lastMondayStr = unitsData[unitsData.length - 1];
+            let lastDate = new Date(lastMondayStr + "T00:00:00");
+            if (!isNaN(lastDate)) {
+                lastDate.setDate(lastDate.getDate() + 7); 
+                nextMonday = lastDate.toISOString().split('T')[0];
+            } else {
+                nextMonday = new Date().toISOString().split('T')[0];
+            }
+        } else {
+            nextMonday = new Date().toISOString().split('T')[0];
+        }
+        
+        unitsData.push(nextMonday);
+        localStorage.setItem(`units_${currentClass}`, JSON.stringify(unitsData));
+        renderUnits();
+    };
+    unitsContainer.appendChild(addBox);
 }
 
 function selectUnit(index) {
@@ -324,6 +330,18 @@ async function loadStudentsData() {
         const response = await fetch(`http://localhost:3000/api/data/${encodeURIComponent(currentClass)}`);
         const json = await response.json();
         studentsData = json.data || [];
+
+        const savedOrder = JSON.parse(localStorage.getItem(`studentOrder_${currentClass}`)) || [];
+        if (savedOrder.length > 0) {
+            studentsData.sort((a, b) => {
+                let indexA = savedOrder.indexOf(a.id);
+                let indexB = savedOrder.indexOf(b.id);
+                if (indexA === -1) indexA = 999999;
+                if (indexB === -1) indexB = 999999;
+                return indexA - indexB;
+            });
+        }
+
         renderRosterTable();
     } catch (err) {
         document.getElementById('roster-container').innerHTML = '<p style="color:var(--danger);">Error connecting to server.</p>';
@@ -331,92 +349,9 @@ async function loadStudentsData() {
 }
 
 function ensureUnitStructure() {
-    if (!classLessonsData[activeUnitIndex]) {
-        classLessonsData[activeUnitIndex] = { lessons: [], hasTest: false, testDate: '' };
-    }
+    if (!classLessonsData[activeUnitIndex]) classLessonsData[activeUnitIndex] = { lessons: [], hasTest: false, testDate: '' };
 }
 
-function addLesson() {
-    ensureUnitStructure();
-    const unit = classLessonsData[activeUnitIndex];
-    if (unit.lessons.length < 12) {
-        const nextId = unit.lessons.length + 1;
-        unit.lessons.push({ id: nextId, date: '' });
-        localStorage.setItem(`lessons_${currentClass}`, JSON.stringify(classLessonsData));
-        renderRosterTable();
-    }
-}
-
-function deleteLesson(lessonIndex) {
-    if (confirm("Are you sure you want to delete this lesson? The remaining lessons and grades will be shifted down.")) {
-        ensureUnitStructure();
-        const lessons = classLessonsData[activeUnitIndex].lessons;
-        const deletedId = lessons[lessonIndex].id;
-
-        studentsData.forEach(student => {
-            const sMarks = classMarksData[student.id] && classMarksData[student.id][activeUnitIndex];
-            if (sMarks) {
-                delete sMarks[`l${deletedId}`];
-                delete sMarks[`l${deletedId}_late`];
-                delete sMarks[`l${deletedId}_custom`];
-
-                for (let i = lessonIndex + 1; i < lessons.length; i++) {
-                    const oldId = lessons[i].id;
-                    const newId = oldId - 1;
-
-                    if (sMarks[`l${oldId}`] !== undefined) {
-                        sMarks[`l${newId}`] = sMarks[`l${oldId}`];
-                        delete sMarks[`l${oldId}`];
-                    }
-                    if (sMarks[`l${oldId}_late`] !== undefined) {
-                        sMarks[`l${newId}_late`] = sMarks[`l${oldId}_late`];
-                        delete sMarks[`l${oldId}_late`];
-                    }
-                    if (sMarks[`l${oldId}_custom`] !== undefined) {
-                        sMarks[`l${newId}_custom`] = sMarks[`l${oldId}_custom`];
-                        delete sMarks[`l${oldId}_custom`];
-                    }
-                }
-            }
-        });
-
-        lessons.splice(lessonIndex, 1);
-        lessons.forEach((l, i) => { l.id = i + 1; });
-
-        localStorage.setItem(`marks_${currentClass}`, JSON.stringify(classMarksData));
-        localStorage.setItem(`lessons_${currentClass}`, JSON.stringify(classLessonsData));
-        renderRosterTable();
-    }
-}
-
-function addTest() {
-    ensureUnitStructure();
-    classLessonsData[activeUnitIndex].hasTest = true;
-    localStorage.setItem(`lessons_${currentClass}`, JSON.stringify(classLessonsData));
-    renderRosterTable();
-}
-
-function deleteTest() {
-    if (confirm("Are you sure you want to delete the test?")) {
-        ensureUnitStructure();
-        classLessonsData[activeUnitIndex].hasTest = false;
-        classLessonsData[activeUnitIndex].testDate = '';
-        localStorage.setItem(`lessons_${currentClass}`, JSON.stringify(classLessonsData));
-        renderRosterTable();
-    }
-}
-
-function updateLessonDate(lessonIndex, dateStr) {
-    classLessonsData[activeUnitIndex].lessons[lessonIndex].date = dateStr;
-    localStorage.setItem(`lessons_${currentClass}`, JSON.stringify(classLessonsData));
-}
-
-function updateTestDate(dateStr) {
-    classLessonsData[activeUnitIndex].testDate = dateStr;
-    localStorage.setItem(`lessons_${currentClass}`, JSON.stringify(classLessonsData));
-}
-
-// --- NEW GRADE UI LOGIC ---
 function toggleCustomView(checkbox, studentId, markKey) {
     const cellDiv = checkbox.closest('.mark-cell-wrapper');
     const radioGroup = cellDiv.querySelector('.radio-group-container');
@@ -424,7 +359,7 @@ function toggleCustomView(checkbox, studentId, markKey) {
 
     if (checkbox.checked) {
         radioGroup.style.display = 'none';
-        sliderGroup.style.display = 'flex'; 
+        sliderGroup.style.display = 'flex';
         const slider = sliderGroup.querySelector('input[type="range"]');
         updateMark(studentId, markKey, slider.value);
     } else {
@@ -459,6 +394,54 @@ function updateNote(studentId, text) {
     if (!classMarksData[studentId][activeUnitIndex]) classMarksData[studentId][activeUnitIndex] = {};
     classMarksData[studentId][activeUnitIndex]['notes'] = text;
     localStorage.setItem(`marks_${currentClass}`, JSON.stringify(classMarksData));
+}
+
+// --- IMAGE ATTACHMENT LOGIC ---
+function uploadNoteImage(studentId, inputElement) {
+    const file = inputElement.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 800;
+            const MAX_HEIGHT = 800;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+            } else {
+                if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+
+            if (!classMarksData[studentId]) classMarksData[studentId] = {};
+            if (!classMarksData[studentId][activeUnitIndex]) classMarksData[studentId][activeUnitIndex] = {};
+
+            classMarksData[studentId][activeUnitIndex]['note_image'] = dataUrl;
+            localStorage.setItem(`marks_${currentClass}`, JSON.stringify(classMarksData));
+            renderRosterTable();
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeNoteImage(studentId) {
+    if (classMarksData[studentId] && classMarksData[studentId][activeUnitIndex]) {
+        classMarksData[studentId][activeUnitIndex]['note_image'] = '';
+        localStorage.setItem(`marks_${currentClass}`, JSON.stringify(classMarksData));
+        renderRosterTable();
+    }
 }
 
 function buildMarkCellHTML(studentId, markKey, markVal, isLate, isCustom) {
@@ -508,63 +491,59 @@ function buildMarkCellHTML(studentId, markKey, markVal, isLate, isCustom) {
 }
 
 function renderRosterTable() {
+    // FIXED: Generates into the proper 'roster-container'
     const container = document.getElementById('roster-container');
+    if (!container) return;
+
     if (studentsData.length === 0) {
-        container.innerHTML = '<p>No students tracked. Please import a CSV above.</p>';
+        container.innerHTML = '<p>No students tracked. Please import a CSV or manually add a student above.</p>';
+        return;
+    }
+    
+    if (unitsData.length === 0) {
+        container.innerHTML = '<p>No weeks available. Please click the + button above to add a week.</p>';
         return;
     }
 
     ensureUnitStructure();
-    const unitData = classLessonsData[activeUnitIndex];
-    const unitNum = activeUnitIndex + 1;
-
+    
     let thHTML = `<th style="text-align:left;">Student Details</th>`;
+    const mondayStr = unitsData[activeUnitIndex];
+    
+    if (!classLessonsData[activeUnitIndex]) classLessonsData[activeUnitIndex] = { titles: ["", "", "", "", ""] };
+    if (!classLessonsData[activeUnitIndex].titles) classLessonsData[activeUnitIndex].titles = ["", "", "", "", ""];
 
-    unitData.lessons.forEach((l, idx) => {
+    [0, 1, 2, 3, 4].forEach(i => {
+        let d = new Date(mondayStr + "T00:00:00");
+        if (isNaN(d)) d = new Date(); 
+        d.setDate(d.getDate() + i);
+        let dateLabel = d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+        let titleVal = classLessonsData[activeUnitIndex].titles[i] || "";
+        
         thHTML += `
-                <th>
-                    <div class="lesson-header">
-                        <button class="col-delete" onclick="deleteLesson(${idx})">×</button>
-                        <span>Lesson ${unitNum}.${l.id}</span>
-                        <input type="date" class="lesson-date" value="${l.date}" onchange="updateLessonDate(${idx}, this.value)">
-                    </div>
-                </th>`;
+            <th>
+                <div class="lesson-header">
+                    <span>${dateLabel}</span>
+                    <input type="text" class="lesson-date" placeholder="Lesson Title" value="${titleVal}" onchange="updateLessonTitle(${i}, this.value)" style="width: 100%; box-sizing: border-box; text-align: center; border: 1px solid var(--border-color); border-radius: 4px; padding: 4px; margin-top: 5px;">
+                </div>
+            </th>`;
     });
-
-    if (unitData.hasTest) {
-        thHTML += `
-                <th>
-                    <div class="lesson-header">
-                        <button class="col-delete" onclick="deleteTest()">×</button>
-                        <span style="color:var(--danger);">Test</span>
-                        <input type="date" class="lesson-date" value="${unitData.testDate}" onchange="updateTestDate(this.value)">
-                    </div>
-                </th>`;
-    }
-
-    let btnHTML = '';
-    if (unitData.lessons.length < 12) btnHTML += `<button class="btn-add-lesson" onclick="addLesson()">+ Lesson</button>`;
-    if (!unitData.hasTest) btnHTML += `<button class="btn-add-lesson" style="background:var(--danger);" onclick="addTest()">+ Test</button>`;
-
-    thHTML += `<th style="width: 80px;"><div class="add-col-controls">${btnHTML}</div></th>`;
+    
     thHTML += `<th style="min-width: 250px;"><div class="lesson-header"><span>Teacher Notes</span></div></th>`;
 
     let tbodyHTML = '';
-    studentsData.forEach(student => {
-        const nameParts = student.name ? student.name.split(' ') : ["Unknown"];
-        const fName = nameParts[0]; 
-        const lName = nameParts.slice(1).join(' ');
+    studentsData.forEach((student, index) => {
         const sMarks = (classMarksData[student.id] && classMarksData[student.id][activeUnitIndex]) || {};
 
         let parsedContacts = [];
         if (student.contacts_info) {
-            try { parsedContacts = JSON.parse(student.contacts_info); } catch(e) {}
+            try { parsedContacts = JSON.parse(student.contacts_info); } catch (e) { }
         } else if (student.guardian_email) {
-            student.guardian_email.split(',').forEach(e => parsedContacts.push({name: '', rel: '', email: e.trim()}));
+            student.guardian_email.split(',').forEach(e => parsedContacts.push({ name: '', rel: '', email: e.trim() }));
         }
 
         let contactsDisplayHtml = '';
-        
+
         if (student.student_email && student.student_email.trim() !== '') {
             contactsDisplayHtml += `<div style="font-size: 0.8em; margin-top: 2px; line-height: 1.3;">
                 <span style="color: gray;">${student.student_email.trim()}</span>
@@ -572,7 +551,7 @@ function renderRosterTable() {
         }
 
         parsedContacts.forEach(c => {
-            if(c.email || c.name) {
+            if (c.email || c.name) {
                 contactsDisplayHtml += `<div style="font-size: 0.8em; margin-top: 6px; line-height: 1.3;">
                     <span style="font-weight: bold; color: var(--text-color);">${c.name || 'Guardian'} ${c.rel ? `(${c.rel})` : ''}</span><br>
                     <span style="color: gray;">${c.email || 'No email'}</span>
@@ -580,7 +559,7 @@ function renderRosterTable() {
             }
         });
 
-        if (parsedContacts.length === 0) parsedContacts.push({name: '', rel: '', email: ''});
+        if (parsedContacts.length === 0) parsedContacts.push({ name: '', rel: '', email: '' });
 
         let parentEditHtml = '';
         parsedContacts.forEach(c => {
@@ -593,65 +572,132 @@ function renderRosterTable() {
             `;
         });
 
-        let trHTML = `
-                <tr>
-                    <td class="student-cell">
-                        <div class="student-card">
-                            <div class="student-header" onclick="toggleStudentDetails(${student.id})" style="align-items: flex-start;">
-                                <div>
-                                    <h4 style="margin: 0; font-size: 1.1em;">${student.name}</h4>
-                                    ${contactsDisplayHtml}
-                                </div>
-                                <div class="student-actions" style="align-items: flex-start;">
-                                    <button class="btn btn-success" style="font-size: 0.75em; padding: 4px 8px;" onclick="emailIndividualStudent(event, ${student.id})">Send</button>
-                                    <button class="btn btn-danger" style="font-size: 0.75em; padding: 4px 8px;" onclick="deleteStudent(event, ${student.id})">Del</button>
-                                </div>
+        const nameParts = student.name ? student.name.split(' ') : ["Unknown"];
+        const fName = nameParts[0];
+        const lName = nameParts.slice(1).join(' ');
+
+        tbodyHTML += `
+            <tr data-student-id="${student.id}" class="student-row">
+                <td class="student-cell" style="text-align:left;">
+                    <div class="student-card">
+                        <div class="student-header" onclick="toggleStudentDetails(${student.id})" style="align-items: flex-start; cursor: pointer;">
+                            <div>
+                                <h4 style="margin: 0; font-size: 1.1em;">${index + 1}. ${student.name}</h4>
+                                ${contactsDisplayHtml}
                             </div>
-                            <div class="student-details" id="details-${student.id}">
-                                <div class="form-row">
-                                    <div class="form-group"><label>First</label><input type="text" id="fname-${student.id}" value="${fName}"></div>
-                                    <div class="form-group"><label>Last</label><input type="text" id="lname-${student.id}" value="${lName}"></div>
-                                </div>
-                                <div class="form-group" style="margin-bottom:10px;"><label>Student Email (Optional)</label><input type="text" id="semail-${student.id}" value="${student.student_email || ''}"></div>
-                                <div class="form-group" id="parent-container-${student.id}"><label>Contacts (Name, Relationship, Email)</label>
-                                    ${parentEditHtml}
-                                </div>
-                                <div style="display:flex; justify-content:space-between; margin-top: 10px;">
-                                    <button class="btn-add-circle" onclick="addParentInput(${student.id})">+</button>
-                                    <button class="btn btn-primary" style="font-size: 0.8em;" onclick="saveStudentChanges(${student.id})">Save Edit</button>
-                                </div>
+                            <div class="student-actions" style="align-items: flex-start;">
+                                <button class="btn btn-success" style="font-size: 0.75em; padding: 4px 8px;" onclick="emailIndividualStudent(event, ${student.id})">Send</button>
+                                <button class="btn btn-danger" style="font-size: 0.75em; padding: 4px 8px;" onclick="deleteStudent(event, ${student.id})">Del</button>
                             </div>
                         </div>
-                    </td>`;
+                        <div class="student-details" id="details-${student.id}" style="display:none; margin-top: 10px;">
+                            <div class="form-row" style="display:flex; gap:10px;">
+                                <div class="form-group" style="flex:1;"><label style="font-weight:bold; font-size:0.8em;">First</label><input type="text" id="fname-${student.id}" value="${fName}" style="width:100%; padding:5px;"></div>
+                                <div class="form-group" style="flex:1;"><label style="font-weight:bold; font-size:0.8em;">Last</label><input type="text" id="lname-${student.id}" value="${lName}" style="width:100%; padding:5px;"></div>
+                            </div>
+                            <div class="form-group" style="margin-top:10px;"><label style="font-weight:bold; font-size:0.8em;">Student Email (Optional)</label><input type="text" id="semail-${student.id}" value="${student.student_email || ''}" style="width:100%; padding:5px;"></div>
+                            <div class="form-group" id="parent-container-${student.id}" style="margin-top:10px;"><label style="font-weight:bold; font-size:0.8em;">Contacts (Name, Relationship, Email)</label>
+                                ${parentEditHtml}
+                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-top: 10px;">
+                                <button class="btn-add-circle" onclick="addParentInput(${student.id})">+</button>
+                                <button class="btn btn-primary" style="font-size: 0.8em;" onclick="saveStudentChanges(${student.id})">Save Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                </td>`;
 
-        unitData.lessons.forEach(l => {
-            const markKey = `l${l.id}`;
+        [0, 1, 2, 3, 4].forEach(i => {
+            const markKey = `d${i}`;
             const markVal = sMarks[markKey] || '';
             const isLate = sMarks[markKey + '_late'] || false;
             const isCustom = sMarks[markKey + '_custom'] || false;
-            trHTML += buildMarkCellHTML(student.id, markKey, markVal, isLate, isCustom);
+            tbodyHTML += buildMarkCellHTML(student.id, markKey, markVal, isLate, isCustom);
         });
 
-        if (unitData.hasTest) {
-            const markVal = sMarks['test'] || '';
-            const isLate = sMarks['test_late'] || false;
-            const isCustom = sMarks['test_custom'] || false;
-            trHTML += buildMarkCellHTML(student.id, 'test', markVal, isLate, isCustom);
+        const studentNote = sMarks['notes'] || '';
+        const studentNoteImg = sMarks['note_image'] || '';
+
+        let imgHtml = '';
+        if (studentNoteImg) {
+            imgHtml = `
+                <div style="position:relative; display:inline-block; margin-top:5px; width: 100%; text-align:center;">
+                    <img src="${studentNoteImg}" style="max-width: 100%; max-height: 100px; border-radius: 4px; border: 1px solid var(--border-color);">
+                    <button onclick="removeNoteImage(${student.id})" title="Remove Image" style="position:absolute; top:-5px; right:-5px; background:var(--danger); color:white; border:none; border-radius:50%; cursor:pointer; width:22px; height:22px; font-size:12px; font-weight:bold;">×</button>
+                </div>
+            `;
         }
 
-        trHTML += `<td></td>`;
-
-        const studentNote = sMarks['notes'] || '';
-        trHTML += `<td style="vertical-align: top;">
-                    <textarea class="mark-input" style="width: 100%; height: 100px; resize: vertical; text-align: left; font-weight: normal; font-family: inherit;" 
-                        placeholder="Add private notes here..." 
-                        onchange="updateNote(${student.id}, this.value)">${studentNote}</textarea>
-                </td></tr>`;
-
-        tbodyHTML += trHTML;
+        // FIXED: Restore teacher notes to proper cell alignment
+        tbodyHTML += `<td class="notes-cell" style="vertical-align: top;">
+                        <textarea class="mark-input" style="width: 100%; height: 60px; resize: vertical; text-align: left; font-weight: normal; font-family: inherit; margin-bottom: 5px;" 
+                            placeholder="Add private notes here..." 
+                            onchange="updateNote(${student.id}, this.value)">${studentNote}</textarea>
+                        
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <label style="cursor:pointer; font-size:0.8em; color:var(--accent); font-weight:bold; display:flex; align-items:center; gap:5px;">
+                                📎 Attach Image
+                                <input type="file" accept="image/*" style="display:none;" onchange="uploadNoteImage(${student.id}, this)">
+                            </label>
+                        </div>
+                        ${imgHtml}
+                    </td></tr>`;
     });
 
     container.innerHTML = `<table class="roster-table"><thead><tr>${thHTML}</tr></thead><tbody>${tbodyHTML}</tbody></table>`;
+
+    // --- DRAG AND DROP LISTENERS ---
+    const rows = container.querySelectorAll('tbody tr.student-row');
+    let dragStartIndex = -1;
+
+    rows.forEach((row, index) => {
+        row.draggable = true;
+
+        row.addEventListener('dragstart', function (e) {
+            const targetTag = e.target.tagName.toLowerCase();
+            if (targetTag === 'input' || targetTag === 'textarea' || targetTag === 'button' || targetTag === 'select') {
+                e.preventDefault();
+                return;
+            }
+            dragStartIndex = index;
+            this.style.opacity = '0.4';
+            this.style.backgroundColor = 'rgba(0,0,0,0.05)';
+        });
+
+        row.addEventListener('dragend', function () {
+            this.style.opacity = '1';
+            this.style.backgroundColor = '';
+            rows.forEach(r => r.style.borderTop = '');
+        });
+
+        row.addEventListener('dragover', function (e) {
+            e.preventDefault(); 
+        });
+
+        row.addEventListener('dragenter', function (e) {
+            e.preventDefault();
+            this.style.borderTop = '3px solid var(--accent)';
+        });
+
+        row.addEventListener('dragleave', function () {
+            this.style.borderTop = '';
+        });
+
+        row.addEventListener('drop', function () {
+            this.style.borderTop = '';
+            const dragEndIndex = index;
+
+            if (dragStartIndex !== -1 && dragStartIndex !== dragEndIndex) {
+                const itemToMove = studentsData.splice(dragStartIndex, 1)[0];
+                studentsData.splice(dragEndIndex, 0, itemToMove);
+
+                const newOrder = studentsData.map(s => s.id);
+                localStorage.setItem(`studentOrder_${currentClass}`, JSON.stringify(newOrder));
+
+                renderRosterTable(); 
+            }
+        });
+    });
 }
 
 // --- STUDENT MANAGER ---
@@ -662,7 +708,7 @@ function toggleStudentDetails(id) {
 
 function addParentInput(id) {
     const container = document.getElementById(`parent-container-${id}`);
-    const newRow = document.createElement('div'); 
+    const newRow = document.createElement('div');
     newRow.className = 'parent-email-row';
     newRow.style.cssText = 'display: flex; gap: 5px; margin-bottom: 5px;';
     newRow.innerHTML = `
@@ -677,17 +723,17 @@ async function saveStudentChanges(id) {
     const fname = document.getElementById(`fname-${id}`).value.trim();
     const lname = document.getElementById(`lname-${id}`).value.trim();
     const sEmail = document.getElementById(`semail-${id}`).value.trim();
-    
+
     const parentRows = document.getElementById(`parent-container-${id}`).querySelectorAll('.parent-email-row');
     let contactsList = [];
     let emailList = [];
-    
+
     parentRows.forEach(row => {
         let name = row.querySelector('.parent-name-input').value.trim();
         let rel = row.querySelector('.parent-rel-input').value.trim();
         let email = row.querySelector('.parent-email-input').value.trim();
         if (email || name) {
-            contactsList.push({name, rel, email});
+            contactsList.push({ name, rel, email });
             if (email) emailList.push(email);
         }
     });
@@ -698,9 +744,9 @@ async function saveStudentChanges(id) {
     try {
         await fetch(`http://localhost:3000/api/update/${id}`, {
             method: 'PUT', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                name: `${fname} ${lname}`.trim(), 
-                student_email: sEmail, 
+            body: JSON.stringify({
+                name: `${fname} ${lname}`.trim(),
+                student_email: sEmail,
                 guardian_email: guardian_email,
                 contacts_info: contacts_info
             })
@@ -710,45 +756,50 @@ async function saveStudentChanges(id) {
 }
 
 // --- EMAIL LOGIC ---
-function buildGradeMessage(studentName, recipientName, isStudent, studentId) {
-    const unitName = unitsData[activeUnitIndex];
-    const unitNum = activeUnitIndex + 1;
-    const unitData = classLessonsData[activeUnitIndex] || { lessons: [], hasTest: false };
-    const sMarks = (classMarksData[studentId] && classMarksData[studentId][activeUnitIndex]) || {};
+function buildGradeMessage(studentName, recipientName, sMarks, isStudent) {
+    const mondayStr = unitsData[activeUnitIndex];
+    let weekDate = new Date(mondayStr + "T00:00:00");
+    let weekDisplay = isNaN(weekDate) ? mondayStr : weekDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
     let text = "";
-    
     if (isStudent) {
-        text += `Hey ${studentName}, here is your progress this week:\n\n`;
+        text += `Hey ${studentName}, here is your progress for ${weekDisplay}:\n\n`;
     } else {
-        text += `Hey ${recipientName}, here is your student's progress this week:\n\n`;
+        text += `Hey ${recipientName}, here is your student's progress for ${weekDisplay}:\n\n`;
     }
 
-    if (unitData.lessons.length === 0 && !unitData.hasTest) {
-        text += "No assignments recorded yet.\n";
-    } else {
-        unitData.lessons.forEach(l => {
-            const mark = sMarks[`l${l.id}`] || "Pending";
-            const isLate = sMarks[`l${l.id}_late`] ? "(Handed in Late) " : "";
-            const dStr = l.date ? ` (${l.date})` : "";
-            text += `• Lesson ${unitNum}.${l.id}${dStr}:  ${isLate}${mark}\n`;
-        });
+    [0, 1, 2, 3, 4].forEach(i => {
+        let d = new Date(mondayStr + "T00:00:00");
+        if (isNaN(d)) d = new Date();
+        d.setDate(d.getDate() + i);
+        let dayName = d.toLocaleDateString('en-US', { weekday: 'long' });
+        
+        let title = (classLessonsData[activeUnitIndex] && classLessonsData[activeUnitIndex].titles) ? classLessonsData[activeUnitIndex].titles[i] : "";
+        let titleStr = title ? ` (${title})` : "";
+        
+        const mark = sMarks[`d${i}`] || "Pending";
+        const isLate = sMarks[`d${i}_late`] ? "Handed in Late: " : "";
+        text += `• ${dayName}${titleStr}:  ${isLate}${mark}\n`;
+    });
 
-        if (unitData.hasTest) {
-            const mark = sMarks['test'] || "Pending";
-            const isLate = sMarks['test_late'] ? "(Handed in Late) " : "";
-            const dStr = unitData.testDate ? ` (${unitData.testDate})` : "";
-            text += `• Unit Test${dStr}:  ${isLate}${mark}\n`;
-        }
+    if (sMarks['notes'] && sMarks['notes'].trim() !== "") {
+        text += `\nTeacher Notes:\n${sMarks['notes']}\n`;
     }
-
-    if (sMarks['notes'] && sMarks['notes'].trim() !== '') {
-        text += `\n${sMarks['notes']}\n`;
-    }
-
+    
     text += `\nBest Regards,\n${currentUser.firstName} ${currentUser.lastName}`;
-
     return text;
+}
+
+function getEmailAttachments(studentId) {
+    const sMarks = (classMarksData[studentId] && classMarksData[studentId][activeUnitIndex]) || {};
+    let attachments = [];
+    if (sMarks['note_image']) {
+        attachments.push({
+            filename: 'teacher_note.jpg',
+            path: sMarks['note_image']
+        });
+    }
+    return attachments;
 }
 
 async function emailIndividualStudent(event, id) {
@@ -757,22 +808,26 @@ async function emailIndividualStudent(event, id) {
     const student = studentsData.find(s => s.id === id);
 
     const oldText = btn.innerText; btn.innerText = "...";
-    
+
     let emailsToSend = [];
-    
+    const attachments = getEmailAttachments(student.id);
+
+    const sMarks = (classMarksData[student.id] && classMarksData[student.id][activeUnitIndex]) || {};
+
     if (student.student_email && student.student_email.trim()) {
         emailsToSend.push({
             to: student.student_email.trim(),
-            subject: `MathTrack Grades: ${unitsData[activeUnitIndex]}`,
-            text: buildGradeMessage(student.name, student.name, true, student.id)
+            subject: `MathTrack Grades`,
+            text: buildGradeMessage(student.name, student.name, sMarks, true),
+            attachments: attachments
         });
     }
 
     let parsedContacts = [];
     if (student.contacts_info) {
-        try { parsedContacts = JSON.parse(student.contacts_info); } catch(e) {}
+        try { parsedContacts = JSON.parse(student.contacts_info); } catch (e) { }
     } else if (student.guardian_email) {
-        student.guardian_email.split(',').forEach(e => parsedContacts.push({name: '', rel: '', email: e.trim()}));
+        student.guardian_email.split(',').forEach(e => parsedContacts.push({ name: '', rel: '', email: e.trim() }));
     }
 
     parsedContacts.forEach(c => {
@@ -780,8 +835,9 @@ async function emailIndividualStudent(event, id) {
             let contactName = (c.name && c.name.trim()) ? c.name.trim() : 'Guardian';
             emailsToSend.push({
                 to: c.email.trim(),
-                subject: `MathTrack Grades: ${unitsData[activeUnitIndex]}`,
-                text: buildGradeMessage(student.name, contactName, false, student.id)
+                subject: `MathTrack Grades`,
+                text: buildGradeMessage(student.name, contactName, sMarks, false),
+                attachments: attachments
             });
         }
     });
@@ -796,7 +852,7 @@ async function emailIndividualStudent(event, id) {
         const response = await fetch(`http://localhost:3000/api/send-emails`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 emailsToSend: emailsToSend,
                 senderEmail: currentUser.email,
                 senderPassword: currentUser.appPassword
@@ -814,19 +870,23 @@ async function emailAllStudents() {
     let emailsToSend = [];
 
     studentsData.forEach(student => {
+        const attachments = getEmailAttachments(student.id);
+        const sMarks = (classMarksData[student.id] && classMarksData[student.id][activeUnitIndex]) || {};
+
         if (student.student_email && student.student_email.trim()) {
             emailsToSend.push({
                 to: student.student_email.trim(),
-                subject: `MathTrack Grades: ${unitsData[activeUnitIndex]}`,
-                text: buildGradeMessage(student.name, student.name, true, student.id)
+                subject: `MathTrack Grades`,
+                text: buildGradeMessage(student.name, student.name, sMarks, true),
+                attachments: attachments
             });
         }
 
         let parsedContacts = [];
         if (student.contacts_info) {
-            try { parsedContacts = JSON.parse(student.contacts_info); } catch(e) {}
+            try { parsedContacts = JSON.parse(student.contacts_info); } catch (e) { }
         } else if (student.guardian_email) {
-            student.guardian_email.split(',').forEach(e => parsedContacts.push({name: '', rel: '', email: e.trim()}));
+            student.guardian_email.split(',').forEach(e => parsedContacts.push({ name: '', rel: '', email: e.trim() }));
         }
 
         parsedContacts.forEach(c => {
@@ -834,8 +894,9 @@ async function emailAllStudents() {
                 let contactName = (c.name && c.name.trim()) ? c.name.trim() : 'Guardian';
                 emailsToSend.push({
                     to: c.email.trim(),
-                    subject: `MathTrack Grades: ${unitsData[activeUnitIndex]}`,
-                    text: buildGradeMessage(student.name, contactName, false, student.id)
+                    subject: `MathTrack Grades`,
+                    text: buildGradeMessage(student.name, contactName, sMarks, false),
+                    attachments: attachments
                 });
             }
         });
@@ -852,7 +913,7 @@ async function emailAllStudents() {
         const response = await fetch(`http://localhost:3000/api/send-emails`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 emailsToSend: emailsToSend,
                 senderEmail: currentUser.email,
                 senderPassword: currentUser.appPassword
@@ -872,13 +933,13 @@ async function handleCSV() {
     const reader = new FileReader();
     reader.onload = async (e) => {
         const rows = e.target.result.split('\n');
-        
+
         let startIndex = 1;
         let headers = [];
-        
-        for(let i = 0; i < rows.length; i++) {
+
+        for (let i = 0; i < rows.length; i++) {
             let rowLower = rows[i].toLowerCase();
-            if(rowLower.includes('last name') && rowLower.includes('first name')) {
+            if (rowLower.includes('last name') && rowLower.includes('first name')) {
                 headers = rows[i].split(',').map(h => h.replace(/"/g, '').trim().toLowerCase().replace(/\s+/g, ' '));
                 startIndex = i + 1;
                 break;
@@ -888,44 +949,44 @@ async function handleCSV() {
         let hIdx = { sLast: -1, sFirst: -1, sEmail: -1, c1Rel: -1, c1Last: -1, c1First: -1, c1Email: -1, c2Rel: -1, c2Last: -1, c2First: -1, c2Email: -1 };
 
         headers.forEach((h, idx) => {
-            if(h === 'last name' && hIdx.sLast === -1) hIdx.sLast = idx;
-            else if(h === 'first name' && hIdx.sFirst === -1) hIdx.sFirst = idx;
-            else if((h.includes('student') && h.includes('email')) || h === 'email address') hIdx.sEmail = idx;
-            else if(h.includes('1st') && h.includes('relationship')) hIdx.c1Rel = idx;
-            else if(h.includes('1st') && h.includes('last name')) hIdx.c1Last = idx;
-            else if(h.includes('1st') && h.includes('first name')) hIdx.c1First = idx;
-            else if(h.includes('1st') && h.includes('email')) hIdx.c1Email = idx;
-            else if(h.includes('2nd') && h.includes('relationship')) hIdx.c2Rel = idx;
-            else if(h.includes('2nd') && h.includes('last name')) hIdx.c2Last = idx;
-            else if(h.includes('2nd') && h.includes('first name')) hIdx.c2First = idx;
-            else if(h.includes('2nd') && h.includes('email')) hIdx.c2Email = idx;
+            if (h === 'last name' && hIdx.sLast === -1) hIdx.sLast = idx;
+            else if (h === 'first name' && hIdx.sFirst === -1) hIdx.sFirst = idx;
+            else if ((h.includes('student') && h.includes('email')) || h === 'email address') hIdx.sEmail = idx;
+            else if (h.includes('1st') && h.includes('relationship')) hIdx.c1Rel = idx;
+            else if (h.includes('1st') && h.includes('last name')) hIdx.c1Last = idx;
+            else if (h.includes('1st') && h.includes('first name')) hIdx.c1First = idx;
+            else if (h.includes('1st') && h.includes('email')) hIdx.c1Email = idx;
+            else if (h.includes('2nd') && h.includes('relationship')) hIdx.c2Rel = idx;
+            else if (h.includes('2nd') && h.includes('last name')) hIdx.c2Last = idx;
+            else if (h.includes('2nd') && h.includes('first name')) hIdx.c2First = idx;
+            else if (h.includes('2nd') && h.includes('email')) hIdx.c2Email = idx;
         });
 
-        if(hIdx.sLast === -1) hIdx.sLast = 1;
-        if(hIdx.sFirst === -1) hIdx.sFirst = 2;
-        if(hIdx.c1Rel === -1) hIdx.c1Rel = 3;
-        if(hIdx.c1Last === -1) hIdx.c1Last = 4;
-        if(hIdx.c1First === -1) hIdx.c1First = 5;
-        if(hIdx.c1Email === -1) hIdx.c1Email = 6;
-        if(hIdx.c2Rel === -1) hIdx.c2Rel = 7;
-        if(hIdx.c2Last === -1) hIdx.c2Last = 8;
-        if(hIdx.c2First === -1) hIdx.c2First = 9;
-        if(hIdx.c2Email === -1) hIdx.c2Email = 10;
+        if (hIdx.sLast === -1) hIdx.sLast = 1;
+        if (hIdx.sFirst === -1) hIdx.sFirst = 2;
+        if (hIdx.c1Rel === -1) hIdx.c1Rel = 3;
+        if (hIdx.c1Last === -1) hIdx.c1Last = 4;
+        if (hIdx.c1First === -1) hIdx.c1First = 5;
+        if (hIdx.c1Email === -1) hIdx.c1Email = 6;
+        if (hIdx.c2Rel === -1) hIdx.c2Rel = 7;
+        if (hIdx.c2Last === -1) hIdx.c2Last = 8;
+        if (hIdx.c2First === -1) hIdx.c2First = 9;
+        if (hIdx.c2Email === -1) hIdx.c2Email = 10;
 
         for (let i = startIndex; i < rows.length; i++) {
             const row = rows[i];
-            if(!row.trim()) continue;
-            
-            const cols = row.split(','); 
-            if(cols.length < 3) continue;
+            if (!row.trim()) continue;
+
+            const cols = row.split(',');
+            if (cols.length < 3) continue;
 
             let safeGet = (idx) => (cols[idx] ? cols[idx].replace(/"/g, '').trim() : '');
 
             let lastName = safeGet(hIdx.sLast);
             let firstName = safeGet(hIdx.sFirst);
             let studentEmail = hIdx.sEmail !== -1 ? safeGet(hIdx.sEmail) : '';
-            
-            if (!lastName && !firstName) continue; 
+
+            if (!lastName && !firstName) continue;
             let studentName = `${firstName} ${lastName}`.trim();
 
             let contacts = [];
@@ -993,4 +1054,67 @@ async function deleteClassRoster() {
             alert("Server offline.");
         }
     }
+}
+
+// --- MANUAL ADD STUDENT LOGIC ---
+function toggleAddStudentForm() {
+    const form = document.getElementById('add-student-form');
+    form.style.display = form.style.display === 'none' || form.style.display === '' ? 'block' : 'none';
+}
+
+async function saveNewStudent() {
+    const fName = document.getElementById('new-fname').value.trim();
+    const lName = document.getElementById('new-lname').value.trim();
+    const sEmail = document.getElementById('new-semail').value.trim();
+    const cName = document.getElementById('new-cname').value.trim();
+    const cRel = document.getElementById('new-crel').value.trim();
+    const cEmail = document.getElementById('new-cemail').value.trim();
+
+    if (!fName || !lName) {
+        return alert("First and Last name are required to add a student.");
+    }
+
+    const studentName = `${fName} ${lName}`;
+
+    let contacts = [];
+    let emails = [];
+
+    if (cName || cEmail) {
+        contacts.push({ name: cName, rel: cRel, email: cEmail });
+        if (cEmail) emails.push(cEmail);
+    }
+
+    try {
+        await fetch('http://localhost:3000/api/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: studentName,
+                student_email: sEmail,
+                guardian_email: emails.join(','),
+                contacts_info: JSON.stringify(contacts),
+                class_name: currentClass
+            })
+        });
+
+        document.getElementById('new-fname').value = '';
+        document.getElementById('new-lname').value = '';
+        document.getElementById('new-semail').value = '';
+        document.getElementById('new-cname').value = '';
+        document.getElementById('new-crel').value = '';
+        document.getElementById('new-cemail').value = '';
+
+        toggleAddStudentForm(); 
+        loadStudentsData();     
+
+    } catch (err) {
+        alert("Error adding student. Make sure your server is running.");
+    }
+}
+
+function updateLessonTitle(dayIndex, title) {
+    if (!classLessonsData[activeUnitIndex]) classLessonsData[activeUnitIndex] = { titles: ["", "", "", "", ""] };
+    if (!classLessonsData[activeUnitIndex].titles) classLessonsData[activeUnitIndex].titles = ["", "", "", "", ""];
+    classLessonsData[activeUnitIndex].titles[dayIndex] = title;
+    localStorage.setItem(`lessons_${currentClass}`, JSON.stringify(classLessonsData));
 }

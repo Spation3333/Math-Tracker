@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,35 +8,123 @@
     <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
     <link href="styles.css" rel="stylesheet" />
     <style>
-        /* Unified Top Widget Styling for Date & Profile */
-        .top-widget { 
-            position: absolute; 
-            top: 20px; 
-            background: var(--card-bg, #fff); 
-            padding: 10px 20px; 
-            border-radius: 8px; 
-            border: 2px solid rgb(139, 107, 35); 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-            z-index: 100; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            height: 65px; /* Locks height so both are even */
+        body,
+        button,
+        input,
+        select,
+        textarea {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .top-widget {
+            position: absolute;
+            top: 20px;
+            background: var(--card-bg, #fff);
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 2px solid rgb(139, 107, 35);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 65px;
             box-sizing: border-box;
         }
-        body.darkmode .top-widget { background: #2d2d2d; border-color: rgb(212, 175, 55); }
-        
-        .profile-widget { right: 20px; cursor: pointer; text-align: right; }
-        .date-widget { left: 20px; text-align: left; }
-        
-        .date-widget-text { font-weight: bold; color: rgb(139, 107, 35); font-size: 1.1em; margin: 0; }
-        body.darkmode .date-widget-text { color: rgb(212, 175, 55); }
 
-        /* Theme Widget to Bottom Right */
-        .theme-widget-bottom { position: absolute; bottom: 20px; right: 20px; z-index: 100; display: flex; align-items: center; gap: 10px; }
-        .bottomnav { position: absolute; bottom: 20px; left: 20px; z-index: 100;}
+        body.darkmode .top-widget {
+            background: #2d2d2d;
+            border-color: rgb(212, 175, 55);
+        }
+
+        .profile-widget {
+            right: 20px;
+            cursor: pointer;
+            text-align: right;
+        }
+
+        .date-widget {
+            left: 20px;
+            text-align: left;
+        }
+
+        .date-widget-text {
+            font-weight: bold;
+            color: rgb(139, 107, 35);
+            font-size: 1.1em;
+            margin: 0;
+        }
+
+        body.darkmode .date-widget-text {
+            color: rgb(212, 175, 55);
+        }
+
+        .theme-widget-bottom {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bottomnav {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modalcontent {
+            background-color: var(--card-bg, #fff);
+            padding: 30px;
+            border-radius: 10px;
+            border: 3px solid rgb(139, 107, 35);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .signupinput {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .signupinput label {
+            font-weight: bold;
+            width: 140px;
+            text-align: left;
+        }
+
+        .signupinput input,
+        .signupinput select {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border-color, #ccc);
+            border-radius: 4px;
+            background: var(--input-bg, #fff);
+            color: var(--text-color, #000);
+            font-family: inherit;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="top-widget date-widget">
@@ -57,12 +146,15 @@
         <div class="modalcontent">
             <h2 id="modalheader">Create New Class</h2>
             <input type="hidden" id="edit-index" value="-1">
-            <div class="signupinput"><label for="classname">Class Name:</label><input type="text" id='classname' placeholder='e.g. Grade 9 Math - MTH1W'></div>
-            <div class="signupinput"><label for="weeklylesson">Weekly Lesson:</label><input type="text" id='weeklylesson' placeholder='e.g. 1.1 - 1.7'></div>
-            <div class="signupinput"><label for="evaluation">Next Evaluation:</label><input type="text" id='evaluation' placeholder='e.g. Feb 20'></div>
+            <div class="signupinput"><label for="classname">Class Name:</label><input type="text" id='classname'
+                    placeholder='e.g. Grade 9 Math - MTH1W'></div>
+            <div class="signupinput"><label for="weeklylesson">Weekly Lesson:</label><input type="text"
+                    id='weeklylesson' placeholder='e.g. 1.1 - 1.7'></div>
+            <div class="signupinput"><label for="evaluation">Next Evaluation:</label><input type="text" id='evaluation'
+                    placeholder='e.g. Feb 20'></div>
             <div class="signupinput">
                 <label for="font-family">Card Font:</label>
-                <select id="font-family" style="padding: 8px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
+                <select id="font-family">
                     <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Default (Segoe UI)</option>
                     <option value="'Times New Roman', Times, serif">Times New Roman</option>
                     <option value="Arial, Helvetica, sans-serif">Arial</option>
@@ -73,24 +165,39 @@
             <div class="signupinput">
                 <label>Background Color:</label>
                 <div style="display: flex; gap: 10px;">
-                    <select id="bg-color-select" onchange="toggleCustomColor('bg')" style="padding: 8px; flex: 1; border: 1px solid #ccc; border-radius: 4px;">
-                        <option value="#f9f9f9">Default (Off-White)</option><option value="#000000">Black</option><option value="#ffcccc">Pastel Red</option><option value="#ccffcc">Pastel Green</option><option value="#ccccff">Pastel Blue</option><option value="#ffffcc">Pastel Yellow</option><option value="custom">Custom RGB...</option>
+                    <select id="bg-color-select" onchange="toggleCustomColor('bg')">
+                        <option value="#f9f9f9">Default (Off-White)</option>
+                        <option value="#000000">Black</option>
+                        <option value="#ffcccc">Pastel Red</option>
+                        <option value="#ccffcc">Pastel Green</option>
+                        <option value="#ccccff">Pastel Blue</option>
+                        <option value="#ffffcc">Pastel Yellow</option>
+                        <option value="custom">Custom RGB...</option>
                     </select>
-                    <input type="color" id="bg-color-custom" style="display:none; width: 40px; height: 35px; padding: 0; border: none; cursor: pointer;">
+                    <input type="color" id="bg-color-custom"
+                        style="display:none; width: 40px; height: 35px; padding: 0; border: none; cursor: pointer;">
                 </div>
             </div>
             <div class="signupinput">
                 <label>Text Color:</label>
                 <div style="display: flex; gap: 10px;">
-                    <select id="text-color-select" onchange="toggleCustomColor('text')" style="padding: 8px; flex: 1; border: 1px solid #ccc; border-radius: 4px;">
-                        <option value="#000000">Default (Black)</option><option value="#ffffff">White</option><option value="#e74c3c">Red</option><option value="#27ae60">Green</option><option value="#2980b9">Blue</option><option value="custom">Custom RGB...</option>
+                    <select id="text-color-select" onchange="toggleCustomColor('text')">
+                        <option value="#000000">Default (Black)</option>
+                        <option value="#ffffff">White</option>
+                        <option value="#e74c3c">Red</option>
+                        <option value="#27ae60">Green</option>
+                        <option value="#2980b9">Blue</option>
+                        <option value="custom">Custom RGB...</option>
                     </select>
-                    <input type="color" id="text-color-custom" style="display:none; width: 40px; height: 35px; padding: 0; border: none; cursor: pointer;">
+                    <input type="color" id="text-color-custom"
+                        style="display:none; width: 40px; height: 35px; padding: 0; border: none; cursor: pointer;">
                 </div>
             </div>
-            <div class="modalaction">
-                <button class="buttons" onclick="saveClass()">Save</button>
-                <button class="buttons cancelbutton" onclick="closeClass()">Cancel</button>
+            <div class="modalaction" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
+                <button class="buttons" style="border:none; border-radius:5px;" onclick="saveClass()">Save</button>
+                <button class="buttons cancelbutton"
+                    style="border:none; border-radius:5px; background-color: #95a5a6; color: white;"
+                    onclick="closeClass()">Cancel</button>
             </div>
         </div>
     </div>
@@ -98,38 +205,50 @@
     <div id="profile-modal" class="modal">
         <div class="modalcontent" style="max-width: 450px; width: 100%;">
             <h2 style="margin-top:0;">Edit Profile</h2>
-            <div class="signupinput" style="justify-content: space-between;"><label>First Name:</label><input type="text" id="prof-fname"></div>
-            <div class="signupinput" style="justify-content: space-between;"><label>Last Name:</label><input type="text" id="prof-lname"></div>
-            <div class="signupinput" style="justify-content: space-between;"><label>Username:</label><input type="email" id="prof-email"></div>
-            
+            <div class="signupinput" style="justify-content: space-between;"><label>First Name:</label><input
+                    type="text" id="prof-fname"></div>
+            <div class="signupinput" style="justify-content: space-between;"><label>Last Name:</label><input type="text"
+                    id="prof-lname"></div>
+            <div class="signupinput" style="justify-content: space-between;"><label>Username:</label><input type="email"
+                    id="prof-email"></div>
+
             <div class="signupinput" style="justify-content: space-between;">
                 <label>App Password:</label>
                 <div style="position: relative; flex: 1;">
-                    <input type="password" id="prof-apppass" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
-                    <span id="toggleProfApp" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
+                    <input type="password" id="prof-apppass"
+                        style="width: 100%; box-sizing: border-box; padding-right: 30px;">
+                    <span id="toggleProfApp"
+                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
                 </div>
             </div>
-            
+
             <hr style="width:100%; border: 0; border-top: 1px solid var(--border-color, #ccc); margin: 20px 0;">
-            
+
             <div class="signupinput" style="justify-content: space-between;">
-                <label style="color:var(--danger, red);">Confirm PIN:</label>
+                <label style="color:var(--danger, #e74c3c);">Confirm PIN:</label>
                 <div style="position: relative; flex: 1;">
-                    <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
-                    <span id="toggleProfPin" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
+                    <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes"
+                        style="width: 100%; box-sizing: border-box; padding-right: 30px;">
+                    <span id="toggleProfPin"
+                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
                 </div>
             </div>
-            
-            <div class="modalaction" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                <button class="buttons" onclick="saveProfile()">Save Changes</button>
-                <button class="buttons cancelbutton" onclick="closeProfileModal()">Cancel</button>
-                <button class="buttons" style="background-color: #e74c3c; color: white;" onclick="deleteAccount()">Delete Account</button>
+
+            <div class="modalaction"
+                style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                <button class="buttons" style="border:none; border-radius:5px;" onclick="saveProfile()">Save
+                    Changes</button>
+                <button class="buttons" style="border:none; border-radius:5px; background-color: #c0392b; color: white;"
+                    onclick="deleteAccount()">Delete Account</button>
+                <button class="buttons cancelbutton"
+                    style="border:none; border-radius:5px; background-color: #95a5a6; color: white;"
+                    onclick="closeProfileModal()">Cancel</button>
             </div>
         </div>
     </div>
 
     <div class="bottomnav">
-        <a href="index.html" class="buttons backbuttons"> back </a>
+        <a href="index.html" class="buttons backbuttons" style="border:none; border-radius:5px;"> back </a>
     </div>
 
     <div class="theme-widget-bottom">
@@ -142,4 +261,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>

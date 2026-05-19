@@ -8,6 +8,10 @@
     <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
     <link href="styles.css" rel="stylesheet" />
     <style>
+        body, button, input, select, textarea {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         .portal-container {
             max-width: 500px;
             margin: 60px auto;
@@ -27,12 +31,15 @@
         .input-group label {
             margin-bottom: 5px;
             font-size: 16px;
+            font-weight: bold;
         }
 
         .input-group input {
             width: 100%;
             padding: 10px;
             box-sizing: border-box;
+            border: 1px solid var(--border-color, #ccc);
+            border-radius: 4px;
         }
 
         .name-row {
@@ -42,7 +49,7 @@
 
         .rules-box {
             background: #f9f9f9;
-            border: 1px solid #ccc;
+            border: 1px solid var(--border-color, #ccc);
             padding: 10px;
             border-radius: 5px;
             margin-top: 10px;
@@ -55,22 +62,9 @@
             border-color: rgb(212, 175, 55);
         }
 
-        .rule {
-            color: #e74c3c;
-            margin: 3px 0;
-        }
-
-        .rule.valid {
-            color: #27ae60;
-        }
-
-        .btn-full {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1em;
-            margin-top: 20px;
-            cursor: pointer;
-        }
+        .rule { color: #e74c3c; margin: 3px 0; }
+        .rule.valid { color: #27ae60; }
+        .btn-full { width: 100%; padding: 15px; font-size: 1.1em; margin-top: 20px; cursor: pointer; border: none; border-radius: 5px; font-weight: bold; }
     </style>
 </head>
 
@@ -84,17 +78,14 @@
         <p style="margin-bottom: 30px; opacity: 0.8;">Join the MathTrack Portal</p>
 
         <div class="name-row">
-            <div class="input-group" style="flex: 1;"><label>First Name</label><input type="text" id="firstName"
-                    placeholder="e.g. Jane"></div>
-            <div class="input-group" style="flex: 1;"><label>Last Name</label><input type="text" id="lastName"
-                    placeholder="e.g. Doe"></div>
+            <div class="input-group" style="flex: 1;"><label>First Name</label><input type="text" id="firstName" placeholder="e.g. Jane"></div>
+            <div class="input-group" style="flex: 1;"><label>Last Name</label><input type="text" id="lastName" placeholder="e.g. Doe"></div>
         </div>
 
-        <div class="input-group"><label>Email Address</label><input type="email" id="email"
-                placeholder="name@gmail.com"></div>
+        <div class="input-group"><label>Email Address (Username)</label><input type="email" id="email" placeholder="teacher@school.com"></div>
 
         <div class="input-group" style="position: relative;">
-            <label>App Password</label>
+            <label>Gmail App Password</label>
             <input type="password" id="appPassword" placeholder="16-letter password" style="padding-right: 35px;">
             <span id="toggleAppPass" style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
         </div>
@@ -102,13 +93,11 @@
         <div class="name-row">
             <div class="input-group" style="flex: 1; position: relative;">
                 <label>4-Digit PIN</label><input type="password" id="pin" placeholder="1234" maxlength="4" style="padding-right: 35px;">
-                <span id="togglePin"
-                    style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
+                <span id="togglePin" style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
             </div>
             <div class="input-group" style="flex: 1; position: relative;">
                 <label>Confirm PIN</label><input type="password" id="confPin" placeholder="1234" maxlength="4" style="padding-right: 35px;">
-                <span id="toggleConfPin"
-                    style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
+                <span id="toggleConfPin" style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
             </div>
         </div>
 
@@ -118,94 +107,10 @@
             <div id="rule-match" class="rule">❌ PINs must match</div>
         </div>
 
-        <button class="buttons btn-full" id="signupBtn" onclick="createAccount()" disabled
-            style="opacity: 0.5;">Create Account & Login</button>
-        <a href="index.html"
-            style="display: block; margin-top: 20px; color: rgb(139, 107, 35); font-weight: bold; text-decoration: none;">←
-            Back to Login</a>
+        <button class="buttons btn-full" id="signupBtn" onclick="createAccount()" disabled style="opacity: 0.5;">Create Account & Login</button>
+        <a href="index.html" style="display: block; margin-top: 20px; color: rgb(139, 107, 35); font-weight: bold; text-decoration: none;">← Back to Login</a>
     </div>
 
-    <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('darkmode'); themeToggle.checked = true; }
-        themeToggle.addEventListener('change', () => {
-            document.body.classList.toggle('darkmode');
-            localStorage.setItem('theme', document.body.classList.contains('darkmode') ? 'dark' : 'light');
-        });
-
-        const pinInput = document.getElementById('pin');
-        const confPinInput = document.getElementById('confPin');
-        const appPassInput = document.getElementById('appPassword');
-        const btn = document.getElementById('signupBtn');
-
-        function validateForm() {
-            const pin = pinInput.value;
-            const conf = confPinInput.value;
-
-            let isLengthValid = pin.length === 4;
-            let isNumValid = /^\d+$/.test(pin);
-            let isMatchValid = (pin === conf) && pin.length > 0;
-
-            document.getElementById('rule-length').className = isLengthValid ? 'rule valid' : 'rule';
-            document.getElementById('rule-length').innerText = isLengthValid ? '✅ Must be exactly 4 characters' : '❌ Must be exactly 4 characters';
-            document.getElementById('rule-number').className = isNumValid && pin.length > 0 ? 'rule valid' : 'rule';
-            document.getElementById('rule-number').innerText = isNumValid && pin.length > 0 ? '✅ Must contain only numbers' : '❌ Must contain only numbers';
-            document.getElementById('rule-match').className = isMatchValid ? 'rule valid' : 'rule';
-            document.getElementById('rule-match').innerText = isMatchValid ? '✅ PINs must match' : '❌ PINs must match';
-
-            const first = document.getElementById('firstName').value.trim();
-            const last = document.getElementById('lastName').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const appPass = appPassInput.value.trim();
-
-            if (isLengthValid && isNumValid && isMatchValid && first !== "" && last !== "" && email !== "" && appPass !== "") {
-                btn.disabled = false; btn.style.opacity = '1';
-            } else {
-                btn.disabled = true; btn.style.opacity = '0.5';
-            }
-        }
-
-        ['pin', 'confPin', 'firstName', 'lastName', 'email', 'appPassword'].forEach(id => {
-            document.getElementById(id).addEventListener('input', validateForm);
-        });
-
-        function createAccount() {
-            const userObj = {
-                firstName: document.getElementById('firstName').value.trim(),
-                lastName: document.getElementById('lastName').value.trim(),
-                email: document.getElementById('email').value.trim().toLowerCase(),
-                appPassword: document.getElementById('appPassword').value.trim(),
-                pin: document.getElementById('pin').value
-            };
-
-            const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
-            if (users[userObj.email]) return alert("An account with this email already exists!");
-
-            users[userObj.email] = userObj;
-            localStorage.setItem('mathTrackUsers', JSON.stringify(users));
-            localStorage.setItem('currentUser', JSON.stringify(userObj));
-            window.location.href = 'select.html';
-        }
-
-        // Toggles
-        document.getElementById('togglePin').addEventListener('click', function () {
-            const type = pinInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            pinInput.setAttribute('type', type);
-            this.textContent = type === 'password' ? '👁️' : '🔒';
-        });
-
-        document.getElementById('toggleConfPin').addEventListener('click', function () {
-            const type = confPinInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            confPinInput.setAttribute('type', type);
-            this.textContent = type === 'password' ? '👁️' : '🔒';
-        });
-
-        document.getElementById('toggleAppPass').addEventListener('click', function () {
-            const type = appPassInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            appPassInput.setAttribute('type', type);
-            this.textContent = type === 'password' ? '👁️' : '🔒';
-        });
-    </script>
+    <script src="signupScript.js"></script>
 </body>
-
 </html>

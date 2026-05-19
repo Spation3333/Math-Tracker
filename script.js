@@ -1,15 +1,15 @@
 const themeToggle = document.getElementById('theme-toggle');
 const body = document.body;
 
-function togglePassword(inputId) { 
-    const password = document.getElementById(inputId); 
-    const toggleButton = password.nextElementSibling; 
-    if (password.type === "password") { 
-        password.type = "text"; 
-        toggleButton.textContent = "🔒"; 
-    } else { 
-        password.type = "password"; 
-        toggleButton.textContent = "👁️"; 
+function togglePassword(inputId) {
+    const password = document.getElementById(inputId);
+    const toggleButton = password.nextElementSibling;
+    if (password.type === "password") {
+        password.type = "text";
+        toggleButton.textContent = "🔒";
+    } else {
+        password.type = "password";
+        toggleButton.textContent = "👁️";
     }
 }
 
@@ -17,7 +17,7 @@ function attachEyeToggles() {
     const toggleApp = document.getElementById('toggleProfApp');
     const togglePin = document.getElementById('toggleProfPin');
     if (toggleApp) {
-        toggleApp.addEventListener('click', function() {
+        toggleApp.addEventListener('click', function () {
             const input = document.getElementById('prof-apppass');
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
@@ -25,7 +25,7 @@ function attachEyeToggles() {
         });
     }
     if (togglePin) {
-        togglePin.addEventListener('click', function() {
+        togglePin.addEventListener('click', function () {
             const input = document.getElementById('prof-pin');
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
@@ -91,7 +91,7 @@ function openProfileModal() {
     document.getElementById('prof-email').value = currentUser.email;
     document.getElementById('prof-apppass').value = currentUser.appPassword || '';
     document.getElementById('prof-pin').value = '';
-    
+
     // Reset types back to password upon opening
     document.getElementById('prof-apppass').setAttribute('type', 'password');
     document.getElementById('prof-pin').setAttribute('type', 'password');
@@ -117,11 +117,11 @@ async function saveProfile() {
     if (!newFname || !newLname || !newEmail || !newAppPass) return alert("All fields are required.");
 
     const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
-    
+
     if (newEmail !== currentUser.email && users[newEmail]) return alert("Email already in use!");
 
     const oldEmail = currentUser.email;
-    
+
     if (newEmail !== oldEmail) {
         try {
             await fetch('http://localhost:3000/api/migrate-email', {
@@ -129,7 +129,7 @@ async function saveProfile() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ oldEmail, newEmail })
             });
-        } catch(e) { console.error("DB Migration Error", e); }
+        } catch (e) { console.error("DB Migration Error", e); }
 
         const keysToMigrate = [];
         for (let i = 0; i < localStorage.length; i++) {
@@ -146,7 +146,7 @@ async function saveProfile() {
     delete users[oldEmail];
     const updatedUser = { firstName: newFname, lastName: newLname, email: newEmail, appPassword: newAppPass, pin: currentUser.pin };
     users[newEmail] = updatedUser;
-    
+
     localStorage.setItem('mathTrackUsers', JSON.stringify(users));
     localStorage.setItem('currentUser', JSON.stringify(updatedUser));
 
@@ -161,7 +161,7 @@ async function deleteAccount() {
     if (pin !== currentUser.pin) return alert("Incorrect PIN! Cannot delete account.");
 
     if (confirm("WARNING: Are you absolutely sure you want to delete your account? This will permanently erase all your classes, students, and grades. This action CANNOT be undone.")) {
-        
+
         const email = currentUser.email;
         const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
         const storageKey = `savedClasses_${email}`;
@@ -172,7 +172,7 @@ async function deleteAccount() {
             const uniqueDbClassName = email + "_" + userClasses[i].name;
             try {
                 await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(uniqueDbClassName)}`, { method: 'DELETE' });
-            } catch(e) {
+            } catch (e) {
                 console.error("Error deleting class from database:", e);
             }
         }

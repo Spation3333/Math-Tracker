@@ -8,6 +8,10 @@
     <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
     <link href="styles.css" rel="stylesheet" />
     <style>
+        body, button, input, select, textarea {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         .portal-container {
             max-width: 450px;
             margin: 60px auto;
@@ -17,13 +21,14 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-        /* Custom spacing to pull H1 and H2 closer together */
+
         .welcomeheader {
-            margin-bottom: 0px; 
+            margin-bottom: 0px;
             font-size: 50px;
         }
+
         .subtitle {
-            margin-top: 5px; 
+            margin-top: 5px;
             font-size: 45px;
         }
     </style>
@@ -52,78 +57,19 @@
             </div>
 
             <div class="linkrow" style="display: flex; justify-content: space-between; align-items: center;">
-                <a href="recovery.html" class="forgotlink" style="font-size: 0.9em;">Forgot PIN?</a>
-                <button class="buttons" onclick="window.location.href='signup.html'" style="margin: 0; padding: 6px 12px; font-size: 0.9em;">Create Account</button>
+                <a href="recovery.html" class="forgotlink" style="font-size: 0.9em; color: var(--accent, #3498db); text-decoration: none;">Forgot PIN?</a>
+                <button class="buttons" onclick="window.location.href='signup.html'" style="margin: 0; padding: 6px 12px; font-size: 0.9em; border: none; border-radius: 4px; cursor: pointer;">Create Account</button>
             </div>
         </div>
 
-        <hr style="border: 0; border-top: 1px solid var(--border-color, #ccc); margin-bottom: 10px; margin-top: 0px;">
+        <hr style="border: 0; border-top: 1px solid var(--border-color, #ccc); margin-bottom: 20px;">
 
         <div class="mainbuttonsrow">
-            <button class="buttons mainbuttons" onclick="window.location.href='credits.html'">Credits</button>
-            <button class="buttons cancelbutton mainbuttons" onclick="quitApp()">Quit</button>
+            <button class="buttons mainbuttons" style="border: none; border-radius: 4px; cursor: pointer;" onclick="window.location.href='credits.html'">Credits</button>
+            <button class="buttons cancelbutton mainbuttons" style="border: none; border-radius: 4px; cursor: pointer;" onclick="quitApp()">Quit</button>
         </div>
     </div>
 
-    <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('darkmode');
-            themeToggle.checked = true;
-        }
-        themeToggle.addEventListener('change', () => {
-            document.body.classList.toggle('darkmode');
-            localStorage.setItem('theme', document.body.classList.contains('darkmode') ? 'dark' : 'light');
-        });
-
-        function togglePassword() {
-            const pinInput = document.getElementById('loginPin');
-            const eyeIcon = pinInput.nextElementSibling;
-            if (pinInput.type === "password") {
-                pinInput.type = "text";
-                eyeIcon.textContent = "🔒";
-            } else {
-                pinInput.type = "password";
-                eyeIcon.textContent = "👁️";
-            }
-        }
-
-        const pinField = document.getElementById('loginPin');
-
-        pinField.addEventListener('input', function () {
-            this.value = this.value.replace(/[^0-9]/g, '');
-
-            if (this.value.length === 4) {
-                const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
-                let account = null;
-
-                // Find user by PIN only
-                for (let email in users) {
-                    if (users[email].pin === this.value) {
-                        account = users[email];
-                        break;
-                    }
-                }
-
-                if (account) {
-                    localStorage.setItem('currentUser', JSON.stringify(account));
-                    document.body.style.opacity = '0.5';
-                    document.body.style.transition = 'opacity 0.2s ease';
-                    setTimeout(() => { window.location.href = "select.html"; }, 250);
-                } else {
-                    alert("Incorrect PIN.");
-                    this.value = "";
-                }
-            }
-        });
-
-        function quitApp() { 
-            if (confirm("Close MathTrack Portal?")) {
-                window.close();
-                document.body.innerHTML = "<h1 style='text-align:center; margin-top:50px;'>You may now close this tab.</h1>";
-            }
-        }
-    </script>
+    <script src="signupScript.js"></script>
 </body>
-
 </html>

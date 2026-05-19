@@ -7,6 +7,11 @@
     <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
     <link href="studentStyles.css" rel="stylesheet" />
     <style>
+        /* Unifying Font */
+        body, button, input, select, textarea {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         .top-widget { 
             position: absolute; 
             top: 20px; 
@@ -36,7 +41,6 @@
         .signupinput label { font-weight: bold; width: 140px; text-align: left; }
         .signupinput input { flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; }
 
-        /* Invisible Editable Class Name Styling */
         .inline-class-edit {
             background: transparent;
             border: none;
@@ -86,16 +90,31 @@
 
         <div id="class-nav-bar" class="class-nav-bar"></div>
 
-        <div class="controls">
-            <h2 style="margin: 0; display: flex; align-items: center; gap: 5px;">
-                Viewing: 
-                <input type="text" id="current-class-input" class="inline-class-edit" value="Loading..." title="Click to rename class">
-            </h2>
+        <div class="controls" style="align-items: flex-start;">
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <h2 style="margin: 0; display: flex; align-items: center; gap: 5px;">
+                    Viewing: 
+                    <input type="text" id="current-class-input" class="inline-class-edit" value="Loading..." title="Click to rename class">
+                </h2>
+                <button class="btn btn-primary" style="width: fit-content;" onclick="toggleAddStudentForm()">+ Add Student</button>
+            </div>
 
             <div style="display: flex; flex-direction: column; gap: 10px; min-width: 250px;">
                 <button class="btn btn-success" style="width: 100%;" onclick="emailAllStudents()">📧 Email Grades (Current Unit)</button>
                 <button class="btn btn-danger" style="width: 100%;" onclick="deleteClassRoster()">🗑️ Delete Entire Roster</button>
                 <span id="emailStatus" style="text-align: center;"></span>
+            </div>
+        </div>
+        
+        <div id="add-student-form" style="display: none; background: var(--bg-color); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <input type="text" id="new-fname" placeholder="First Name" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+                <input type="text" id="new-lname" placeholder="Last Name" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+                <input type="text" id="new-semail" placeholder="Student Email (Optional)" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+                <input type="text" id="new-cname" placeholder="Contact Name" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+                <input type="text" id="new-crel" placeholder="Relationship" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+                <input type="text" id="new-cemail" placeholder="Contact Email" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+                <button class="btn btn-success" onclick="saveNewStudent()">Save Student</button>
             </div>
         </div>
 
@@ -106,11 +125,11 @@
         </div>
 
         <div class="units-section">
-            <h3 style="margin-top: 0; margin-bottom: 15px; font-size: 1.3em;">1. Select Unit to Grade</h3>
+            <h3 style="margin-top: 0; margin-bottom: 15px; font-size: 1.3em;">1. Select Week</h3>
             <div id="units-container" class="unit-container"></div>
         </div>
 
-        <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 1.3em;">2. Class Gradebook</h3>
+        <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 1.3em;">2. Student Roster</h3>
         <div id="roster-container" class="table-responsive"></div>
     </div>
 
@@ -132,7 +151,7 @@
             <hr style="width:100%; border: 0; border-top: 1px solid var(--border-color, #ccc); margin: 20px 0;">
             
             <div class="signupinput" style="justify-content: space-between;">
-                <label style="color:var(--danger, red);">Confirm PIN:</label>
+                <label style="color:var(--danger, #e74c3c);">Confirm PIN:</label>
                 <div style="position: relative; flex: 1;">
                     <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
                     <span id="toggleProfPin" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
@@ -141,8 +160,8 @@
             
             <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
                 <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
-                <button class="btn btn-danger cancelbutton" onclick="closeProfileModal()">Cancel</button>
-                <button class="btn btn-danger" style="background-color: #c0392b;" onclick="deleteAccount()">Delete Account</button>
+                <button class="btn" style="background-color: #c0392b; color: white;" onclick="deleteAccount()">Delete Account</button>
+                <button class="btn" style="background-color: #95a5a6; color: white;" onclick="closeProfileModal()">Cancel</button>
             </div>
         </div>
     </div>

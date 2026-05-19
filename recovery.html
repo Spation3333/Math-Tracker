@@ -7,6 +7,10 @@
     <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
     <link href="styles.css" rel="stylesheet" />
     <style>
+        body, button, input, select, textarea {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         .portal-container {
             max-width: 500px;
             margin: 60px auto;
@@ -27,6 +31,7 @@
         .input-group label {
             margin-bottom: 5px;
             font-size: 16px;
+            font-weight: bold;
         }
 
         .input-group input {
@@ -46,7 +51,7 @@
 
         .rules-box {
             background: #f9f9f9;
-            border: 1px solid #ccc;
+            border: 1px solid var(--border-color, #ccc);
             padding: 10px;
             border-radius: 5px;
             margin-top: 10px;
@@ -61,7 +66,7 @@
 
         .rule { color: #e74c3c; margin: 3px 0; }
         .rule.valid { color: #27ae60; }
-        .btn-full { width: 100%; padding: 15px; font-size: 1.1em; margin-top: 20px; cursor: pointer; }
+        .btn-full { width: 100%; padding: 15px; font-size: 1.1em; margin-top: 20px; cursor: pointer; border: none; border-radius: 5px; font-weight: bold;}
     </style>
 </head>
 <body>
@@ -86,19 +91,19 @@
 
         <div id="step2" style="display: none;">
             <div class="input-group" style="margin-bottom: 30px;">
-                <label style="color: var(--accent);">4-Digit Recovery Code from Email</label>
+                <label style="color: var(--accent, #3498db);">4-Digit Recovery Code from Email</label>
                 <input type="text" id="recoveryCode" placeholder="Enter code" style="font-size: 1.2em; text-align: center; letter-spacing: 5px;" maxlength="4">
             </div>
 
             <div class="name-row">
                 <div class="input-group" style="flex: 1; position: relative;">
                     <label>New 4-Digit PIN</label>
-                    <input type="password" id="newPin" placeholder="1234" maxlength="4">
+                    <input type="password" id="newPin" placeholder="1234" maxlength="4" style="padding-right: 35px;">
                     <span id="toggleNewPin" style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
                 </div>
                 <div class="input-group" style="flex: 1; position: relative;">
                     <label>Confirm PIN</label>
-                    <input type="password" id="confPin" placeholder="1234" maxlength="4">
+                    <input type="password" id="confPin" placeholder="1234" maxlength="4" style="padding-right: 35px;">
                     <span id="toggleConfPin" style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
                 </div>
             </div>
@@ -115,129 +120,6 @@
         <a href="index.html" style="display: block; margin-top: 20px; color: rgb(139, 107, 35); font-weight: bold; text-decoration: none;">← Back to Login</a>
     </div>
 
-    <script>
-        // --- THEME LOGIC ---
-        const themeToggle = document.getElementById('theme-toggle');
-        if (localStorage.getItem('theme') === 'dark') { 
-            document.body.classList.add('darkmode'); 
-            themeToggle.checked = true; 
-        }
-        themeToggle.addEventListener('change', () => {
-            document.body.classList.toggle('darkmode');
-            localStorage.setItem('theme', document.body.classList.contains('darkmode') ? 'dark' : 'light');
-        });
-
-        // --- STEP 1: SEND EMAIL LOGIC ---
-        let generatedCode = "";
-        let targetEmail = "";
-
-        async function sendCode() {
-            const emailInput = document.getElementById('email').value.trim().toLowerCase();
-            const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
-
-            if (!emailInput) return alert("Please enter your email.");
-            if (!users[emailInput]) return alert("No account found matching that email.");
-
-            targetEmail = emailInput;
-            generatedCode = Math.floor(1000 + Math.random() * 9000).toString(); // Generate random 4 digit code
-
-            const btn = document.getElementById('sendBtn');
-            btn.innerText = "Sending...";
-            btn.disabled = true;
-
-            try {
-                const response = await fetch('http://localhost:3000/api/send-recovery', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: targetEmail, code: generatedCode })
-                });
-
-                if (response.ok) {
-                    document.getElementById('step1').style.display = 'none';
-                    document.getElementById('step2').style.display = 'block';
-                    document.getElementById('instructionText').innerText = `Recovery code sent to ${targetEmail}`;
-                } else {
-                    alert("Failed to send email. Check server console.");
-                    btn.innerText = "Send Recovery Code";
-                    btn.disabled = false;
-                }
-            } catch (err) {
-                alert("Server offline. Ensure your node server is running.");
-                btn.innerText = "Send Recovery Code";
-                btn.disabled = false;
-            }
-        }
-
-        // --- STEP 2: VALIDATION & RESET LOGIC ---
-        const newPinInput = document.getElementById('newPin');
-        const confPinInput = document.getElementById('confPin');
-        const codeInput = document.getElementById('recoveryCode');
-        const resetBtn = document.getElementById('resetBtn');
-
-        function validateForm() {
-            const pin = newPinInput.value;
-            const conf = confPinInput.value;
-            const code = codeInput.value.trim();
-
-            let isLengthValid = pin.length === 4;
-            let isNumValid = /^\d+$/.test(pin);
-            let isMatchValid = (pin === conf) && pin.length > 0;
-
-            document.getElementById('rule-length').className = isLengthValid ? 'rule valid' : 'rule';
-            document.getElementById('rule-length').innerText = isLengthValid ? '✅ Must be exactly 4 characters' : '❌ Must be exactly 4 characters';
-            document.getElementById('rule-number').className = isNumValid && pin.length > 0 ? 'rule valid' : 'rule';
-            document.getElementById('rule-number').innerText = isNumValid && pin.length > 0 ? '✅ Must contain only numbers' : '❌ Must contain only numbers';
-            document.getElementById('rule-match').className = isMatchValid ? 'rule valid' : 'rule';
-            document.getElementById('rule-match').innerText = isMatchValid ? '✅ PINs must match' : '❌ PINs must match';
-
-            if (isLengthValid && isNumValid && isMatchValid && code.length === 4) {
-                resetBtn.disabled = false; 
-                resetBtn.style.opacity = '1';
-            } else {
-                resetBtn.disabled = true; 
-                resetBtn.style.opacity = '0.5';
-            }
-        }
-
-        newPinInput.addEventListener('input', validateForm);
-        confPinInput.addEventListener('input', validateForm);
-        codeInput.addEventListener('input', validateForm);
-
-        function resetPassword() {
-            if (codeInput.value.trim() !== generatedCode) {
-                alert("Incorrect recovery code. Please check your email.");
-                return;
-            }
-
-            const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
-            
-            // Save the new PIN
-            users[targetEmail].pin = newPinInput.value;
-            localStorage.setItem('mathTrackUsers', JSON.stringify(users));
-
-            // Sync with current session if active
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (currentUser && currentUser.email === targetEmail) {
-                currentUser.pin = newPinInput.value;
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            }
-
-            alert("PIN successfully reset! You can now log in.");
-            window.location.href = 'index.html';
-        }
-
-        // --- EYE TOGGLES ---
-        document.getElementById('toggleNewPin').addEventListener('click', function () {
-            const type = newPinInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            newPinInput.setAttribute('type', type);
-            this.textContent = type === 'password' ? '👁️' : '🔒';
-        });
-
-        document.getElementById('toggleConfPin').addEventListener('click', function () {
-            const type = confPinInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            confPinInput.setAttribute('type', type);
-            this.textContent = type === 'password' ? '👁️' : '🔒';
-        });
-    </script>
+    <script src="signupScript.js"></script>
 </body>
 </html>
