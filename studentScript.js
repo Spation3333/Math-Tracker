@@ -12,6 +12,23 @@ let classLessonsData = {};
 let classMarksData = {};
 let studentsData = [];
 
+// --- DATE UTILITY ---
+// Forces dates to noon local time on Monday to prevent UTC timezone drift
+function getSafeMonday(dateString) {
+    if (!dateString || dateString.startsWith("Unit")) {
+        dateString = new Date().toISOString().split('T')[0];
+    }
+    let parts = dateString.split('-');
+    if (parts.length === 3) {
+        let d = new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0);
+        let day = d.getDay();
+        let diff = d.getDate() - day + (day === 0 ? -6 : 1);
+        d.setDate(diff);
+        return d;
+    }
+    return new Date();
+}
+
 function attachEyeToggles() {
     const toggleApp = document.getElementById('toggleProfApp');
     const togglePin = document.getElementById('toggleProfPin');
@@ -248,48 +265,83 @@ function renderClassNav() {
 // --- UNIT LOGIC ---
 function initUnits() {
     const unitStorageKey = `units_${currentClass}`;
-    unitsData = JSON.parse(localStorage.getItem(unitStorageKey)) || ["Unit 1"];
-    localStorage.setItem(unitStorageKey, JSON.stringify(unitsData));
+    let storedUnits = JSON.parse(localStorage.getItem(unitStorageKey));
+    
+    // Safely migrate old "Unit 1" structures to new Date string structures
+    if (!storedUnits || storedUnits.length === 0 || storedUnits[0].startsWith("Unit")) {
+        let mondayDate = getSafeMonday(new Date().toISOString().split('T')[0]);
+        let y = mondayDate.getFullYear();
+        let m = String(mondayDate.getMonth() + 1).padStart(2, '0');
+        let d = String(mondayDate.getDate()).padStart(2, '0');
+        unitsData = [`${y}-${m}-${d}`];
+        localStorage.setItem(unitStorageKey, JSON.stringify(unitsData));
+    } else {
+        unitsData = storedUnits;
+    }
     renderUnits();
 }
 
 function renderUnits() {
-    // FIXED: Now looks for 'units-container' to match the HTML ID correctly
     const unitsContainer = document.getElementById('units-container');
     if (!unitsContainer) return;
     unitsContainer.innerHTML = '';
-    
-    unitsData.forEach((unitName, index) => {
+
+    unitsData.forEach((unitStr, index) => {
         let unitDiv = document.createElement('div');
         unitDiv.className = 'unit-box' + (index === activeUnitIndex ? ' active' : '');
-        
-        let d = new Date(unitName + "T00:00:00");
-        unitDiv.innerText = isNaN(d) ? unitName : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        
+
+        let safeDate = getSafeMonday(unitStr);
+        unitDiv.innerText = safeDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
         unitDiv.onclick = () => {
             activeUnitIndex = index;
             renderUnits();
             renderRosterTable();
         };
-        
-        // Include the delete button for weeks
+
         const delBtn = document.createElement('button');
         delBtn.className = 'unit-delete';
         delBtn.innerText = '×';
         delBtn.onclick = (e) => {
             e.stopPropagation();
             if (confirm(`Delete this week and all its marks?`)) {
+                // FIXED BUG 1: Only delete the specific unit, do not clear entire class structures.
                 unitsData.splice(index, 1);
                 delete classLessonsData[index];
+                
+                // We must shift marks back to prevent ghost data
+                for(let studentId in classMarksData) {
+                    if(classMarksData[studentId]) {
+                         delete classMarksData[studentId][index];
+                         // Shift any remaining weeks down
+                         for(let j = index + 1; j <= unitsData.length; j++) {
+                             if(classMarksData[studentId][j]) {
+                                 classMarksData[studentId][j-1] = classMarksData[studentId][j];
+                                 delete classMarksData[studentId][j];
+                             }
+                         }
+                    }
+                }
+
+                // Shift lessons down
+                for(let j = index + 1; j <= unitsData.length; j++) {
+                    if(classLessonsData[j]) {
+                        classLessonsData[j-1] = classLessonsData[j];
+                        delete classLessonsData[j];
+                    }
+                }
+
                 localStorage.setItem(`units_${currentClass}`, JSON.stringify(unitsData));
                 localStorage.setItem(`lessons_${currentClass}`, JSON.stringify(classLessonsData));
+                localStorage.setItem(`marks_${currentClass}`, JSON.stringify(classMarksData));
+                
                 activeUnitIndex = 0;
                 renderUnits();
                 renderRosterTable();
             }
         };
         unitDiv.appendChild(delBtn);
-        
+
         unitsContainer.appendChild(unitDiv);
     });
 
@@ -297,21 +349,24 @@ function renderUnits() {
     addBox.className = 'unit-add-box';
     addBox.innerText = '+';
     addBox.onclick = () => {
-        let nextMonday;
+        let nextMondayStr;
         if (unitsData.length > 0) {
-            let lastMondayStr = unitsData[unitsData.length - 1];
-            let lastDate = new Date(lastMondayStr + "T00:00:00");
-            if (!isNaN(lastDate)) {
-                lastDate.setDate(lastDate.getDate() + 7); 
-                nextMonday = lastDate.toISOString().split('T')[0];
-            } else {
-                nextMonday = new Date().toISOString().split('T')[0];
-            }
+            let lastSafeDate = getSafeMonday(unitsData[unitsData.length - 1]);
+            lastSafeDate.setDate(lastSafeDate.getDate() + 7);
+            
+            let y = lastSafeDate.getFullYear();
+            let m = String(lastSafeDate.getMonth() + 1).padStart(2, '0');
+            let d = String(lastSafeDate.getDate()).padStart(2, '0');
+            nextMondayStr = `${y}-${m}-${d}`;
         } else {
-            nextMonday = new Date().toISOString().split('T')[0];
+            let safeDate = getSafeMonday(new Date().toISOString().split('T')[0]);
+            let y = safeDate.getFullYear();
+            let m = String(safeDate.getMonth() + 1).padStart(2, '0');
+            let d = String(safeDate.getDate()).padStart(2, '0');
+            nextMondayStr = `${y}-${m}-${d}`;
         }
-        
-        unitsData.push(nextMonday);
+
+        unitsData.push(nextMondayStr);
         localStorage.setItem(`units_${currentClass}`, JSON.stringify(unitsData));
         renderUnits();
     };
@@ -349,7 +404,8 @@ async function loadStudentsData() {
 }
 
 function ensureUnitStructure() {
-    if (!classLessonsData[activeUnitIndex]) classLessonsData[activeUnitIndex] = { lessons: [], hasTest: false, testDate: '' };
+    if (!classLessonsData[activeUnitIndex]) classLessonsData[activeUnitIndex] = { titles: ["", "", "", "", ""] };
+    if (!classLessonsData[activeUnitIndex].titles) classLessonsData[activeUnitIndex].titles = ["", "", "", "", ""];
 }
 
 function toggleCustomView(checkbox, studentId, markKey) {
@@ -394,6 +450,12 @@ function updateNote(studentId, text) {
     if (!classMarksData[studentId][activeUnitIndex]) classMarksData[studentId][activeUnitIndex] = {};
     classMarksData[studentId][activeUnitIndex]['notes'] = text;
     localStorage.setItem(`marks_${currentClass}`, JSON.stringify(classMarksData));
+}
+
+function updateLessonTitle(dayIndex, title) {
+    ensureUnitStructure();
+    classLessonsData[activeUnitIndex].titles[dayIndex] = title;
+    localStorage.setItem(`lessons_${currentClass}`, JSON.stringify(classLessonsData));
 }
 
 // --- IMAGE ATTACHMENT LOGIC ---
@@ -491,7 +553,6 @@ function buildMarkCellHTML(studentId, markKey, markVal, isLate, isCustom) {
 }
 
 function renderRosterTable() {
-    // FIXED: Generates into the proper 'roster-container'
     const container = document.getElementById('roster-container');
     if (!container) return;
 
@@ -499,27 +560,23 @@ function renderRosterTable() {
         container.innerHTML = '<p>No students tracked. Please import a CSV or manually add a student above.</p>';
         return;
     }
-    
+
     if (unitsData.length === 0) {
         container.innerHTML = '<p>No weeks available. Please click the + button above to add a week.</p>';
         return;
     }
 
     ensureUnitStructure();
-    
+
     let thHTML = `<th style="text-align:left;">Student Details</th>`;
     const mondayStr = unitsData[activeUnitIndex];
-    
-    if (!classLessonsData[activeUnitIndex]) classLessonsData[activeUnitIndex] = { titles: ["", "", "", "", ""] };
-    if (!classLessonsData[activeUnitIndex].titles) classLessonsData[activeUnitIndex].titles = ["", "", "", "", ""];
 
     [0, 1, 2, 3, 4].forEach(i => {
-        let d = new Date(mondayStr + "T00:00:00");
-        if (isNaN(d)) d = new Date(); 
+        let d = getSafeMonday(mondayStr);
         d.setDate(d.getDate() + i);
         let dateLabel = d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
         let titleVal = classLessonsData[activeUnitIndex].titles[i] || "";
-        
+
         thHTML += `
             <th>
                 <div class="lesson-header">
@@ -528,7 +585,7 @@ function renderRosterTable() {
                 </div>
             </th>`;
     });
-    
+
     thHTML += `<th style="min-width: 250px;"><div class="lesson-header"><span>Teacher Notes</span></div></th>`;
 
     let tbodyHTML = '';
@@ -628,7 +685,6 @@ function renderRosterTable() {
             `;
         }
 
-        // FIXED: Restore teacher notes to proper cell alignment
         tbodyHTML += `<td class="notes-cell" style="vertical-align: top;">
                         <textarea class="mark-input" style="width: 100%; height: 60px; resize: vertical; text-align: left; font-weight: normal; font-family: inherit; margin-bottom: 5px;" 
                             placeholder="Add private notes here..." 
@@ -671,7 +727,7 @@ function renderRosterTable() {
         });
 
         row.addEventListener('dragover', function (e) {
-            e.preventDefault(); 
+            e.preventDefault();
         });
 
         row.addEventListener('dragenter', function (e) {
@@ -694,7 +750,7 @@ function renderRosterTable() {
                 const newOrder = studentsData.map(s => s.id);
                 localStorage.setItem(`studentOrder_${currentClass}`, JSON.stringify(newOrder));
 
-                renderRosterTable(); 
+                renderRosterTable();
             }
         });
     });
@@ -755,28 +811,83 @@ async function saveStudentChanges(id) {
     } catch (err) { alert("Error saving."); }
 }
 
+// --- MANUAL ADD STUDENT LOGIC ---
+function toggleAddStudentForm() {
+    const form = document.getElementById('add-student-form');
+    form.style.display = form.style.display === 'none' || form.style.display === '' ? 'block' : 'none';
+}
+
+async function saveNewStudent() {
+    const fName = document.getElementById('new-fname').value.trim();
+    const lName = document.getElementById('new-lname').value.trim();
+    const sEmail = document.getElementById('new-semail').value.trim();
+    const cName = document.getElementById('new-cname').value.trim();
+    const cRel = document.getElementById('new-crel').value.trim();
+    const cEmail = document.getElementById('new-cemail').value.trim();
+
+    if (!fName || !lName) {
+        return alert("First and Last name are required to add a student.");
+    }
+
+    const studentName = `${fName} ${lName}`;
+
+    let contacts = [];
+    let emails = [];
+
+    if (cName || cEmail) {
+        contacts.push({ name: cName, rel: cRel, email: cEmail });
+        if (cEmail) emails.push(cEmail);
+    }
+
+    try {
+        await fetch('http://localhost:3000/api/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: studentName,
+                student_email: sEmail,
+                guardian_email: emails.join(','),
+                contacts_info: JSON.stringify(contacts),
+                class_name: currentClass
+            })
+        });
+
+        document.getElementById('new-fname').value = '';
+        document.getElementById('new-lname').value = '';
+        document.getElementById('new-semail').value = '';
+        document.getElementById('new-cname').value = '';
+        document.getElementById('new-crel').value = '';
+        document.getElementById('new-cemail').value = '';
+
+        toggleAddStudentForm();
+        loadStudentsData();
+
+    } catch (err) {
+        alert("Error adding student. Make sure your server is running.");
+    }
+}
+
 // --- EMAIL LOGIC ---
 function buildGradeMessage(studentName, recipientName, sMarks, isStudent) {
     const mondayStr = unitsData[activeUnitIndex];
-    let weekDate = new Date(mondayStr + "T00:00:00");
-    let weekDisplay = isNaN(weekDate) ? mondayStr : weekDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    let weekDate = getSafeMonday(mondayStr);
+    let weekDisplay = weekDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
     let text = "";
     if (isStudent) {
-        text += `Hey ${studentName}, here is your progress for ${weekDisplay}:\n\n`;
+        text += `Hello ${studentName}, here is your progress for the Week of ${weekDisplay}:\n\n`;
     } else {
-        text += `Hey ${recipientName}, here is your student's progress for ${weekDisplay}:\n\n`;
+        text += `Hello ${recipientName}, here is your student's progress for the Week of ${weekDisplay}:\n\n`;
     }
 
     [0, 1, 2, 3, 4].forEach(i => {
-        let d = new Date(mondayStr + "T00:00:00");
-        if (isNaN(d)) d = new Date();
+        let d = getSafeMonday(mondayStr);
         d.setDate(d.getDate() + i);
         let dayName = d.toLocaleDateString('en-US', { weekday: 'long' });
-        
+
         let title = (classLessonsData[activeUnitIndex] && classLessonsData[activeUnitIndex].titles) ? classLessonsData[activeUnitIndex].titles[i] : "";
         let titleStr = title ? ` (${title})` : "";
-        
+
         const mark = sMarks[`d${i}`] || "Pending";
         const isLate = sMarks[`d${i}_late`] ? "Handed in Late: " : "";
         text += `• ${dayName}${titleStr}:  ${isLate}${mark}\n`;
@@ -785,7 +896,7 @@ function buildGradeMessage(studentName, recipientName, sMarks, isStudent) {
     if (sMarks['notes'] && sMarks['notes'].trim() !== "") {
         text += `\nTeacher Notes:\n${sMarks['notes']}\n`;
     }
-    
+
     text += `\nBest Regards,\n${currentUser.firstName} ${currentUser.lastName}`;
     return text;
 }
@@ -1031,90 +1142,4 @@ async function handleCSV() {
         loadStudentsData();
     };
     reader.readAsText(file);
-}
-
-async function deleteStudent(event, id) {
-    event.stopPropagation();
-    if (confirm("Remove this student?")) {
-        await fetch(`http://localhost:3000/api/delete/${id}`, { method: 'DELETE' });
-        loadStudentsData();
-    }
-}
-
-async function deleteClassRoster() {
-    if (confirm("Are you sure you want to delete EVERY student in this roster? This cannot be undone.")) {
-        try {
-            const response = await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(currentClass)}`, { method: 'DELETE' });
-            if (response.ok) {
-                loadStudentsData();
-            } else {
-                alert("Failed to delete roster. Check server console.");
-            }
-        } catch (err) {
-            alert("Server offline.");
-        }
-    }
-}
-
-// --- MANUAL ADD STUDENT LOGIC ---
-function toggleAddStudentForm() {
-    const form = document.getElementById('add-student-form');
-    form.style.display = form.style.display === 'none' || form.style.display === '' ? 'block' : 'none';
-}
-
-async function saveNewStudent() {
-    const fName = document.getElementById('new-fname').value.trim();
-    const lName = document.getElementById('new-lname').value.trim();
-    const sEmail = document.getElementById('new-semail').value.trim();
-    const cName = document.getElementById('new-cname').value.trim();
-    const cRel = document.getElementById('new-crel').value.trim();
-    const cEmail = document.getElementById('new-cemail').value.trim();
-
-    if (!fName || !lName) {
-        return alert("First and Last name are required to add a student.");
-    }
-
-    const studentName = `${fName} ${lName}`;
-
-    let contacts = [];
-    let emails = [];
-
-    if (cName || cEmail) {
-        contacts.push({ name: cName, rel: cRel, email: cEmail });
-        if (cEmail) emails.push(cEmail);
-    }
-
-    try {
-        await fetch('http://localhost:3000/api/add', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name: studentName,
-                student_email: sEmail,
-                guardian_email: emails.join(','),
-                contacts_info: JSON.stringify(contacts),
-                class_name: currentClass
-            })
-        });
-
-        document.getElementById('new-fname').value = '';
-        document.getElementById('new-lname').value = '';
-        document.getElementById('new-semail').value = '';
-        document.getElementById('new-cname').value = '';
-        document.getElementById('new-crel').value = '';
-        document.getElementById('new-cemail').value = '';
-
-        toggleAddStudentForm(); 
-        loadStudentsData();     
-
-    } catch (err) {
-        alert("Error adding student. Make sure your server is running.");
-    }
-}
-
-function updateLessonTitle(dayIndex, title) {
-    if (!classLessonsData[activeUnitIndex]) classLessonsData[activeUnitIndex] = { titles: ["", "", "", "", ""] };
-    if (!classLessonsData[activeUnitIndex].titles) classLessonsData[activeUnitIndex].titles = ["", "", "", "", ""];
-    classLessonsData[activeUnitIndex].titles[dayIndex] = title;
-    localStorage.setItem(`lessons_${currentClass}`, JSON.stringify(classLessonsData));
 }

@@ -1,15 +1,15 @@
 const themeToggle = document.getElementById('theme-toggle');
 const body = document.body;
 
-function togglePassword(inputId) {
-    const password = document.getElementById(inputId);
-    const toggleButton = password.nextElementSibling;
-    if (password.type === "password") {
-        password.type = "text";
-        toggleButton.textContent = "🔒";
-    } else {
-        password.type = "password";
-        toggleButton.textContent = "👁️";
+function togglePassword(inputId) { 
+    const password = document.getElementById(inputId); 
+    const toggleButton = password.nextElementSibling; 
+    if (password.type === "password") { 
+        password.type = "text"; 
+        toggleButton.textContent = "🔒"; 
+    } else { 
+        password.type = "password"; 
+        toggleButton.textContent = "👁️"; 
     }
 }
 
@@ -17,7 +17,7 @@ function attachEyeToggles() {
     const toggleApp = document.getElementById('toggleProfApp');
     const togglePin = document.getElementById('toggleProfPin');
     if (toggleApp) {
-        toggleApp.addEventListener('click', function () {
+        toggleApp.addEventListener('click', function() {
             const input = document.getElementById('prof-apppass');
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
@@ -25,7 +25,7 @@ function attachEyeToggles() {
         });
     }
     if (togglePin) {
-        togglePin.addEventListener('click', function () {
+        togglePin.addEventListener('click', function() {
             const input = document.getElementById('prof-pin');
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
@@ -54,7 +54,7 @@ if (themeToggle) {
 window.addEventListener('DOMContentLoaded', function () {
     if (document.getElementById('newclass')) updateClass();
     if (document.getElementById('currentdate')) displayDate();
-    attachEyeToggles(); // Enable eye toggles
+    attachEyeToggles();
 });
 
 function displayDate() {
@@ -84,15 +84,13 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// PROFILE MODAL LOGIC
 function openProfileModal() {
     document.getElementById('prof-fname').value = currentUser.firstName;
     document.getElementById('prof-lname').value = currentUser.lastName;
     document.getElementById('prof-email').value = currentUser.email;
     document.getElementById('prof-apppass').value = currentUser.appPassword || '';
     document.getElementById('prof-pin').value = '';
-
-    // Reset types back to password upon opening
+    
     document.getElementById('prof-apppass').setAttribute('type', 'password');
     document.getElementById('prof-pin').setAttribute('type', 'password');
     if (document.getElementById('toggleProfApp')) document.getElementById('toggleProfApp').textContent = '👁️';
@@ -117,11 +115,11 @@ async function saveProfile() {
     if (!newFname || !newLname || !newEmail || !newAppPass) return alert("All fields are required.");
 
     const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
-
+    
     if (newEmail !== currentUser.email && users[newEmail]) return alert("Email already in use!");
 
     const oldEmail = currentUser.email;
-
+    
     if (newEmail !== oldEmail) {
         try {
             await fetch('http://localhost:3000/api/migrate-email', {
@@ -129,7 +127,7 @@ async function saveProfile() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ oldEmail, newEmail })
             });
-        } catch (e) { console.error("DB Migration Error", e); }
+        } catch(e) { console.error("DB Migration Error", e); }
 
         const keysToMigrate = [];
         for (let i = 0; i < localStorage.length; i++) {
@@ -146,7 +144,7 @@ async function saveProfile() {
     delete users[oldEmail];
     const updatedUser = { firstName: newFname, lastName: newLname, email: newEmail, appPassword: newAppPass, pin: currentUser.pin };
     users[newEmail] = updatedUser;
-
+    
     localStorage.setItem('mathTrackUsers', JSON.stringify(users));
     localStorage.setItem('currentUser', JSON.stringify(updatedUser));
 
@@ -154,30 +152,27 @@ async function saveProfile() {
     window.location.reload();
 }
 
-// FULL ACCOUNT DELETION LOGIC
 async function deleteAccount() {
     const pin = document.getElementById('prof-pin').value;
     if (!pin) return alert("Please enter your PIN to authorize account deletion.");
     if (pin !== currentUser.pin) return alert("Incorrect PIN! Cannot delete account.");
 
     if (confirm("WARNING: Are you absolutely sure you want to delete your account? This will permanently erase all your classes, students, and grades. This action CANNOT be undone.")) {
-
+        
         const email = currentUser.email;
         const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
         const storageKey = `savedClasses_${email}`;
         const userClasses = JSON.parse(localStorage.getItem(storageKey)) || [];
 
-        // Delete all students from the backend database for each class
         for (let i = 0; i < userClasses.length; i++) {
             const uniqueDbClassName = email + "_" + userClasses[i].name;
             try {
                 await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(uniqueDbClassName)}`, { method: 'DELETE' });
-            } catch (e) {
+            } catch(e) {
                 console.error("Error deleting class from database:", e);
             }
         }
 
-        // Remove all local storage data tied to this user's email
         const keysToDelete = [];
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
@@ -187,7 +182,6 @@ async function deleteAccount() {
         }
         keysToDelete.forEach(k => localStorage.removeItem(k));
 
-        // Remove the user profile and current session
         delete users[email];
         localStorage.setItem('mathTrackUsers', JSON.stringify(users));
         localStorage.removeItem('currentUser');
@@ -248,7 +242,6 @@ function openClass(editIndex = -1) {
         title.textContent = "Edit Class";
         indexTracker.value = editIndex;
         document.getElementById('classname').value = classData[editIndex].name;
-        document.getElementById('weeklylesson').value = classData[editIndex].lesson;
         document.getElementById('evaluation').value = classData[editIndex].eval;
         document.getElementById('font-family').value = classData[editIndex].font || "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
         setDropdownColor('bg', classData[editIndex].bgColor);
@@ -257,7 +250,6 @@ function openClass(editIndex = -1) {
         title.textContent = "Create New Class";
         indexTracker.value = -1;
         document.getElementById('classname').value = "";
-        document.getElementById('weeklylesson').value = "";
         document.getElementById('evaluation').value = "";
         document.getElementById('font-family').selectedIndex = 0;
         setDropdownColor('bg', '#f9f9f9');
@@ -271,7 +263,6 @@ function closeClass() {
 
 function saveClass() {
     const name = document.getElementById('classname').value;
-    const lesson = document.getElementById('weeklylesson').value;
     const eval = document.getElementById('evaluation').value;
     const font = document.getElementById('font-family').value;
     const bgColor = getFinalColor('bg');
@@ -283,7 +274,6 @@ function saveClass() {
     const newClass = {
         name: name,
         students: currentStudents,
-        lesson: lesson,
         eval: eval,
         font: font,
         bgColor: bgColor,
@@ -308,6 +298,48 @@ function deleteClass(index) {
         updateClass();
     }
 }
+
+// --- NEW FEATURE: GET CURRENT LESSON TITLE FROM STUDENT PAGE DATA ---
+function getCurrentWeekLessonTitle(uniqueDbClassName) {
+    const unitsKey = `units_${uniqueDbClassName}`;
+    const lessonsKey = `lessons_${uniqueDbClassName}`;
+    
+    const unitsStr = localStorage.getItem(unitsKey);
+    const lessonsStr = localStorage.getItem(lessonsKey);
+    
+    if (!unitsStr || !lessonsStr) return "N/A";
+    
+    const units = JSON.parse(unitsStr);
+    const lessons = JSON.parse(lessonsStr);
+    
+    const today = new Date();
+    today.setHours(12, 0, 0, 0); // Normalize today to noon
+    
+    // Iterate backwards through weeks to find the active one
+    for (let i = units.length - 1; i >= 0; i--) {
+        let mondayParts = units[i].split('-');
+        if (mondayParts.length === 3) {
+            let mondayDate = new Date(mondayParts[0], mondayParts[1] - 1, mondayParts[2], 12, 0, 0);
+            
+            // If today is equal to or comes after this week's Monday...
+            if (today >= mondayDate) {
+                // Calculate the difference in days between Monday and Today
+                const diffTime = Math.abs(today - mondayDate);
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                
+                // If the difference is between 0 (Monday) and 4 (Friday)
+                if (diffDays >= 0 && diffDays <= 4) {
+                    if (lessons[i] && lessons[i].titles && lessons[i].titles[diffDays]) {
+                        return lessons[i].titles[diffDays];
+                    }
+                }
+                break; // We found the correct week but no title exists, break out
+            }
+        }
+    }
+    return "N/A";
+}
+
 
 function updateClass() {
     const grid = document.getElementById('newclass');
@@ -343,6 +375,9 @@ function updateClass() {
         const countId = `student-count-${i}`;
 
         const uniqueDbClassName = currentUser.email + "_" + classData[i].name;
+        
+        // Dynamically grab the lesson title for today
+        const todaysLessonTitle = getCurrentWeekLessonTitle(uniqueDbClassName);
 
         card.innerHTML = `
             <button class="buttons cardedit" onclick="event.stopPropagation(); openClass(${i})">✎</button>
@@ -353,7 +388,7 @@ function updateClass() {
                 <div class="class-title" style="color: ${classData[i].textColor || 'rgb(139, 107, 35)'};">${classData[i].name}</div>
                
                 <p style="color: ${classData[i].textColor || 'black'};">Students: <span id="${countId}" style="font-weight:normal">Loading...</span></p>
-                <p style="color: ${classData[i].textColor || 'black'};">Lesson: <span style="font-weight:normal">${classData[i].lesson}</span></p>
+                <p style="color: ${classData[i].textColor || 'black'};">Lesson: <span style="font-weight:normal">${todaysLessonTitle}</span></p>
                 <p style="color: ${classData[i].textColor || 'black'};">Next Eval: <span style="font-weight:normal">${classData[i].eval}</span></p>
             </div>
         `;
