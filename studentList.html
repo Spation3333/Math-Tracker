@@ -7,7 +7,6 @@
     <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
     <link href="studentStyles.css" rel="stylesheet" />
     <style>
-        /* Unifying Font */
         body, button, input, select, textarea {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
@@ -61,6 +60,19 @@
         body.darkmode .inline-class-edit:hover, body.darkmode .inline-class-edit:focus {
             background: rgba(255,255,255,0.1);
         }
+
+        /* Enforce Grid formatting for Nav Bar */
+        #class-nav-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .btn-class-nav {
+            margin: 0 !important;
+            width: 100% !important;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -100,8 +112,8 @@
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 10px; min-width: 250px;">
-                <button class="btn btn-success" style="width: 100%;" onclick="emailAllStudents()">📧 Email Grades (Current Unit)</button>
-                <button class="btn btn-danger" style="width: 100%;" onclick="deleteClassRoster()">🗑️ Delete Entire Roster</button>
+                <button class="btn btn-success" style="width: 100%;" onclick="emailAllStudents()">📧 Email Class</button>
+                <button class="btn btn-danger" style="width: 100%;" onclick="deleteClassRoster()">🗑️ Delete Class</button>
                 <span id="emailStatus" style="text-align: center;"></span>
             </div>
         </div>
@@ -129,7 +141,13 @@
             <div id="units-container" class="unit-container"></div>
         </div>
 
-        <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 1.3em;">2. Student Roster</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="margin: 0; font-size: 1.3em;">2. Student Roster</h3>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <label style="font-weight: bold; font-size: 1em; color: var(--text-color);">Next Eval:</label>
+                <input type="text" id="next-eval-input" placeholder="e.g. May 25" title="Date of next evaluation" style="padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; font-size: 0.95em;">
+            </div>
+        </div>
         <div id="roster-container" class="table-responsive"></div>
     </div>
 

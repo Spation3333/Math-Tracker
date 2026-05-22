@@ -242,7 +242,7 @@ function openClass(editIndex = -1) {
         title.textContent = "Edit Class";
         indexTracker.value = editIndex;
         document.getElementById('classname').value = classData[editIndex].name;
-        document.getElementById('evaluation').value = classData[editIndex].eval;
+        document.getElementById('evaluation').value = classData[editIndex].eval || "";
         document.getElementById('font-family').value = classData[editIndex].font || "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
         setDropdownColor('bg', classData[editIndex].bgColor);
         setDropdownColor('text', classData[editIndex].textColor);
@@ -282,7 +282,7 @@ function saveClass() {
 
     if (editIndex >= 0) {
         classData[editIndex] = newClass;
-    } else if (classData.length < 4) {
+    } else if (classData.length < 8) {
         classData.push(newClass);
     }
 
@@ -299,7 +299,6 @@ function deleteClass(index) {
     }
 }
 
-// --- NEW FEATURE: GET CURRENT LESSON TITLE FROM STUDENT PAGE DATA ---
 function getCurrentWeekLessonTitle(uniqueDbClassName) {
     const unitsKey = `units_${uniqueDbClassName}`;
     const lessonsKey = `lessons_${uniqueDbClassName}`;
@@ -313,33 +312,28 @@ function getCurrentWeekLessonTitle(uniqueDbClassName) {
     const lessons = JSON.parse(lessonsStr);
     
     const today = new Date();
-    today.setHours(12, 0, 0, 0); // Normalize today to noon
+    today.setHours(12, 0, 0, 0); 
     
-    // Iterate backwards through weeks to find the active one
     for (let i = units.length - 1; i >= 0; i--) {
         let mondayParts = units[i].split('-');
         if (mondayParts.length === 3) {
             let mondayDate = new Date(mondayParts[0], mondayParts[1] - 1, mondayParts[2], 12, 0, 0);
             
-            // If today is equal to or comes after this week's Monday...
             if (today >= mondayDate) {
-                // Calculate the difference in days between Monday and Today
                 const diffTime = Math.abs(today - mondayDate);
                 const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
                 
-                // If the difference is between 0 (Monday) and 4 (Friday)
                 if (diffDays >= 0 && diffDays <= 4) {
                     if (lessons[i] && lessons[i].titles && lessons[i].titles[diffDays]) {
                         return lessons[i].titles[diffDays];
                     }
                 }
-                break; // We found the correct week but no title exists, break out
+                break; 
             }
         }
     }
     return "N/A";
 }
-
 
 function updateClass() {
     const grid = document.getElementById('newclass');
@@ -366,18 +360,44 @@ function updateClass() {
 
         const letter = document.createElement('div');
         letter.className = 'cardletter';
-        letter.textContent = String.fromCharCode(65 + i);
+        letter.textContent = String.fromCharCode(65 + (i % 4));
 
         const card = document.createElement('div');
         card.className = 'classcard';
         card.style.backgroundColor = classData[i].bgColor || '#f9f9f9';
 
         const countId = `student-count-${i}`;
-
         const uniqueDbClassName = currentUser.email + "_" + classData[i].name;
-        
-        // Dynamically grab the lesson title for today
         const todaysLessonTitle = getCurrentWeekLessonTitle(uniqueDbClassName);
+
+        let evalText = "N/A";
+        if (classData[i].eval) {
+            let eDate = new Date(classData[i].eval);
+            if (!isNaN(eDate)) {
+                let today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if (eDate.getFullYear() < today.getFullYear() - 5) {
+                    eDate.setFullYear(today.getFullYear());
+                }
+                
+                eDate.setHours(0, 0, 0, 0);
+                
+                if (eDate < today && (today - eDate) > (1000 * 60 * 60 * 24 * 30)) {
+                    eDate.setFullYear(today.getFullYear() + 1);
+                }
+
+                let diffTime = eDate.getTime() - today.getTime();
+                let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays === 0) evalText = "Today";
+                else if (diffDays === 1) evalText = "1 day";
+                else if (diffDays > 1) evalText = diffDays + " days";
+                else evalText = "Past";
+            } else {
+                evalText = classData[i].eval; 
+            }
+        }
 
         card.innerHTML = `
             <button class="buttons cardedit" onclick="event.stopPropagation(); openClass(${i})">✎</button>
@@ -389,7 +409,7 @@ function updateClass() {
                
                 <p style="color: ${classData[i].textColor || 'black'};">Students: <span id="${countId}" style="font-weight:normal">Loading...</span></p>
                 <p style="color: ${classData[i].textColor || 'black'};">Lesson: <span style="font-weight:normal">${todaysLessonTitle}</span></p>
-                <p style="color: ${classData[i].textColor || 'black'};">Next Eval: <span style="font-weight:normal">${classData[i].eval}</span></p>
+                <p style="color: ${classData[i].textColor || 'black'};">Next Eval: <span style="font-weight:normal">${evalText}</span></p>
             </div>
         `;
 
@@ -410,7 +430,7 @@ function updateClass() {
             });
     }
 
-    if (classData.length < 4) {
+    if (classData.length < 8) {
         const addBoxWrapper = document.createElement('div');
         addBoxWrapper.className = 'cardwrapper';
         const spacerLetter = document.createElement('div');

@@ -513,103 +513,12 @@ input:checked+.slider:before {
     border-radius: 50%;
 }
 
-/*-------------------------Dark Theme-----------------------------------*/
+-------------------------Dark Theme-----------------------------------
 /*Toggle Switch Bar*/
 .themewrapper {
     position: absolute;
     top: 20px;
     right: 20px;
-}
-
-/*Dark Mode Body*/
-body.darkmode {
-    background-color: rgb(26, 26, 26);
-    color: rgb(255, 255, 255);
-}
-
-/*Dark Mode Headers*/
-body.darkmode h1,
-body.darkmode h2 {
-    color: rgb(212, 175, 55);
-}
-
-/*Dark Mode Label*/
-body.darkmode label {
-    color: rgb(255, 255, 255);
-}
-
-/*Dark Mode Textboxes*/
-body.darkmode input {
-    background-color: rgb(51, 51, 51);
-    color: rgb(255, 255, 255);
-    border-color: rgb(212, 175, 55);
-}
-
-/*Dark Mode Show Password Button*/
-body.darkmode .togglebuttons {
-    background-color: rgb(51, 51, 51);
-    color: rgb(255, 255, 255);
-    border-color: rgb(212, 175, 55);
-}
-
-/*Dark Mode Show Password Button When Hovering*/
-body.darkmode .togglebuttons:hover {
-    background-color: rgb(55, 55, 55);
-}
-
-/*Dark Mode Add Class Box*/
-body.darkmode .addbox {
-    background-color: rgb(68, 68, 68);
-}
-
-/*Dark Mode Add Class Box When Hovering*/
-body.darkmode .addbox:hover {
-    background-color: rgb(102, 102, 102);
-}
-
-/*Dark Mode Class Box*/
-body.darkmode .classcard {
-    background-color: rgb(51, 51, 51);
-    border-color: rgb(212, 175, 55);
-}
-
-/*Dark Mode Class Box Text*/
-body.darkmode .classcard p {
-    color: white;
-}
-
-/*Dark Mode Class Letter*/
-body.darkmode .classletter {
-    color: rgb(212, 175, 55);
-}
-
-/*Dark Mode Class Title*/
-.body.darkmode .cardtitle {
-    color: rgb(212, 175, 55);
-}
-
-/*Dark Mode Class Box Edit Button*/
-body.darkmode .cardedit .carddelete {
-    color: rgb(212, 175, 55);
-}
-
-/*Dark Mode Class Box Delete Button*/
-body.darkmode .modalcontent {
-    background-color: rgb(34, 34, 34);
-    border-color: rgb(212, 175, 55);
-}
-
-/*Dark Mode Display Current Date*/
-body.darkmode .datedisplay {
-    color: #3498db;
-}
-
-body.darkmode .portal-container {
-    background-color: #2d2d2d;
-}
-
-body.darkmode label {
-    color: #ffffff !important;
 }
 
 .eye-icon {

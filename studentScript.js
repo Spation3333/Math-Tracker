@@ -13,7 +13,6 @@ let classMarksData = {};
 let studentsData = [];
 
 // --- DATE UTILITY ---
-// Forces dates to noon local time on Monday to prevent UTC timezone drift
 function getSafeMonday(dateString) {
     if (!dateString || dateString.startsWith("Unit")) {
         dateString = new Date().toISOString().split('T')[0];
@@ -109,6 +108,22 @@ window.onload = () => {
 
         renderClassNav();
     });
+
+    const evalInput = document.getElementById('next-eval-input');
+    if (evalInput) {
+        const currentClassObj = classData.find(c => `${currentUser.email}_${c.name}` === currentClass);
+        if (currentClassObj && currentClassObj.eval) {
+            evalInput.value = currentClassObj.eval;
+        }
+        evalInput.addEventListener('change', function () {
+            const classIndex = classData.findIndex(c => `${currentUser.email}_${c.name}` === currentClass);
+            if (classIndex !== -1) {
+                classData[classIndex].eval = this.value.trim();
+                localStorage.setItem(storageKey, JSON.stringify(classData));
+                renderRosterTable();
+            }
+        });
+    }
 
     classLessonsData = JSON.parse(localStorage.getItem(`lessons_${currentClass}`)) || {};
     classMarksData = JSON.parse(localStorage.getItem(`marks_${currentClass}`)) || {};
@@ -240,7 +255,8 @@ async function deleteAccount() {
 function renderClassNav() {
     const navBar = document.getElementById('class-nav-bar');
     navBar.innerHTML = '';
-    for (let i = 0; i < 4; i++) {
+    // LOOP UP TO 8 TO SUPPORT NEW CLASSES
+    for (let i = 0; i < 8; i++) {
         const btn = document.createElement('button');
         btn.className = 'btn-class-nav';
         if (i < classData.length) {
@@ -266,8 +282,7 @@ function renderClassNav() {
 function initUnits() {
     const unitStorageKey = `units_${currentClass}`;
     let storedUnits = JSON.parse(localStorage.getItem(unitStorageKey));
-    
-    // Safely migrate old "Unit 1" structures to new Date string structures
+
     if (!storedUnits || storedUnits.length === 0 || storedUnits[0].startsWith("Unit")) {
         let mondayDate = getSafeMonday(new Date().toISOString().split('T')[0]);
         let y = mondayDate.getFullYear();
@@ -305,28 +320,24 @@ function renderUnits() {
         delBtn.onclick = (e) => {
             e.stopPropagation();
             if (confirm(`Delete this week and all its marks?`)) {
-                // FIXED BUG 1: Only delete the specific unit, do not clear entire class structures.
                 unitsData.splice(index, 1);
                 delete classLessonsData[index];
-                
-                // We must shift marks back to prevent ghost data
-                for(let studentId in classMarksData) {
-                    if(classMarksData[studentId]) {
-                         delete classMarksData[studentId][index];
-                         // Shift any remaining weeks down
-                         for(let j = index + 1; j <= unitsData.length; j++) {
-                             if(classMarksData[studentId][j]) {
-                                 classMarksData[studentId][j-1] = classMarksData[studentId][j];
-                                 delete classMarksData[studentId][j];
-                             }
-                         }
+
+                for (let studentId in classMarksData) {
+                    if (classMarksData[studentId]) {
+                        delete classMarksData[studentId][index];
+                        for (let j = index + 1; j <= unitsData.length; j++) {
+                            if (classMarksData[studentId][j]) {
+                                classMarksData[studentId][j - 1] = classMarksData[studentId][j];
+                                delete classMarksData[studentId][j];
+                            }
+                        }
                     }
                 }
 
-                // Shift lessons down
-                for(let j = index + 1; j <= unitsData.length; j++) {
-                    if(classLessonsData[j]) {
-                        classLessonsData[j-1] = classLessonsData[j];
+                for (let j = index + 1; j <= unitsData.length; j++) {
+                    if (classLessonsData[j]) {
+                        classLessonsData[j - 1] = classLessonsData[j];
                         delete classLessonsData[j];
                     }
                 }
@@ -334,7 +345,7 @@ function renderUnits() {
                 localStorage.setItem(`units_${currentClass}`, JSON.stringify(unitsData));
                 localStorage.setItem(`lessons_${currentClass}`, JSON.stringify(classLessonsData));
                 localStorage.setItem(`marks_${currentClass}`, JSON.stringify(classMarksData));
-                
+
                 activeUnitIndex = 0;
                 renderUnits();
                 renderRosterTable();
@@ -353,7 +364,7 @@ function renderUnits() {
         if (unitsData.length > 0) {
             let lastSafeDate = getSafeMonday(unitsData[unitsData.length - 1]);
             lastSafeDate.setDate(lastSafeDate.getDate() + 7);
-            
+
             let y = lastSafeDate.getFullYear();
             let m = String(lastSafeDate.getMonth() + 1).padStart(2, '0');
             let d = String(lastSafeDate.getDate()).padStart(2, '0');
@@ -568,6 +579,22 @@ function renderRosterTable() {
 
     ensureUnitStructure();
 
+    const currentClassObj = classData.find(c => `${currentUser.email}_${c.name}` === currentClass);
+    let evalDateObj = null;
+    if (currentClassObj && currentClassObj.eval) {
+        let parsed = new Date(currentClassObj.eval);
+        if (!isNaN(parsed)) {
+            if (parsed.getFullYear() < new Date().getFullYear() - 5) {
+                parsed.setFullYear(new Date().getFullYear());
+            }
+            let today = new Date();
+            if (parsed < today && (today - parsed) > (1000 * 60 * 60 * 24 * 30)) {
+                parsed.setFullYear(today.getFullYear() + 1);
+            }
+            evalDateObj = parsed;
+        }
+    }
+
     let thHTML = `<th style="text-align:left;">Student Details</th>`;
     const mondayStr = unitsData[activeUnitIndex];
 
@@ -577,11 +604,19 @@ function renderRosterTable() {
         let dateLabel = d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
         let titleVal = classLessonsData[activeUnitIndex].titles[i] || "";
 
+        let isEvalDay = false;
+        if (evalDateObj && d.getMonth() === evalDateObj.getMonth() && d.getDate() === evalDateObj.getDate() && d.getFullYear() === evalDateObj.getFullYear()) {
+            isEvalDay = true;
+        }
+
+        let headerColorStyle = isEvalDay ? 'color: var(--danger, #e74c3c); font-weight: bold;' : '';
+        let inputColorStyle = isEvalDay ? 'color: var(--danger, #e74c3c); font-weight: bold;' : '';
+
         thHTML += `
             <th>
-                <div class="lesson-header">
+                <div class="lesson-header" style="${headerColorStyle}">
                     <span>${dateLabel}</span>
-                    <input type="text" class="lesson-date" placeholder="Lesson Title" value="${titleVal}" onchange="updateLessonTitle(${i}, this.value)" style="width: 100%; box-sizing: border-box; text-align: center; border: 1px solid var(--border-color); border-radius: 4px; padding: 4px; margin-top: 5px;">
+                    <input type="text" class="lesson-date" placeholder="Lesson Title" value="${titleVal}" onchange="updateLessonTitle(${i}, this.value)" style="width: 100%; box-sizing: border-box; text-align: center; border: 1px solid var(--border-color); border-radius: 4px; padding: 4px; margin-top: 5px; ${inputColorStyle}">
                 </div>
             </th>`;
     });
@@ -875,9 +910,9 @@ function buildGradeMessage(studentName, recipientName, sMarks, isStudent) {
 
     let text = "";
     if (isStudent) {
-        text += `Hello ${studentName}, here is your progress for the Week of ${weekDisplay}:\n\n`;
+        text += `Hello ${studentName},\nHere is your progress for the week of ${weekDisplay}:\n\n`;
     } else {
-        text += `Hello ${recipientName}, here is your student's progress for the Week of ${weekDisplay}:\n\n`;
+        text += `Hello ${recipientName},\nHere is your student's progress for the week of ${weekDisplay}:\n\n`;
     }
 
     [0, 1, 2, 3, 4].forEach(i => {
@@ -890,7 +925,7 @@ function buildGradeMessage(studentName, recipientName, sMarks, isStudent) {
 
         const mark = sMarks[`d${i}`] || "Pending";
         const isLate = sMarks[`d${i}_late`] ? "Handed in Late: " : "";
-        text += `• ${dayName}${titleStr}:  ${isLate}${mark}\n`;
+        text += `• ${dayName}${titleStr}:  ${isLate}${mark}%\n`;
     });
 
     if (sMarks['notes'] && sMarks['notes'].trim() !== "") {
