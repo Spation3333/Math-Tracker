@@ -567,3 +567,140 @@ body.darkmode .inline-class-edit:hover,
 body.darkmode .inline-class-edit:focus {
     background: rgba(255, 255, 255, 0.1);
 }
+
+body,
+button,
+input,
+select,
+textarea {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.top-widget {
+    position: absolute;
+    top: 20px;
+    background: var(--card-bg, #fff);
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 65px;
+    box-sizing: border-box;
+}
+
+body.darkmode .top-widget {
+    background: #2d2d2d;
+    border-color: rgb(212, 175, 55);
+}
+
+.profile-widget {
+    right: 20px;
+    cursor: pointer;
+    text-align: right;
+    border-color: rgb(139, 107, 35);
+}
+
+.date-widget {
+    left: 20px;
+    text-align: left;
+    border-color: rgb(139, 107, 35);
+}
+
+.date-widget-text {
+    font-weight: bold;
+    color: rgb(139, 107, 35);
+    font-size: 1.1em;
+    margin: 0;
+}
+
+body.darkmode .date-widget-text {
+    color: rgb(212, 175, 55);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modalcontent {
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: 10px;
+    border: 3px solid rgb(139, 107, 35);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.signupinput {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.signupinput label {
+    font-weight: bold;
+    width: 140px;
+    text-align: left;
+}
+
+.signupinput input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-family: inherit;
+}
+
+.inline-class-edit {
+    background: transparent;
+    border: none;
+    border-bottom: 2px dashed transparent;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: bold;
+    outline: none;
+    padding: 0 5px;
+    width: 350px;
+    transition: all 0.2s;
+}
+
+.inline-class-edit:hover,
+.inline-class-edit:focus {
+    border-bottom: 2px dashed var(--accent);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+body.darkmode .inline-class-edit:hover,
+body.darkmode .inline-class-edit:focus {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+#class-nav-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.btn-class-nav {
+    margin: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box;
+}

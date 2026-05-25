@@ -1,15 +1,15 @@
 const themeToggle = document.getElementById('theme-toggle');
 const body = document.body;
 
-function togglePassword(inputId) { 
-    const password = document.getElementById(inputId); 
-    const toggleButton = password.nextElementSibling; 
-    if (password.type === "password") { 
-        password.type = "text"; 
-        toggleButton.textContent = "🔒"; 
-    } else { 
-        password.type = "password"; 
-        toggleButton.textContent = "👁️"; 
+function togglePassword(inputId) {
+    const password = document.getElementById(inputId);
+    const toggleButton = password.nextElementSibling;
+    if (password.type === "password") {
+        password.type = "text";
+        toggleButton.textContent = "🔒";
+    } else {
+        password.type = "password";
+        toggleButton.textContent = "👁️";
     }
 }
 
@@ -17,7 +17,7 @@ function attachEyeToggles() {
     const toggleApp = document.getElementById('toggleProfApp');
     const togglePin = document.getElementById('toggleProfPin');
     if (toggleApp) {
-        toggleApp.addEventListener('click', function() {
+        toggleApp.addEventListener('click', function () {
             const input = document.getElementById('prof-apppass');
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
@@ -25,7 +25,7 @@ function attachEyeToggles() {
         });
     }
     if (togglePin) {
-        togglePin.addEventListener('click', function() {
+        togglePin.addEventListener('click', function () {
             const input = document.getElementById('prof-pin');
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
@@ -90,7 +90,7 @@ function openProfileModal() {
     document.getElementById('prof-email').value = currentUser.email;
     document.getElementById('prof-apppass').value = currentUser.appPassword || '';
     document.getElementById('prof-pin').value = '';
-    
+
     document.getElementById('prof-apppass').setAttribute('type', 'password');
     document.getElementById('prof-pin').setAttribute('type', 'password');
     if (document.getElementById('toggleProfApp')) document.getElementById('toggleProfApp').textContent = '👁️';
@@ -115,11 +115,11 @@ async function saveProfile() {
     if (!newFname || !newLname || !newEmail || !newAppPass) return alert("All fields are required.");
 
     const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
-    
+
     if (newEmail !== currentUser.email && users[newEmail]) return alert("Email already in use!");
 
     const oldEmail = currentUser.email;
-    
+
     if (newEmail !== oldEmail) {
         try {
             await fetch('http://localhost:3000/api/migrate-email', {
@@ -127,7 +127,7 @@ async function saveProfile() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ oldEmail, newEmail })
             });
-        } catch(e) { console.error("DB Migration Error", e); }
+        } catch (e) { console.error("DB Migration Error", e); }
 
         const keysToMigrate = [];
         for (let i = 0; i < localStorage.length; i++) {
@@ -144,7 +144,7 @@ async function saveProfile() {
     delete users[oldEmail];
     const updatedUser = { firstName: newFname, lastName: newLname, email: newEmail, appPassword: newAppPass, pin: currentUser.pin };
     users[newEmail] = updatedUser;
-    
+
     localStorage.setItem('mathTrackUsers', JSON.stringify(users));
     localStorage.setItem('currentUser', JSON.stringify(updatedUser));
 
@@ -158,7 +158,7 @@ async function deleteAccount() {
     if (pin !== currentUser.pin) return alert("Incorrect PIN! Cannot delete account.");
 
     if (confirm("WARNING: Are you absolutely sure you want to delete your account? This will permanently erase all your classes, students, and grades. This action CANNOT be undone.")) {
-        
+
         const email = currentUser.email;
         const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
         const storageKey = `savedClasses_${email}`;
@@ -168,7 +168,7 @@ async function deleteAccount() {
             const uniqueDbClassName = email + "_" + userClasses[i].name;
             try {
                 await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(uniqueDbClassName)}`, { method: 'DELETE' });
-            } catch(e) {
+            } catch (e) {
                 console.error("Error deleting class from database:", e);
             }
         }
@@ -263,18 +263,18 @@ function closeClass() {
 
 function saveClass() {
     const name = document.getElementById('classname').value;
-    const eval = document.getElementById('evaluation').value;
     const font = document.getElementById('font-family').value;
     const bgColor = getFinalColor('bg');
     const textColor = getFinalColor('text');
     const editIndex = parseInt(document.getElementById('edit-index').value);
 
     const currentStudents = editIndex >= 0 ? classData[editIndex].students : 0;
+    const currentEval = editIndex >= 0 ? classData[editIndex].eval : "";
 
     const newClass = {
         name: name,
         students: currentStudents,
-        eval: eval,
+        eval: currentEval,
         font: font,
         bgColor: bgColor,
         textColor: textColor
@@ -291,10 +291,20 @@ function saveClass() {
     updateClass();
 }
 
-function deleteClass(index) {
+// FIXED: Now ensures the SQLite database removes the class roster completely
+async function deleteClass(index) {
     if (confirm("Delete this class?")) {
+        const uniqueDbClassName = currentUser.email + "_" + classData[index].name;
+
         classData.splice(index, 1);
         localStorage.setItem(storageKey, JSON.stringify(classData));
+
+        try {
+            await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(uniqueDbClassName)}`, { method: 'DELETE' });
+        } catch (e) {
+            console.error("Failed to sync deletion with database", e);
+        }
+
         updateClass();
     }
 }
@@ -302,38 +312,39 @@ function deleteClass(index) {
 function getCurrentWeekLessonTitle(uniqueDbClassName) {
     const unitsKey = `units_${uniqueDbClassName}`;
     const lessonsKey = `lessons_${uniqueDbClassName}`;
-    
+
     const unitsStr = localStorage.getItem(unitsKey);
     const lessonsStr = localStorage.getItem(lessonsKey);
-    
+
     if (!unitsStr || !lessonsStr) return "N/A";
-    
+
     const units = JSON.parse(unitsStr);
     const lessons = JSON.parse(lessonsStr);
-    
+
     const today = new Date();
-    today.setHours(12, 0, 0, 0); 
-    
+    today.setHours(12, 0, 0, 0);
+
     for (let i = units.length - 1; i >= 0; i--) {
         let mondayParts = units[i].split('-');
         if (mondayParts.length === 3) {
             let mondayDate = new Date(mondayParts[0], mondayParts[1] - 1, mondayParts[2], 12, 0, 0);
-            
+
             if (today >= mondayDate) {
                 const diffTime = Math.abs(today - mondayDate);
                 const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                
+
                 if (diffDays >= 0 && diffDays <= 4) {
                     if (lessons[i] && lessons[i].titles && lessons[i].titles[diffDays]) {
                         return lessons[i].titles[diffDays];
                     }
                 }
-                break; 
+                break;
             }
         }
     }
     return "N/A";
 }
+
 
 function updateClass() {
     const grid = document.getElementById('newclass');
@@ -376,26 +387,26 @@ function updateClass() {
             if (!isNaN(eDate)) {
                 let today = new Date();
                 today.setHours(0, 0, 0, 0);
-                
+
                 if (eDate.getFullYear() < today.getFullYear() - 5) {
                     eDate.setFullYear(today.getFullYear());
                 }
-                
+
                 eDate.setHours(0, 0, 0, 0);
-                
+
                 if (eDate < today && (today - eDate) > (1000 * 60 * 60 * 24 * 30)) {
                     eDate.setFullYear(today.getFullYear() + 1);
                 }
 
                 let diffTime = eDate.getTime() - today.getTime();
                 let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                
+
                 if (diffDays === 0) evalText = "Today";
                 else if (diffDays === 1) evalText = "1 day";
                 else if (diffDays > 1) evalText = diffDays + " days";
                 else evalText = "Past";
             } else {
-                evalText = classData[i].eval; 
+                evalText = classData[i].eval;
             }
         }
 
