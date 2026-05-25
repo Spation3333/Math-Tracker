@@ -89,6 +89,14 @@ body.darkmode .datedisplay {
     color: #3498db;
 }
 
+body.darkmode .indexportal {
+    background-color: #2d2d2d;
+}
+
+body.darkmode .signupportal {
+    background-color: #2d2d2d;
+}
+
 body.darkmode .portal-container {
     background-color: #2d2d2d;
 }
@@ -97,7 +105,7 @@ body.darkmode label {
     color: #ffffff !important;
 }
 
-body.darkmode .rules-box {
+body.darkmode .rulebox {
     background: #333;
     border-color: rgb(212, 175, 55);
 }

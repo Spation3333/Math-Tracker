@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,8 @@
     <link href="styles.css" rel="stylesheet" />
     <link href="darkmode.css" rel="stylesheet" />
     <style>
-        body, button, input, select, textarea {
+        select,
+        textarea {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
@@ -22,20 +24,7 @@
             text-align: center;
         }
 
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-            margin-bottom: 15px;
-        }
-
-        .input-group label {
-            margin-bottom: 5px;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .input-group input {
+        .signupinput input {
             width: 100%;
             padding: 10px;
             box-sizing: border-box;
@@ -45,31 +34,14 @@
             color: var(--text-color, #000);
         }
 
-        .name-row {
+        .doubleinput {
             display: flex;
             gap: 15px;
         }
 
-        .rules-box {
-            background: #f9f9f9;
-            border: 1px solid var(--border-color, #ccc);
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-size: 0.9em;
-            text-align: left;
-        }
-
-        body.darkmode .rules-box {
-            background: #333;
-            border-color: rgb(212, 175, 55);
-        }
-
-        .rule { color: #e74c3c; margin: 3px 0; }
-        .rule.valid { color: #27ae60; }
-        .btn-full { width: 100%; padding: 15px; font-size: 1.1em; margin-top: 20px; cursor: pointer; border: none; border-radius: 5px; font-weight: bold;}
     </style>
 </head>
+
 <body>
     <div class="themewrapper" style="position: absolute; top: 20px; right: 20px;">
         <label class="switch">
@@ -80,47 +52,55 @@
 
     <div class="portal-container">
         <h1 class="welcomeheader" style="margin-bottom: 10px; font-size: 40px;">Recover PIN</h1>
-        <p style="margin-bottom: 30px; opacity: 0.8;" id="instructionText">Enter your email to receive a recovery code.</p>
+        <p style="margin-bottom: 30px; opacity: 0.8;" id="instructionText">Enter your email to receive a recovery code.
+        </p>
 
         <div id="step1">
-            <div class="input-group">
+            <div class="signupinput">
                 <label>Email Address</label>
                 <input type="email" id="email" placeholder="teacher@school.com">
             </div>
-            <button class="buttons btn-full" id="sendBtn" onclick="sendCode()">Send Recovery Code</button>
+            <button class="buttons largebuttons" id="sendBtn" onclick="sendCode()">Send Recovery Code</button>
         </div>
 
         <div id="step2" style="display: none;">
-            <div class="input-group" style="margin-bottom: 30px;">
+            <div class="signupinput" style="margin-bottom: 30px;">
                 <label style="color: var(--accent, #3498db);">4-Digit Recovery Code from Email</label>
-                <input type="text" id="recoveryCode" placeholder="Enter code" style="font-size: 1.2em; text-align: center; letter-spacing: 5px;" maxlength="4">
+                <input type="text" id="recoveryCode" placeholder="Enter code"
+                    style="font-size: 1.2em; text-align: center; letter-spacing: 5px;" maxlength="4">
             </div>
 
-            <div class="name-row">
-                <div class="input-group" style="flex: 1; position: relative;">
+            <div class="doubleinput">
+                <div class="signupinput" style="flex: 1; position: relative;">
                     <label>New 4-Digit PIN</label>
                     <input type="password" id="newPin" placeholder="1234" maxlength="4" style="padding-right: 35px;">
-                    <span id="toggleNewPin" style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
+                    <span id="toggleNewPin"
+                        style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
                 </div>
-                <div class="input-group" style="flex: 1; position: relative;">
+                <div class="signupinput" style="flex: 1; position: relative;">
                     <label>Confirm PIN</label>
                     <input type="password" id="confPin" placeholder="1234" maxlength="4" style="padding-right: 35px;">
-                    <span id="toggleConfPin" style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
+                    <span id="toggleConfPin"
+                        style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
                 </div>
             </div>
 
-            <div class="rules-box" id="rulesBox">
+            <div class="rulebox" id="rulesBox">
                 <div id="rule-length" class="rule">❌ Must be exactly 4 characters</div>
                 <div id="rule-number" class="rule">❌ Must contain only numbers</div>
                 <div id="rule-match" class="rule">❌ PINs must match</div>
             </div>
 
-            <button class="buttons btn-full" id="resetBtn" onclick="resetPassword()" disabled style="opacity: 0.5;">Reset Password</button>
+            <button class="buttons largebuttons" id="resetBtn" onclick="resetPassword()" disabled
+                style="opacity: 0.5;">Reset Password</button>
         </div>
 
-        <a href="index.html" style="display: block; margin-top: 20px; color: rgb(139, 107, 35); font-weight: bold; text-decoration: none;">← Back to Login</a>
+        <a href="index.html"
+            style="display: block; margin-top: 20px; color: rgb(139, 107, 35); font-weight: bold; text-decoration: none;">←
+            Back to Login</a>
     </div>
 
     <script src="signupScript.js"></script>
 </body>
+
 </html>

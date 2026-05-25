@@ -644,29 +644,6 @@ body.darkmode .date-widget-text {
     gap: 15px;
 }
 
-.signupinput {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.signupinput label {
-    font-weight: bold;
-    width: 140px;
-    text-align: left;
-}
-
-.signupinput input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background: var(--input-bg);
-    color: var(--text-color);
-    font-family: inherit;
-}
-
 .inline-class-edit {
     background: transparent;
     border: none;

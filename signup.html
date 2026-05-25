@@ -9,58 +9,11 @@
     <link href="styles.css" rel="stylesheet" />
     <link href="darkmode.css" rel="stylesheet" />
     <style>
-        body, button, input, select, textarea {
+        select,
+        textarea {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .portal-container {
-            max-width: 500px;
-            margin: 60px auto;
-            background-color: var(--card-bg, #fff);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-            margin-bottom: 15px;
-        }
-
-        .input-group label {
-            margin-bottom: 5px;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid var(--border-color, #ccc);
-            border-radius: 4px;
-        }
-
-        .name-row {
-            display: flex;
-            gap: 15px;
-        }
-
-        .rules-box {
-            background: #f9f9f9;
-            border: 1px solid var(--border-color, #ccc);
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-size: 0.9em;
-            text-align: left;
-        }
-
-        .rule { color: #e74c3c; margin: 3px 0; }
-        .rule.valid { color: #27ae60; }
-        .btn-full { width: 100%; padding: 15px; font-size: 1.1em; margin-top: 20px; cursor: pointer; border: none; border-radius: 5px; font-weight: bold; }
     </style>
 </head>
 
@@ -69,44 +22,56 @@
         <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider round"></span></label>
     </div>
 
-    <div class="portal-container">
+    <div class="signupportal">
         <h1 class="welcomeheader" style="margin-bottom: 10px; font-size: 40px;">Create Account</h1>
         <p style="margin-bottom: 30px; opacity: 0.8;">Join the MathTrack Portal</p>
 
-        <div class="name-row">
-            <div class="input-group" style="flex: 1;"><label>First Name</label><input type="text" id="firstName" placeholder="e.g. Jane"></div>
-            <div class="input-group" style="flex: 1;"><label>Last Name</label><input type="text" id="lastName" placeholder="e.g. Doe"></div>
+        <div class="doubleinput">
+            <div class="signupinput" style="flex: 1;"><label>First Name</label><input type="text" id="firstName"
+                    placeholder="e.g. Jane"></div>
+            <div class="signupinput" style="flex: 1;"><label>Last Name</label><input type="text" id="lastName"
+                    placeholder="e.g. Doe"></div>
         </div>
 
-        <div class="input-group"><label>Email Address (Username)</label><input type="email" id="email" placeholder="teacher@school.com"></div>
+        <div class="signupinput"><label>Email Address (Username)</label><input type="email" id="email"
+                placeholder="teacher@school.com"></div>
 
-        <div class="input-group" style="position: relative;">
+        <div class="signupinput" style="position: relative;">
             <label>Gmail App Password</label>
             <input type="password" id="appPassword" placeholder="16-letter password" style="padding-right: 35px;">
-            <span id="toggleAppPass" style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
+            <span id="toggleAppPass"
+                style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
         </div>
 
-        <div class="name-row">
-            <div class="input-group" style="flex: 1; position: relative;">
-                <label>4-Digit PIN</label><input type="password" id="pin" placeholder="1234" maxlength="4" style="padding-right: 35px;">
-                <span id="togglePin" style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
+        <div class="doubleinput">
+            <div class="signupinput" style="flex: 1; position: relative;">
+                <label>4-Digit PIN</label><input type="password" id="pin" placeholder="1234" maxlength="4"
+                    style="padding-right: 35px;">
+                <span id="togglePin"
+                    style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
             </div>
-            <div class="input-group" style="flex: 1; position: relative;">
-                <label>Confirm PIN</label><input type="password" id="confPin" placeholder="1234" maxlength="4" style="padding-right: 35px;">
-                <span id="toggleConfPin" style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
+            <div class="signupinput" style="flex: 1; position: relative;">
+                <label>Confirm PIN</label><input type="password" id="confPin" placeholder="1234" maxlength="4"
+                    style="padding-right: 35px;">
+                <span id="toggleConfPin"
+                    style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
             </div>
         </div>
 
-        <div class="rules-box" id="rulesBox">
+        <div class="rulebox" id="rulesBox">
             <div id="rule-length" class="rule">❌ Must be exactly 4 characters</div>
             <div id="rule-number" class="rule">❌ Must contain only numbers</div>
             <div id="rule-match" class="rule">❌ PINs must match</div>
         </div>
 
-        <button class="buttons btn-full" id="signupBtn" onclick="createAccount()" disabled style="opacity: 0.5;">Create Account & Login</button>
-        <a href="index.html" style="display: block; margin-top: 20px; color: rgb(139, 107, 35); font-weight: bold; text-decoration: none;">← Back to Login</a>
+        <button class="buttons largebuttons" id="signupBtn" onclick="createAccount()" disabled style="opacity: 0.5;">Create
+            Account & Login</button>
+        <a href="index.html"
+            style="display: block; margin-top: 20px; color: rgb(139, 107, 35); font-weight: bold; text-decoration: none;">←
+            Back to Login</a>
     </div>
 
     <script src="signupScript.js"></script>
 </body>
+
 </html>

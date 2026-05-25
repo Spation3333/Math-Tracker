@@ -659,9 +659,9 @@ function renderRosterTable() {
         parsedContacts.forEach(c => {
             parentEditHtml += `
                 <div class="parent-email-row" style="display: flex; gap: 5px; margin-bottom: 5px;">
-                    <input type="text" class="parent-name-input" placeholder="Name" value="${c.name || ''}" style="width: 30%; flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
-                    <input type="text" class="parent-rel-input" placeholder="Relation" value="${c.rel || ''}" style="width: 30%; flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
-                    <input type="text" class="parent-email-input" placeholder="Email" value="${c.email || ''}" style="flex: 2; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+                    <input type="text" class="parent-name-input" placeholder="Name" value="${c.name || ''}" style="width: 30%; flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);" onchange="saveStudentChanges(${student.id})">
+                    <input type="text" class="parent-rel-input" placeholder="Relation" value="${c.rel || ''}" style="width: 30%; flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);" onchange="saveStudentChanges(${student.id})">
+                    <input type="text" class="parent-email-input" placeholder="Email" value="${c.email || ''}" style="flex: 2; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);" onchange="saveStudentChanges(${student.id})">
                 </div>
             `;
         });
@@ -670,12 +670,13 @@ function renderRosterTable() {
         const fName = nameParts[0];
         const lName = nameParts.slice(1).join(' ');
 
+        // Auto-save relies on onchange passing the student.id 
         tbodyHTML += `
             <tr data-student-id="${student.id}" class="student-row">
                 <td class="student-cell" style="text-align:left;">
                     <div class="student-card">
                         <div class="student-header" onclick="toggleStudentDetails(${student.id})" style="align-items: flex-start; cursor: pointer;">
-                            <div>
+                            <div id="student-header-info-${student.id}">
                                 <h4 style="margin: 0; font-size: 1.1em;">${index + 1}. ${student.name}</h4>
                                 ${contactsDisplayHtml}
                             </div>
@@ -689,16 +690,15 @@ function renderRosterTable() {
                         </div>
                         <div class="student-details" id="details-${student.id}" style="display:none; margin-top: 10px;">
                             <div class="form-row" style="display:flex; gap:10px;">
-                                <div class="form-group" style="flex:1;"><label style="font-weight:bold; font-size:0.8em;">First</label><input type="text" id="fname-${student.id}" value="${fName}" style="width:100%; padding:5px;"></div>
-                                <div class="form-group" style="flex:1;"><label style="font-weight:bold; font-size:0.8em;">Last</label><input type="text" id="lname-${student.id}" value="${lName}" style="width:100%; padding:5px;"></div>
+                                <div class="form-group" style="flex:1;"><label style="font-weight:bold; font-size:0.8em;">First</label><input type="text" id="fname-${student.id}" value="${fName}" style="width:100%; padding:5px;" onchange="saveStudentChanges(${student.id})"></div>
+                                <div class="form-group" style="flex:1;"><label style="font-weight:bold; font-size:0.8em;">Last</label><input type="text" id="lname-${student.id}" value="${lName}" style="width:100%; padding:5px;" onchange="saveStudentChanges(${student.id})"></div>
                             </div>
-                            <div class="form-group" style="margin-top:10px;"><label style="font-weight:bold; font-size:0.8em;">Student Email (Optional)</label><input type="text" id="semail-${student.id}" value="${student.student_email || ''}" style="width:100%; padding:5px;"></div>
+                            <div class="form-group" style="margin-top:10px;"><label style="font-weight:bold; font-size:0.8em;">Student Email (Optional)</label><input type="text" id="semail-${student.id}" value="${student.student_email || ''}" style="width:100%; padding:5px;" onchange="saveStudentChanges(${student.id})"></div>
                             <div class="form-group" id="parent-container-${student.id}" style="margin-top:10px;"><label style="font-weight:bold; font-size:0.8em;">Contacts (Name, Relationship, Email)</label>
                                 ${parentEditHtml}
                             </div>
-                            <div style="display:flex; justify-content:space-between; margin-top: 10px;">
+                            <div style="display:flex; justify-content:flex-start; margin-top: 10px;">
                                 <button class="btn-add-circle" onclick="addParentInput(${student.id})">+</button>
-                                <button class="btn btn-primary" style="font-size: 0.8em;" onclick="saveStudentChanges(${student.id})">Save Edit</button>
                             </div>
                         </div>
                     </div>
@@ -808,13 +808,14 @@ function addParentInput(id) {
     newRow.className = 'parent-email-row';
     newRow.style.cssText = 'display: flex; gap: 5px; margin-bottom: 5px;';
     newRow.innerHTML = `
-        <input type="text" class="parent-name-input" placeholder="Name" style="width: 30%; flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
-        <input type="text" class="parent-rel-input" placeholder="Relation" style="width: 30%; flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
-        <input type="text" class="parent-email-input" placeholder="Email" style="flex: 2; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+        <input type="text" class="parent-name-input" placeholder="Name" style="width: 30%; flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);" onchange="saveStudentChanges(${id})">
+        <input type="text" class="parent-rel-input" placeholder="Relation" style="width: 30%; flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);" onchange="saveStudentChanges(${id})">
+        <input type="text" class="parent-email-input" placeholder="Email" style="flex: 2; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);" onchange="saveStudentChanges(${id})">
     `;
     container.appendChild(newRow);
 }
 
+// Seamless Auto-Save Function
 async function saveStudentChanges(id) {
     const fname = document.getElementById(`fname-${id}`).value.trim();
     const lname = document.getElementById(`lname-${id}`).value.trim();
@@ -836,19 +837,43 @@ async function saveStudentChanges(id) {
 
     const guardian_email = emailList.join(',');
     const contacts_info = JSON.stringify(contactsList);
+    const fullName = `${fname} ${lname}`.trim();
+
+    // Silently update the local memory array without full table redraw
+    const sIndex = studentsData.findIndex(s => s.id === id);
+    if (sIndex > -1) {
+        studentsData[sIndex].name = fullName;
+        studentsData[sIndex].student_email = sEmail;
+        studentsData[sIndex].guardian_email = guardian_email;
+        studentsData[sIndex].contacts_info = contacts_info;
+
+        // Visually update the header text specifically to avoid stealing focus
+        const headerInfoDiv = document.getElementById(`student-header-info-${id}`);
+        if (headerInfoDiv) {
+            let contactsDisplayHtml = '';
+            if (sEmail && sEmail !== '') {
+                contactsDisplayHtml += `<div style="font-size: 0.8em; margin-top: 2px; line-height: 1.3;"><span style="color: gray;">${sEmail}</span></div>`;
+            }
+            contactsList.forEach(c => {
+                if (c.email || c.name) {
+                    contactsDisplayHtml += `<div style="font-size: 0.8em; margin-top: 6px; line-height: 1.3;"><span style="font-weight: bold; color: var(--text-color);">${c.name || 'Guardian'} ${c.rel ? `(${c.rel})` : ''}</span><br><span style="color: gray;">${c.email || 'No email'}</span></div>`;
+                }
+            });
+            headerInfoDiv.innerHTML = `<h4 style="margin: 0; font-size: 1.1em;">${sIndex + 1}. ${fullName}</h4>${contactsDisplayHtml}`;
+        }
+    }
 
     try {
         await fetch(`http://localhost:3000/api/update/${id}`, {
             method: 'PUT', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                name: `${fname} ${lname}`.trim(),
+                name: fullName,
                 student_email: sEmail,
                 guardian_email: guardian_email,
                 contacts_info: contacts_info
             })
         });
-        alert("Student saved!"); loadStudentsData();
-    } catch (err) { alert("Error saving."); }
+    } catch (err) { console.error("Error auto-saving.", err); }
 }
 
 async function deleteStudent(event, id) {
