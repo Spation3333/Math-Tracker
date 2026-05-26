@@ -130,7 +130,7 @@
     </div>
 
     <div style="flex: 1; width: 100%;">
-        <h1 class="welcomeheader" style="margin-top: 130px; margin-bottom: 10px; text-align: center;">Archived Classes</h1>
+        <h1 class="welcomeheader" style="margin-top: 50px; margin-bottom: 10px; text-align: center;">Archived Classes</h1>
         <h2 class="subtitle" style="text-align: center; margin-bottom: 40px;">Recover or permanently delete your
             inactive classes:</h2>
 
@@ -394,7 +394,7 @@
                 card.style.opacity = '0.7'; // Grays out the entire card
 
                 card.innerHTML = `
-                    <button class="buttons cardedit" style="background-color: #27ae60; color: white; border: none; opacity: 1;" onclick="event.stopPropagation(); recoverClass(${i})">↩</button>
+                    <button class="buttons cardrecover" style="background-color: #27ae60; color: white; border: none; opacity: 1;" onclick="event.stopPropagation(); recoverClass(${i})">↩</button>
                     <button class="buttons carddelete" style="opacity: 1;" onclick="event.stopPropagation(); permanentDelete(${i})">🗑️</button>
                    
                     <div style="padding-top: 10px; text-align: center; font-family: ${archivedData[i].font || 'inherit'};">

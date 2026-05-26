@@ -155,6 +155,16 @@ input[type="color"] {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
+.recoveryportal {
+    max-width: 500px;
+    margin: 60px auto;
+    background-color: var(--card-bg, #fff);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
 .mainbuttonsrow {
     display: flex;
     gap: 15px;
@@ -205,6 +215,8 @@ input[type="color"] {
     box-sizing: border-box;
     border: 1px solid var(--border-color, #ccc);
     border-radius: 4px;
+    background: var(--input-bg, #fff);
+    color: var(--text-color, #000);
 }
 
 .doubleinput {
@@ -362,6 +374,7 @@ input[type="color"] {
 }
 
 .cardedit,
+.cardrecover,
 .carddelete {
     position: absolute;
     top: 10px;
@@ -373,6 +386,14 @@ input[type="color"] {
 
 .cardedit {
     left: 10px;
+}
+
+.cardrecover {
+    left: 10px;
+}
+
+.cardrecover:hover {
+    background-color: #2196F3;
 }
 
 .carddelete {
