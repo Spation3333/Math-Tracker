@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archived Classes</title>
+    <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
+    <link href="styles.css" rel="stylesheet" />
+    <link href="darkmode.css" rel="stylesheet" />
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .top-widget {
+            position: absolute;
+            top: 20px;
+            background: var(--card-bg, #fff);
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 2px solid rgb(139, 107, 35);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 65px;
+            box-sizing: border-box;
+        }
+
+        body.darkmode .top-widget {
+            background: #2d2d2d;
+            border-color: rgb(212, 175, 55);
+        }
+
+        .profile-widget {
+            right: 20px;
+            text-align: right;
+            cursor: pointer;
+        }
+
+        .date-widget {
+            left: 20px;
+            text-align: left;
+        }
+
+        .date-widget-text {
+            font-weight: bold;
+            color: rgb(139, 107, 35);
+            font-size: 1.1em;
+            margin: 0;
+        }
+
+        body.darkmode .date-widget-text {
+            color: rgb(212, 175, 55);
+        }
+
+        .newclass {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto 40px auto;
+            justify-items: center;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modalcontent {
+            background-color: var(--card-bg, #fff);
+            padding: 30px;
+            border-radius: 10px;
+            border: 3px solid rgb(139, 107, 35);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .selectinput {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .selectinput label {
+            font-weight: bold;
+            width: 140px;
+            text-align: left;
+        }
+
+        .selectinput input,
+        .selectinput select {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border-color, #ccc);
+            border-radius: 4px;
+            background: var(--input-bg, #fff);
+            color: var(--text-color, #000);
+            font-family: inherit;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-widget date-widget">
+        <p id="currentdate" class="date-widget-text"></p>
+    </div>
+
+    <div class="top-widget profile-widget" onclick="openProfileModal()">
+        <div id="profile-name" style="font-weight: bold; font-size: 1.1em; color: rgb(139, 107, 35);"></div>
+        <div id="profile-email" style="font-size: 0.85em; color: gray;"></div>
+    </div>
+
+    <div style="flex: 1; width: 100%;">
+        <h1 class="welcomeheader" style="margin-top: 130px; margin-bottom: 10px; text-align: center;">Archived Classes</h1>
+        <h2 class="subtitle" style="text-align: center; margin-bottom: 40px;">Recover or permanently delete your
+            inactive classes:</h2>
+
+        <div class="newclass" id="archive-container"></div>
+    </div>
+
+    <div id="profile-modal" class="modal">
+        <div class="modalcontent" style="max-width: 450px; width: 100%;">
+            <h2 style="margin-top:0;">Edit Profile</h2>
+            <div class="selectinput" style="justify-content: space-between;"><label>First Name:</label><input
+                    type="text" id="prof-fname"></div>
+            <div class="selectinput" style="justify-content: space-between;"><label>Last Name:</label><input type="text"
+                    id="prof-lname"></div>
+            <div class="selectinput" style="justify-content: space-between;"><label>Username:</label><input type="email"
+                    id="prof-email"></div>
+
+            <div class="selectinput" style="justify-content: space-between;">
+                <label>App Password:</label>
+                <div style="position: relative; flex: 1;">
+                    <input type="password" id="prof-apppass"
+                        style="width: 100%; box-sizing: border-box; padding-right: 30px;">
+                    <span id="toggleProfApp"
+                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
+                </div>
+            </div>
+
+            <hr style="width:100%; border: 0; border-top: 1px solid var(--border-color, #ccc); margin: 20px 0;">
+
+            <div class="selectinput" style="justify-content: space-between;">
+                <label style="color:var(--danger, #e74c3c);">Confirm PIN:</label>
+                <div style="position: relative; flex: 1;">
+                    <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes"
+                        style="width: 100%; box-sizing: border-box; padding-right: 30px;">
+                    <span id="toggleProfPin"
+                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
+                </div>
+            </div>
+
+            <div class="modalaction"
+                style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                <button class="buttons" style="border:none; border-radius:5px;" onclick="saveProfile()">Save
+                    Changes</button>
+                <button class="buttons" style="border:none; border-radius:5px; background-color: #c0392b; color: white;"
+                    onclick="deleteAccount()">Delete Account</button>
+                <button class="buttons cancelbutton"
+                    style="border:none; border-radius:5px; background-color: #95a5a6; color: white;"
+                    onclick="closeProfileModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div
+        style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 20px 30px; width: 100%; box-sizing: border-box; margin-top: auto;">
+        <div style="display: flex; justify-content: flex-start;">
+            <a href="select.html" class="buttons backbuttons"
+                style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0;"> back </a>
+        </div>
+
+        <div></div>
+
+        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
+            <span style="font-size: 0.9em; font-weight: bold; color: var(--text-color, #333);">Dark Mode</span>
+            <label class="switch" style="margin: 0;">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </div>
+
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('darkmode');
+            if (themeToggle) themeToggle.checked = true;
+        }
+
+        if (themeToggle) {
+            themeToggle.addEventListener('change', function () {
+                if (this.checked) {
+                    body.classList.add('darkmode');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    body.classList.remove('darkmode');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+        }
+
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) window.location.href = 'index.html';
+
+        document.getElementById('currentdate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        const profNameEl = document.getElementById('profile-name');
+        if (profNameEl) {
+            profNameEl.textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+            if (body.classList.contains('darkmode')) profNameEl.style.color = "rgb(212, 175, 55)";
+        }
+        document.getElementById('profile-email').textContent = currentUser.email;
+
+        // Toggle Password visibility for profile modal
+        function attachEyeToggles() {
+            const toggleApp = document.getElementById('toggleProfApp');
+            const togglePin = document.getElementById('toggleProfPin');
+            if (toggleApp) {
+                toggleApp.addEventListener('click', function () {
+                    const input = document.getElementById('prof-apppass');
+                    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                    input.setAttribute('type', type);
+                    this.textContent = type === 'password' ? '👁️' : '🔒';
+                });
+            }
+            if (togglePin) {
+                togglePin.addEventListener('click', function () {
+                    const input = document.getElementById('prof-pin');
+                    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                    input.setAttribute('type', type);
+                    this.textContent = type === 'password' ? '👁️' : '🔒';
+                });
+            }
+        }
+        attachEyeToggles();
+
+        // Profile Modal Logic
+        function openProfileModal() {
+            document.getElementById('prof-fname').value = currentUser.firstName;
+            document.getElementById('prof-lname').value = currentUser.lastName;
+            document.getElementById('prof-email').value = currentUser.email;
+            document.getElementById('prof-apppass').value = currentUser.appPassword || '';
+            document.getElementById('prof-pin').value = '';
+
+            document.getElementById('prof-apppass').setAttribute('type', 'password');
+            document.getElementById('prof-pin').setAttribute('type', 'password');
+            if (document.getElementById('toggleProfApp')) document.getElementById('toggleProfApp').textContent = '👁️';
+            if (document.getElementById('toggleProfPin')) document.getElementById('toggleProfPin').textContent = '👁️';
+
+            document.getElementById('profile-modal').style.display = 'flex';
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').style.display = 'none';
+        }
+
+        async function saveProfile() {
+            const pin = document.getElementById('prof-pin').value;
+            if (pin !== currentUser.pin) return alert("Incorrect PIN! Cannot save changes.");
+
+            const newFname = document.getElementById('prof-fname').value.trim();
+            const newLname = document.getElementById('prof-lname').value.trim();
+            const newEmail = document.getElementById('prof-email').value.trim().toLowerCase();
+            const newAppPass = document.getElementById('prof-apppass').value.trim();
+
+            if (!newFname || !newLname || !newEmail || !newAppPass) return alert("All fields are required.");
+
+            const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
+
+            if (newEmail !== currentUser.email && users[newEmail]) return alert("Email already in use!");
+
+            const oldEmail = currentUser.email;
+
+            if (newEmail !== oldEmail) {
+                try {
+                    await fetch('http://localhost:3000/api/migrate-email', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ oldEmail, newEmail })
+                    });
+                } catch (e) { console.error("DB Migration Error", e); }
+
+                const keysToMigrate = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.includes(oldEmail)) keysToMigrate.push(key);
+                }
+                keysToMigrate.forEach(key => {
+                    const newKey = key.replace(oldEmail, newEmail);
+                    localStorage.setItem(newKey, localStorage.getItem(key));
+                    localStorage.removeItem(key);
+                });
+            }
+
+            delete users[oldEmail];
+            const updatedUser = { firstName: newFname, lastName: newLname, email: newEmail, appPassword: newAppPass, pin: currentUser.pin };
+            users[newEmail] = updatedUser;
+
+            localStorage.setItem('mathTrackUsers', JSON.stringify(users));
+            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+
+            alert("Profile updated successfully!");
+            window.location.reload();
+        }
+
+        async function deleteAccount() {
+            const pin = document.getElementById('prof-pin').value;
+            if (!pin) return alert("Please enter your PIN to authorize account deletion.");
+            if (pin !== currentUser.pin) return alert("Incorrect PIN! Cannot delete account.");
+
+            if (confirm("WARNING: Are you absolutely sure you want to delete your account? This will permanently erase all your classes, students, and grades. This action CANNOT be undone.")) {
+
+                const email = currentUser.email;
+                const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
+
+                const storageKey = `savedClasses_${email}`;
+                const archiveKey = `archivedClasses_${email}`;
+
+                const userClasses = JSON.parse(localStorage.getItem(storageKey)) || [];
+                const archivedClasses = JSON.parse(localStorage.getItem(archiveKey)) || [];
+
+                const allClasses = [...userClasses, ...archivedClasses];
+
+                for (let i = 0; i < allClasses.length; i++) {
+                    const uniqueDbClassName = email + "_" + allClasses[i].name;
+                    try {
+                        await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(uniqueDbClassName)}`, { method: 'DELETE' });
+                    } catch (e) {
+                        console.error("Error deleting class from database:", e);
+                    }
+                }
+
+                const keysToDelete = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.includes(email)) {
+                        keysToDelete.push(key);
+                    }
+                }
+                keysToDelete.forEach(k => localStorage.removeItem(k));
+
+                delete users[email];
+                localStorage.setItem('mathTrackUsers', JSON.stringify(users));
+                localStorage.removeItem('currentUser');
+
+                alert("Account permanently deleted.");
+                window.location.href = 'index.html';
+            }
+        }
+
+        const archiveKey = `archivedClasses_${currentUser.email}`;
+        const storageKey = `savedClasses_${currentUser.email}`;
+        let archivedData = JSON.parse(localStorage.getItem(archiveKey)) || [];
+        let classData = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+        function renderArchives() {
+            const grid = document.getElementById('archive-container');
+            grid.innerHTML = '';
+
+            if (archivedData.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-color, #333); font-size: 1.2em;">No archived classes found.</div>`;
+                return;
+            }
+
+            for (let i = 0; i < archivedData.length; i++) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'cardwrapper';
+
+                const card = document.createElement('div');
+                card.className = 'classcard';
+                card.style.backgroundColor = archivedData[i].bgColor || '#eee';
+                card.style.opacity = '0.7'; // Grays out the entire card
+
+                card.innerHTML = `
+                    <button class="buttons cardedit" style="background-color: #27ae60; color: white; border: none; opacity: 1;" onclick="event.stopPropagation(); recoverClass(${i})">↩</button>
+                    <button class="buttons carddelete" style="opacity: 1;" onclick="event.stopPropagation(); permanentDelete(${i})">🗑️</button>
+                   
+                    <div style="padding-top: 10px; text-align: center; font-family: ${archivedData[i].font || 'inherit'};">
+                        <div class="class-title" style="color: ${archivedData[i].textColor || 'rgb(139, 107, 35)'};">${archivedData[i].name}</div>
+                        <p style="color: ${archivedData[i].textColor || 'black'}; margin-top: 15px; font-weight: bold;">Status: Archived</p>
+                        <p style="color: ${archivedData[i].textColor || 'black'}; font-size: 0.85em;">All grades & students preserved.</p>
+                    </div>
+                `;
+
+                wrapper.appendChild(card);
+                grid.appendChild(wrapper);
+            }
+        }
+
+        function recoverClass(index) {
+            if (classData.length >= 8) {
+                alert("You already have 8 active classes. Please archive or delete an active class before recovering this one.");
+                return;
+            }
+
+            const recoveredClass = archivedData.splice(index, 1)[0];
+            classData.push(recoveredClass);
+
+            localStorage.setItem(archiveKey, JSON.stringify(archivedData));
+            localStorage.setItem(storageKey, JSON.stringify(classData));
+
+            renderArchives();
+            alert("Class recovered successfully! It is now visible on your Select Class screen.");
+        }
+
+        async function permanentDelete(index) {
+            if (confirm("WARNING: Are you absolutely sure you want to permanently delete this class? ALL student data, marks, and lessons will be erased. This CANNOT be undone.")) {
+                const uniqueDbClassName = currentUser.email + "_" + archivedData[index].name;
+
+                try {
+                    // Permanently purge from database
+                    await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(uniqueDbClassName)}`, { method: 'DELETE' });
+
+                    // Purge isolated structures out of LocalStorage
+                    localStorage.removeItem(`units_${uniqueDbClassName}`);
+                    localStorage.removeItem(`lessons_${uniqueDbClassName}`);
+                    localStorage.removeItem(`marks_${uniqueDbClassName}`);
+                    localStorage.removeItem(`studentOrder_${uniqueDbClassName}`);
+                    localStorage.removeItem(`emailTemplate_${uniqueDbClassName}`);
+
+                    // Remove from active archive array
+                    archivedData.splice(index, 1);
+                    localStorage.setItem(archiveKey, JSON.stringify(archivedData));
+
+                    renderArchives();
+                } catch (e) {
+                    alert("Failed to permanently delete from server.");
+                }
+            }
+        }
+
+        window.onload = renderArchives;
+    </script>
+</body>
+
+</html>

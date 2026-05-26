@@ -161,11 +161,18 @@ async function deleteAccount() {
 
         const email = currentUser.email;
         const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
-        const storageKey = `savedClasses_${email}`;
-        const userClasses = JSON.parse(localStorage.getItem(storageKey)) || [];
 
-        for (let i = 0; i < userClasses.length; i++) {
-            const uniqueDbClassName = email + "_" + userClasses[i].name;
+        const storageKey = `savedClasses_${email}`;
+        const archiveKey = `archivedClasses_${email}`;
+
+        const userClasses = JSON.parse(localStorage.getItem(storageKey)) || [];
+        const archivedClasses = JSON.parse(localStorage.getItem(archiveKey)) || [];
+
+        // Ensures archived classes are permanently deleted as well
+        const allClasses = [...userClasses, ...archivedClasses];
+
+        for (let i = 0; i < allClasses.length; i++) {
+            const uniqueDbClassName = email + "_" + allClasses[i].name;
             try {
                 await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(uniqueDbClassName)}`, { method: 'DELETE' });
             } catch (e) {
@@ -242,7 +249,6 @@ function openClass(editIndex = -1) {
         title.textContent = "Edit Class";
         indexTracker.value = editIndex;
         document.getElementById('classname').value = classData[editIndex].name;
-        document.getElementById('evaluation').value = classData[editIndex].eval || "";
         document.getElementById('font-family').value = classData[editIndex].font || "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
         setDropdownColor('bg', classData[editIndex].bgColor);
         setDropdownColor('text', classData[editIndex].textColor);
@@ -250,7 +256,6 @@ function openClass(editIndex = -1) {
         title.textContent = "Create New Class";
         indexTracker.value = -1;
         document.getElementById('classname').value = "";
-        document.getElementById('evaluation').value = "";
         document.getElementById('font-family').selectedIndex = 0;
         setDropdownColor('bg', '#f9f9f9');
         setDropdownColor('text', '#000000');
@@ -269,6 +274,7 @@ function saveClass() {
     const editIndex = parseInt(document.getElementById('edit-index').value);
 
     const currentStudents = editIndex >= 0 ? classData[editIndex].students : 0;
+    // Keep eval so it doesn't get overwritten with undefined if saving from here
     const currentEval = editIndex >= 0 ? classData[editIndex].eval : "";
 
     const newClass = {
@@ -291,19 +297,18 @@ function saveClass() {
     updateClass();
 }
 
-// FIXED: Now ensures the SQLite database removes the class roster completely
-async function deleteClass(index) {
-    if (confirm("Delete this class?")) {
-        const uniqueDbClassName = currentUser.email + "_" + classData[index].name;
+function deleteClass(index) {
+    if (confirm("Archive this class? (You can recover it later from the Archived Classes page)")) {
+        const archiveKey = currentUser ? `archivedClasses_${currentUser.email}` : 'archivedClasses';
+        let archivedData = JSON.parse(localStorage.getItem(archiveKey)) || [];
 
+        // Save into Archive
+        archivedData.push(classData[index]);
+        localStorage.setItem(archiveKey, JSON.stringify(archivedData));
+
+        // Remove from Active Classes
         classData.splice(index, 1);
         localStorage.setItem(storageKey, JSON.stringify(classData));
-
-        try {
-            await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(uniqueDbClassName)}`, { method: 'DELETE' });
-        } catch (e) {
-            console.error("Failed to sync deletion with database", e);
-        }
 
         updateClass();
     }
@@ -344,7 +349,6 @@ function getCurrentWeekLessonTitle(uniqueDbClassName) {
     }
     return "N/A";
 }
-
 
 function updateClass() {
     const grid = document.getElementById('newclass');
