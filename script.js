@@ -52,7 +52,10 @@ if (themeToggle) {
 }
 
 window.addEventListener('DOMContentLoaded', function () {
-    if (document.getElementById('newclass')) updateClass();
+    if (document.getElementById('newclass')) {
+        initializeFixedGrid();
+        updateClass();
+    }
     if (document.getElementById('currentdate')) displayDate();
     attachEyeToggles();
 });
@@ -168,8 +171,7 @@ async function deleteAccount() {
         const userClasses = JSON.parse(localStorage.getItem(storageKey)) || [];
         const archivedClasses = JSON.parse(localStorage.getItem(archiveKey)) || [];
 
-        // Ensures archived classes are permanently deleted as well
-        const allClasses = [...userClasses, ...archivedClasses];
+        const allClasses = [...userClasses, ...archivedClasses].filter(c => c !== null);
 
         for (let i = 0; i < allClasses.length; i++) {
             const uniqueDbClassName = email + "_" + allClasses[i].name;
@@ -199,7 +201,26 @@ async function deleteAccount() {
 }
 
 const storageKey = currentUser ? `savedClasses_${currentUser.email}` : 'savedClasses';
-let classData = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+// Convert existing array structure to a rigid 8-slot array representing absolute grid positions
+function initializeFixedGrid() {
+    let loadedData = JSON.parse(localStorage.getItem(storageKey));
+    if (!Array.isArray(loadedData) || loadedData.length !== 8) {
+        let fixedArray = new Array(8).fill(null);
+        if (Array.isArray(loadedData)) {
+            // Map old data into the new structure
+            for (let i = 0; i < loadedData.length && i < 8; i++) {
+                fixedArray[i] = loadedData[i];
+            }
+        }
+        localStorage.setItem(storageKey, JSON.stringify(fixedArray));
+    }
+}
+
+function getClassData() {
+    return JSON.parse(localStorage.getItem(storageKey)) || new Array(8).fill(null);
+}
+
 let dragStart;
 
 function toggleCustomColor(type) {
@@ -239,22 +260,24 @@ function setDropdownColor(type, savedColor) {
     }
 }
 
-function openClass(editIndex = -1) {
+// Open class explicitly tracks which grid index was clicked
+function openClass(editIndex) {
     const modal = document.getElementById('modal');
     const title = document.getElementById('modalheader');
     const indexTracker = document.getElementById('edit-index');
     modal.style.display = 'flex';
 
-    if (editIndex >= 0) {
+    let classData = getClassData();
+    indexTracker.value = editIndex; // Always strictly sets target grid slot
+
+    if (classData[editIndex] !== null) {
         title.textContent = "Edit Class";
-        indexTracker.value = editIndex;
         document.getElementById('classname').value = classData[editIndex].name;
         document.getElementById('font-family').value = classData[editIndex].font || "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
         setDropdownColor('bg', classData[editIndex].bgColor);
         setDropdownColor('text', classData[editIndex].textColor);
     } else {
         title.textContent = "Create New Class";
-        indexTracker.value = -1;
         document.getElementById('classname').value = "";
         document.getElementById('font-family').selectedIndex = 0;
         setDropdownColor('bg', '#f9f9f9');
@@ -273,9 +296,10 @@ function saveClass() {
     const textColor = getFinalColor('text');
     const editIndex = parseInt(document.getElementById('edit-index').value);
 
-    const currentStudents = editIndex >= 0 ? classData[editIndex].students : 0;
-    // Keep eval so it doesn't get overwritten with undefined if saving from here
-    const currentEval = editIndex >= 0 ? classData[editIndex].eval : "";
+    let classData = getClassData();
+
+    const currentStudents = classData[editIndex] !== null ? classData[editIndex].students : 0;
+    const currentEval = classData[editIndex] !== null ? classData[editIndex].eval : "";
 
     const newClass = {
         name: name,
@@ -286,28 +310,28 @@ function saveClass() {
         textColor: textColor
     };
 
-    if (editIndex >= 0) {
-        classData[editIndex] = newClass;
-    } else if (classData.length < 8) {
-        classData.push(newClass);
-    }
-
+    // Insert new class explicitly into the clicked grid index
+    classData[editIndex] = newClass;
     localStorage.setItem(storageKey, JSON.stringify(classData));
+
     closeClass();
     updateClass();
 }
 
 function deleteClass(index) {
     if (confirm("Archive this class? (You can recover it later from the Archived Classes page)")) {
+        let classData = getClassData();
         const archiveKey = currentUser ? `archivedClasses_${currentUser.email}` : 'archivedClasses';
         let archivedData = JSON.parse(localStorage.getItem(archiveKey)) || [];
 
-        // Save into Archive
-        archivedData.push(classData[index]);
+        // Save into Archive mapping with its original index
+        let archivedObj = classData[index];
+        archivedObj.originalIndex = index;
+        archivedData.push(archivedObj);
         localStorage.setItem(archiveKey, JSON.stringify(archivedData));
 
-        // Remove from Active Classes
-        classData.splice(index, 1);
+        // Delete from Active grid by replacing with null
+        classData[index] = null;
         localStorage.setItem(storageKey, JSON.stringify(classData));
 
         updateClass();
@@ -355,108 +379,118 @@ function updateClass() {
     if (!grid) return;
     grid.innerHTML = '';
 
-    for (let i = 0; i < classData.length; i++) {
+    let classData = getClassData();
+
+    // Iterate exactly 8 times over the grid array
+    for (let i = 0; i < 8; i++) {
         const wrapper = document.createElement('div');
         wrapper.className = 'cardwrapper';
-        wrapper.draggable = true;
 
-        wrapper.addEventListener('dragstart', function () { dragStartIndex = i; this.classList.add('dragging'); });
-        wrapper.addEventListener('dragend', function () { this.classList.remove('dragging'); });
+        // Set up drop target logic universally (so you can drag onto empty spaces)
         wrapper.addEventListener('dragover', function (e) { e.preventDefault(); });
         wrapper.addEventListener('dragenter', function (e) { e.preventDefault(); this.classList.add('drag-over'); });
         wrapper.addEventListener('dragleave', function () { this.classList.remove('drag-over'); });
         wrapper.addEventListener('drop', function () {
             this.classList.remove('drag-over');
-            const itemToMove = classData.splice(dragStartIndex, 1)[0];
-            classData.splice(i, 0, itemToMove);
-            localStorage.setItem(storageKey, JSON.stringify(classData));
+            let data = getClassData();
+            // Swap the dragged item with the target spot (even if null)
+            const draggedItem = data[dragStartIndex];
+            data[dragStartIndex] = data[i];
+            data[i] = draggedItem;
+            localStorage.setItem(storageKey, JSON.stringify(data));
             updateClass();
         });
 
+        // Determine letter regardless of if it's empty
         const letter = document.createElement('div');
         letter.className = 'cardletter';
         letter.textContent = String.fromCharCode(65 + (i % 4));
-
-        const card = document.createElement('div');
-        card.className = 'classcard';
-        card.style.backgroundColor = classData[i].bgColor || '#f9f9f9';
-
-        const countId = `student-count-${i}`;
-        const uniqueDbClassName = currentUser.email + "_" + classData[i].name;
-        const todaysLessonTitle = getCurrentWeekLessonTitle(uniqueDbClassName);
-
-        let evalText = "N/A";
-        if (classData[i].eval) {
-            let eDate = new Date(classData[i].eval);
-            if (!isNaN(eDate)) {
-                let today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                if (eDate.getFullYear() < today.getFullYear() - 5) {
-                    eDate.setFullYear(today.getFullYear());
-                }
-
-                eDate.setHours(0, 0, 0, 0);
-
-                if (eDate < today && (today - eDate) > (1000 * 60 * 60 * 24 * 30)) {
-                    eDate.setFullYear(today.getFullYear() + 1);
-                }
-
-                let diffTime = eDate.getTime() - today.getTime();
-                let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                if (diffDays === 0) evalText = "Today";
-                else if (diffDays === 1) evalText = "1 day";
-                else if (diffDays > 1) evalText = diffDays + " days";
-                else evalText = "Past";
-            } else {
-                evalText = classData[i].eval;
-            }
-        }
-
-        card.innerHTML = `
-            <button class="buttons cardedit" onclick="event.stopPropagation(); openClass(${i})">✎</button>
-            <button class="buttons carddelete" onclick="event.stopPropagation(); deleteClass(${i})">🗑️</button>
-           
-            <div onclick="window.location.href='studentList.html?class=${encodeURIComponent(uniqueDbClassName)}'"
-                 style="cursor: pointer; padding-top: 10px; font-family: ${classData[i].font};">
-                <div class="class-title" style="color: ${classData[i].textColor || 'rgb(139, 107, 35)'};">${classData[i].name}</div>
-               
-                <p style="color: ${classData[i].textColor || 'black'};">Students: <span id="${countId}" style="font-weight:normal">Loading...</span></p>
-                <p style="color: ${classData[i].textColor || 'black'};">Lesson: <span style="font-weight:normal">${todaysLessonTitle}</span></p>
-                <p style="color: ${classData[i].textColor || 'black'};">Next Eval: <span style="font-weight:normal">${evalText}</span></p>
-            </div>
-        `;
-
         wrapper.appendChild(letter);
-        wrapper.appendChild(card);
-        grid.appendChild(wrapper);
 
-        fetch(`http://localhost:3000/api/data/${encodeURIComponent(uniqueDbClassName)}`)
-            .then(res => res.json())
-            .then(data => {
-                const actualCount = (data.data) ? data.data.length : 0;
-                document.getElementById(countId).textContent = actualCount;
-                classData[i].students = actualCount;
-                localStorage.setItem(storageKey, JSON.stringify(classData));
-            })
-            .catch(err => {
-                document.getElementById(countId).textContent = "Server Offline";
-            });
-    }
+        // If a class exists at this grid slot
+        if (classData[i] !== null) {
+            wrapper.draggable = true;
+            wrapper.addEventListener('dragstart', function () { dragStartIndex = i; this.classList.add('dragging'); });
+            wrapper.addEventListener('dragend', function () { this.classList.remove('dragging'); });
 
-    if (classData.length < 8) {
-        const addBoxWrapper = document.createElement('div');
-        addBoxWrapper.className = 'cardwrapper';
-        const spacerLetter = document.createElement('div');
-        spacerLetter.className = 'cardletter';
-        spacerLetter.innerHTML = '&nbsp;';
-        const addBox = document.createElement('div');
-        addBox.className = 'addbox';
-        addBox.textContent = '+';
-        addBox.onclick = function () { openClass(); };
-        addBoxWrapper.appendChild(spacerLetter);
-        addBoxWrapper.appendChild(addBox);
-        grid.appendChild(addBoxWrapper);
+            const card = document.createElement('div');
+            card.className = 'classcard';
+            card.style.backgroundColor = classData[i].bgColor || '#f9f9f9';
+
+            const countId = `student-count-${i}`;
+            const uniqueDbClassName = currentUser.email + "_" + classData[i].name;
+            const todaysLessonTitle = getCurrentWeekLessonTitle(uniqueDbClassName);
+
+            let evalText = "N/A";
+            if (classData[i].eval) {
+                let eDate = new Date(classData[i].eval);
+                if (!isNaN(eDate)) {
+                    let today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    if (eDate.getFullYear() < today.getFullYear() - 5) {
+                        eDate.setFullYear(today.getFullYear());
+                    }
+
+                    eDate.setHours(0, 0, 0, 0);
+
+                    if (eDate < today && (today - eDate) > (1000 * 60 * 60 * 24 * 30)) {
+                        eDate.setFullYear(today.getFullYear() + 1);
+                    }
+
+                    let diffTime = eDate.getTime() - today.getTime();
+                    let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    if (diffDays === 0) evalText = "Today";
+                    else if (diffDays === 1) evalText = "1 day";
+                    else if (diffDays > 1) evalText = diffDays + " days";
+                    else evalText = "Past";
+                } else {
+                    evalText = classData[i].eval;
+                }
+            }
+
+            card.innerHTML = `
+                <button class="buttons cardedit" onclick="event.stopPropagation(); openClass(${i})">✎</button>
+                <button class="buttons carddelete" onclick="event.stopPropagation(); deleteClass(${i})">🗑️</button>
+               
+                <div onclick="window.location.href='studentList.html?class=${encodeURIComponent(uniqueDbClassName)}'"
+                     style="cursor: pointer; padding-top: 10px; font-family: ${classData[i].font};">
+                    <div class="class-title" style="color: ${classData[i].textColor || 'rgb(139, 107, 35)'};">${classData[i].name}</div>
+                   
+                    <p style="color: ${classData[i].textColor || 'black'};">Students: <span id="${countId}" style="font-weight:normal">Loading...</span></p>
+                    <p style="color: ${classData[i].textColor || 'black'};">Lesson: <span style="font-weight:normal">${todaysLessonTitle}</span></p>
+                    <p style="color: ${classData[i].textColor || 'black'};">Next Eval: <span style="font-weight:normal">${evalText}</span></p>
+                </div>
+            `;
+
+            wrapper.appendChild(card);
+            grid.appendChild(wrapper);
+
+            fetch(`http://localhost:3000/api/data/${encodeURIComponent(uniqueDbClassName)}`)
+                .then(res => res.json())
+                .then(data => {
+                    const actualCount = (data.data) ? data.data.length : 0;
+                    document.getElementById(countId).textContent = actualCount;
+
+                    let memoryData = getClassData();
+                    if (memoryData[i] !== null) {
+                        memoryData[i].students = actualCount;
+                        localStorage.setItem(storageKey, JSON.stringify(memoryData));
+                    }
+                })
+                .catch(err => {
+                    document.getElementById(countId).textContent = "Server Offline";
+                });
+        }
+        // If spot is empty, create an Add Box natively tied to its index position
+        else {
+            const addBox = document.createElement('div');
+            addBox.className = 'addbox';
+            addBox.textContent = '+';
+            addBox.onclick = function () { openClass(i); };
+            wrapper.appendChild(addBox);
+            grid.appendChild(wrapper);
+        }
     }
 }

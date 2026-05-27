@@ -115,6 +115,21 @@
             color: var(--text-color, #000);
             font-family: inherit;
         }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #c0392b;
+            color: white;
+        }
+
+        .btn-cancel {
+            background-color: #95a5a6;
+            color: white;
+        }
     </style>
 </head>
 
@@ -130,7 +145,8 @@
     </div>
 
     <div style="flex: 1; width: 100%;">
-        <h1 class="welcomeheader" style="margin-top: 50px; margin-bottom: 10px; text-align: center;">Archived Classes</h1>
+        <h1 class="welcomeheader" style="margin-top: 130px; margin-bottom: 10px; text-align: center;">Archived Classes
+        </h1>
         <h2 class="subtitle" style="text-align: center; margin-bottom: 40px;">Recover or permanently delete your
             inactive classes:</h2>
 
@@ -171,12 +187,11 @@
 
             <div class="modalaction"
                 style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                <button class="buttons" style="border:none; border-radius:5px;" onclick="saveProfile()">Save
-                    Changes</button>
-                <button class="buttons" style="border:none; border-radius:5px; background-color: #c0392b; color: white;"
+                <button class="buttons btn-primary" style="border:none; border-radius:5px; padding: 10px 20px;"
+                    onclick="saveProfile()">Save Changes</button>
+                <button class="buttons btn-danger" style="border:none; border-radius:5px; padding: 10px 20px;"
                     onclick="deleteAccount()">Delete Account</button>
-                <button class="buttons cancelbutton"
-                    style="border:none; border-radius:5px; background-color: #95a5a6; color: white;"
+                <button class="buttons btn-cancel" style="border:none; border-radius:5px; padding: 10px 20px;"
                     onclick="closeProfileModal()">Cancel</button>
             </div>
         </div>
@@ -341,7 +356,7 @@
                 const userClasses = JSON.parse(localStorage.getItem(storageKey)) || [];
                 const archivedClasses = JSON.parse(localStorage.getItem(archiveKey)) || [];
 
-                const allClasses = [...userClasses, ...archivedClasses];
+                const allClasses = [...userClasses, ...archivedClasses].filter(c => c !== null);
 
                 for (let i = 0; i < allClasses.length; i++) {
                     const uniqueDbClassName = email + "_" + allClasses[i].name;
@@ -373,7 +388,8 @@
         const archiveKey = `archivedClasses_${currentUser.email}`;
         const storageKey = `savedClasses_${currentUser.email}`;
         let archivedData = JSON.parse(localStorage.getItem(archiveKey)) || [];
-        let classData = JSON.parse(localStorage.getItem(storageKey)) || [];
+        // Make sure classData uses the fixed 8-slot format
+        let classData = JSON.parse(localStorage.getItem(storageKey)) || new Array(8).fill(null);
 
         function renderArchives() {
             const grid = document.getElementById('archive-container');
@@ -388,13 +404,18 @@
                 const wrapper = document.createElement('div');
                 wrapper.className = 'cardwrapper';
 
+                const letter = document.createElement('div');
+                letter.className = 'cardletter';
+                // Retrieve original letter or default to ?
+                letter.textContent = archivedData[i].originalIndex !== undefined ? String.fromCharCode(65 + (archivedData[i].originalIndex % 4)) : "?";
+
                 const card = document.createElement('div');
                 card.className = 'classcard';
                 card.style.backgroundColor = archivedData[i].bgColor || '#eee';
-                card.style.opacity = '0.7'; // Grays out the entire card
+                card.style.opacity = '0.7';
 
                 card.innerHTML = `
-                    <button class="buttons cardrecover" style="background-color: #27ae60; color: white; border: none; opacity: 1;" onclick="event.stopPropagation(); recoverClass(${i})">↩</button>
+                    <button class="buttons cardedit" style="background-color: #27ae60; color: white; opacity: 1;" onclick="event.stopPropagation(); recoverClass(${i})">↩</button>
                     <button class="buttons carddelete" style="opacity: 1;" onclick="event.stopPropagation(); permanentDelete(${i})">🗑️</button>
                    
                     <div style="padding-top: 10px; text-align: center; font-family: ${archivedData[i].font || 'inherit'};">
@@ -404,20 +425,36 @@
                     </div>
                 `;
 
+                wrapper.appendChild(letter);
                 wrapper.appendChild(card);
                 grid.appendChild(wrapper);
             }
         }
 
         function recoverClass(index) {
-            if (classData.length >= 8) {
-                alert("You already have 8 active classes. Please archive or delete an active class before recovering this one.");
-                return;
+            let recoveredClass = archivedData[index];
+            let targetIndex = recoveredClass.originalIndex;
+
+            // Check if the original slot is empty
+            if (targetIndex !== undefined && classData[targetIndex] === null) {
+                classData[targetIndex] = recoveredClass;
+            } else {
+                // Find first available slot if original is taken
+                let foundSlot = false;
+                for (let j = 0; j < 8; j++) {
+                    if (classData[j] === null) {
+                        classData[j] = recoveredClass;
+                        foundSlot = true;
+                        break;
+                    }
+                }
+                if (!foundSlot) {
+                    alert("You already have 8 active classes. Please archive or delete an active class before recovering this one.");
+                    return;
+                }
             }
 
-            const recoveredClass = archivedData.splice(index, 1)[0];
-            classData.push(recoveredClass);
-
+            archivedData.splice(index, 1);
             localStorage.setItem(archiveKey, JSON.stringify(archivedData));
             localStorage.setItem(storageKey, JSON.stringify(classData));
 
@@ -430,17 +467,14 @@
                 const uniqueDbClassName = currentUser.email + "_" + archivedData[index].name;
 
                 try {
-                    // Permanently purge from database
                     await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(uniqueDbClassName)}`, { method: 'DELETE' });
 
-                    // Purge isolated structures out of LocalStorage
                     localStorage.removeItem(`units_${uniqueDbClassName}`);
                     localStorage.removeItem(`lessons_${uniqueDbClassName}`);
                     localStorage.removeItem(`marks_${uniqueDbClassName}`);
                     localStorage.removeItem(`studentOrder_${uniqueDbClassName}`);
                     localStorage.removeItem(`emailTemplate_${uniqueDbClassName}`);
 
-                    // Remove from active archive array
                     archivedData.splice(index, 1);
                     localStorage.setItem(archiveKey, JSON.stringify(archivedData));
 

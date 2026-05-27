@@ -2,7 +2,21 @@ const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 if (!currentUser) window.location.href = 'index.html';
 
 const storageKey = `savedClasses_${currentUser.email}`;
-let classData = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+// Enforce the rigid 8-slot array structure immediately on load
+let rawClassData = JSON.parse(localStorage.getItem(storageKey));
+if (!Array.isArray(rawClassData) || rawClassData.length !== 8) {
+    let fixedArray = new Array(8).fill(null);
+    if (Array.isArray(rawClassData)) {
+        for (let i = 0; i < rawClassData.length && i < 8; i++) {
+            fixedArray[i] = rawClassData[i];
+        }
+    }
+    localStorage.setItem(storageKey, JSON.stringify(fixedArray));
+    rawClassData = fixedArray;
+}
+let classData = rawClassData;
+
 let currentClass = "Unknown Class";
 
 let unitsData = [];
@@ -79,7 +93,7 @@ window.onload = () => {
 
         const newDbName = currentUser.email + "_" + newRawName;
 
-        const classIndex = classData.findIndex(c => c.name === oldRawName);
+        const classIndex = classData.findIndex(c => c !== null && c.name === oldRawName);
         if (classIndex !== -1) {
             classData[classIndex].name = newRawName;
             localStorage.setItem(storageKey, JSON.stringify(classData));
@@ -114,12 +128,12 @@ window.onload = () => {
 
     const evalInput = document.getElementById('next-eval-input');
     if (evalInput) {
-        const currentClassObj = classData.find(c => `${currentUser.email}_${c.name}` === currentClass);
+        const currentClassObj = classData.find(c => c !== null && `${currentUser.email}_${c.name}` === currentClass);
         if (currentClassObj && currentClassObj.eval) {
             evalInput.value = currentClassObj.eval;
         }
         evalInput.addEventListener('change', function () {
-            const classIndex = classData.findIndex(c => `${currentUser.email}_${c.name}` === currentClass);
+            const classIndex = classData.findIndex(c => c !== null && `${currentUser.email}_${c.name}` === currentClass);
             if (classIndex !== -1) {
                 classData[classIndex].eval = this.value.trim();
                 localStorage.setItem(storageKey, JSON.stringify(classData));
@@ -226,10 +240,15 @@ async function deleteAccount() {
         const email = currentUser.email;
         const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {};
         const storageKey = `savedClasses_${email}`;
-        const userClasses = JSON.parse(localStorage.getItem(storageKey)) || [];
+        const archiveKey = `archivedClasses_${email}`;
 
-        for (let i = 0; i < userClasses.length; i++) {
-            const uniqueDbClassName = email + "_" + userClasses[i].name;
+        const userClasses = JSON.parse(localStorage.getItem(storageKey)) || [];
+        const archivedClasses = JSON.parse(localStorage.getItem(archiveKey)) || [];
+
+        const allClasses = [...userClasses, ...archivedClasses].filter(c => c !== null);
+
+        for (let i = 0; i < allClasses.length; i++) {
+            const uniqueDbClassName = email + "_" + allClasses[i].name;
             try {
                 await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(uniqueDbClassName)}`, { method: 'DELETE' });
             } catch (e) {
@@ -255,23 +274,46 @@ async function deleteAccount() {
     }
 }
 
+// Fixed RenderClassNav mapped precisely to the 8 grid slots
 function renderClassNav() {
     const navBar = document.getElementById('class-nav-bar');
     navBar.innerHTML = '';
+
     for (let i = 0; i < 8; i++) {
         const btn = document.createElement('button');
         btn.className = 'btn-class-nav';
-        if (i < classData.length) {
+
+        if (classData[i] !== null) {
             btn.innerText = classData[i].name;
             btn.style.backgroundColor = 'var(--primary)';
-            if (`${currentUser.email}_${classData[i].name}` === currentClass) btn.style.boxShadow = '0 0 0 3px var(--accent)';
+            if (`${currentUser.email}_${classData[i].name}` === currentClass) {
+                btn.style.boxShadow = '0 0 0 3px var(--accent)';
+            }
             btn.onclick = () => window.location.href = `studentList.html?class=${encodeURIComponent(currentUser.email + '_' + classData[i].name)}`;
         } else {
             btn.innerText = '+ Untitled';
             btn.style.backgroundColor = '#a9a9a9';
             btn.onclick = () => {
-                const newClass = { name: `Untitled`, students: 0 };
-                classData.push(newClass);
+                // Generate a unique name to prevent database key conflicts
+                let baseName = "Untitled";
+                let count = 1;
+                let uniqueName = baseName;
+                while (classData.some(c => c !== null && c.name === uniqueName)) {
+                    count++;
+                    uniqueName = `${baseName} ${count}`;
+                }
+
+                const newClass = {
+                    name: uniqueName,
+                    students: 0,
+                    eval: "",
+                    font: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                    bgColor: "#f9f9f9",
+                    textColor: "#000000"
+                };
+
+                // Spawn exactly in the empty slot that was clicked
+                classData[i] = newClass;
                 localStorage.setItem(storageKey, JSON.stringify(classData));
                 window.location.href = `studentList.html?class=${encodeURIComponent(currentUser.email + '_' + newClass.name)}`;
             };
@@ -581,7 +623,7 @@ function renderRosterTable() {
 
     ensureUnitStructure();
 
-    const currentClassObj = classData.find(c => `${currentUser.email}_${c.name}` === currentClass);
+    const currentClassObj = classData.find(c => c !== null && `${currentUser.email}_${c.name}` === currentClass);
     let evalDateObj = null;
     if (currentClassObj && currentClassObj.eval) {
         let parsed = new Date(currentClassObj.eval);
@@ -670,7 +712,6 @@ function renderRosterTable() {
         const fName = nameParts[0];
         const lName = nameParts.slice(1).join(' ');
 
-        // Auto-save relies on onchange passing the student.id 
         tbodyHTML += `
             <tr data-student-id="${student.id}" class="student-row">
                 <td class="student-cell" style="text-align:left;">

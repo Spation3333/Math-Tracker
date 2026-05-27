@@ -87,6 +87,30 @@
             gap: 15px;
         }
 
+        .selectinput {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .selectinput label {
+            font-weight: bold;
+            width: 140px;
+            text-align: left;
+        }
+
+        .selectinput input,
+        .selectinput select {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border-color, #ccc);
+            border-radius: 4px;
+            background: var(--input-bg, #fff);
+            color: var(--text-color, #000);
+            font-family: inherit;
+        }
+
         /* Ensure 4 items per row */
         .newclass {
             display: grid;
@@ -97,8 +121,19 @@
             justify-items: center;
         }
 
-        body.darkmode label{
-            color: #e74c3c;
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #c0392b;
+            color: white;
+        }
+
+        .btn-cancel {
+            background-color: #95a5a6;
+            color: white;
         }
     </style>
 </head>
@@ -202,7 +237,7 @@
             <hr style="width:100%; border: 0; border-top: 1px solid var(--border-color, #ccc); margin: 20px 0;">
 
             <div class="selectinput" style="justify-content: space-between;">
-                <label style="color: #e74c3c;">Confirm PIN:</label>
+                <label style="color:var(--danger, #e74c3c);">Confirm PIN:</label>
                 <div style="position: relative; flex: 1;">
                     <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes"
                         style="width: 100%; box-sizing: border-box; padding-right: 30px;">
@@ -213,12 +248,11 @@
 
             <div class="modalaction"
                 style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                <button class="buttons" style="border:none; border-radius:5px; background-color: #2980b9" onclick="saveProfile()">Save
-                    Changes</button>
-                <button class="buttons" style="border:none; border-radius:5px; background-color: #c0392b; color: white;"
+                <button class="buttons btn-primary" style="border:none; border-radius:5px; padding: 10px 20px;"
+                    onclick="saveProfile()">Save Changes</button>
+                <button class="buttons btn-danger" style="border:none; border-radius:5px; padding: 10px 20px;"
                     onclick="deleteAccount()">Delete Account</button>
-                <button class="buttons cancelbutton"
-                    style="border:none; border-radius:5px; background-color: #95a5a6; color: white;"
+                <button class="buttons btn-cancel" style="border:none; border-radius:5px; padding: 10px 20px;"
                     onclick="closeProfileModal()">Cancel</button>
             </div>
         </div>
@@ -249,7 +283,6 @@
     </div>
 
     <script src="script.js"></script>
-    
 </body>
 
 </html>
