@@ -3,7 +3,6 @@ const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const path = require('path');
 const nodemailer = require('nodemailer');
-const cron = require('node-cron'); // <--- ADD THIS LINE
 
 const app = express();
 
@@ -46,7 +45,8 @@ app.post('/api/send-emails', (req, res) => {
             from: senderEmail,
             to: mail.to,
             subject: mail.subject,
-            text: mail.text,
+            // Changed from 'text' to 'html' to support the new table format
+            html: mail.text,
             attachments: mail.attachments || [] // Injects images if they exist
         });
     });
@@ -131,77 +131,6 @@ app.post('/api/send-recovery', (req, res) => {
         if (error) return res.status(500).json({ error: "Failed to send recovery email." });
         res.json({ message: "Recovery email sent." });
     });
-});
-
-// --- AUTOMATED WEEKLY EMAIL CRON JOB ---
-// '15 14 * * 5' executes exactly at 14:15 (2:15 PM) every Friday (day 5)
-cron.schedule('15 14 * * 5', () => {
-    console.log('Cron Job Triggered: Fetching student roster for weekly automated emails...');
-
-    // Queries your existing database table
-    db.all("SELECT * FROM Students", [], (err, rows) => {
-        if (err) {
-            console.error("Error fetching students for cron email:", err.message);
-            return;
-        }
-
-        if (!rows || rows.length === 0) {
-            console.log("No students found in the database to email.");
-            return;
-        }
-
-        // Iterate through each student to dispatch their notification
-        rows.forEach((student) => {
-            const recipients = [];
-            
-            // Gather guardian email(s) if present (splitting commas if multiple exist)
-            if (student.guardian_email) {
-                recipients.push(...student.guardian_email.split(','));
-            }
-            // Gather student email if present
-            if (student.student_email) {
-                recipients.push(student.student_email);
-            }
-
-            // Filter out empty strings/whitespace and remove any duplicates
-            const cleanRecipients = [...new Set(recipients.filter(email => email && email.trim() !== ''))];
-
-            if (cleanRecipients.length === 0) {
-                console.log(`Skipping student ${student.name} (ID: ${student.id}) - No valid email addresses.`);
-                return;
-            }
-
-            // Configure the email options utilizing your systemTransporter authentication
-            const mailOptions = {
-                from: '"MathTrack Portal" <owensirrichard@gmail.com>',
-                to: cleanRecipients.join(', '),
-                subject: `Weekly Progress Update - ${student.name}`,
-                html: `
-                    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; padding: 20px; border-radius: 8px;">
-                        <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">Weekly MathTrack Update</h2>
-                        <p>Dear Guardian / Student,</p>
-                        <p>This is an automated weekly summary report regarding <strong>${student.name}</strong> in your <strong>${student.class_name}</strong> class.</p>
-                        <p>Please log in to your MathTrack Portal dashboard to view this week's updated lesson subjects, track homework completion rates, and view the latest evaluation metrics.</p>
-                        <br>
-                        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-                        <p style="font-size: 0.8em; color: #7f8c8d; text-align: center;">This is a system-generated notification. Please do not reply directly to this email message.</p>
-                    </div>
-                `
-            };
-
-            // Send the email using your existing systemTransporter
-            systemTransporter.sendMail(mailOptions, (mailErr, info) => {
-                if (mailErr) {
-                    console.error(`Failed to send automated email to ${student.name}:`, mailErr.message);
-                } else {
-                    console.log(`Weekly automated email successfully sent to ${student.name} (${cleanRecipients.join(', ')})`);
-                }
-            });
-        });
-    });
-}, {
-    scheduled: true,
-    timezone: "America/New_York" // Sets execution context to Eastern Time regardless of physical hosting location
 });
 
 app.listen(3000, () => console.log(`Server live at http://localhost:3000`));

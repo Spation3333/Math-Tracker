@@ -7,8 +7,93 @@
     <title>MathTrack - Class Gradebook</title>
     <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
     <link href="studentStyles.css" rel="stylesheet" />
-</head>
+    <style>
+        body, button, input, select, textarea {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
+        .top-widget { 
+            position: absolute; 
+            top: 20px; 
+            background: var(--card-bg, #fff); 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            border: 2px solid var(--border-color); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            z-index: 100; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            height: 65px; 
+            box-sizing: border-box;
+        }
+        body.darkmode .top-widget { background: #2d2d2d; border-color: rgb(212, 175, 55); }
+        
+        .profile-widget { right: 20px; cursor: pointer; text-align: right; border-color: rgb(139, 107, 35); }
+        .date-widget { left: 20px; text-align: left; border-color: rgb(139, 107, 35); }
+        
+        .date-widget-text { font-weight: bold; color: rgb(139, 107, 35); font-size: 1.1em; margin: 0; }
+        body.darkmode .date-widget-text { color: rgb(212, 175, 55); }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modalcontent { background-color: var(--card-bg); padding: 30px; border-radius: 10px; border: 3px solid rgb(139, 107, 35); display: flex; flex-direction: column; gap: 15px; }
+        .signupinput { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .signupinput label { font-weight: bold; width: 140px; text-align: left; }
+        .signupinput input { flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; }
+
+        .inline-class-edit {
+            background: transparent;
+            border: none;
+            border-bottom: 2px dashed transparent;
+            color: var(--accent);
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: bold;
+            outline: none;
+            padding: 0 5px;
+            width: 350px;
+            transition: all 0.2s;
+        }
+        .inline-class-edit:hover, .inline-class-edit:focus {
+            border-bottom: 2px dashed var(--accent);
+            background: rgba(0,0,0,0.05);
+        }
+        body.darkmode .inline-class-edit:hover, body.darkmode .inline-class-edit:focus {
+            background: rgba(255,255,255,0.1);
+        }
+
+        #class-nav-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .btn-class-nav {
+            margin: 0 !important;
+            width: 100% !important;
+            box-sizing: border-box;
+        }
+
+        /* Enforced visibility for rich text editor regardless of dark mode */
+        .rich-editor {
+            width: 100%; 
+            height: 300px; 
+            padding: 15px; 
+            border-radius: 4px; 
+            border: 1px solid var(--border-color); 
+            background-color: #ffffff !important; 
+            color: #000000 !important; 
+            font-family: Arial, sans-serif; 
+            overflow-y: auto; 
+            box-sizing: border-box;
+            outline: none;
+        }
+        .rich-editor:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+    </style>
+</head>
 <body>
 
     <div class="top-widget date-widget">
@@ -27,11 +112,10 @@
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
             <a href="select.html" class="nav-link" style="margin-bottom: 0;">← Back to Classes</a>
-
+            
             <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="font-size: 0.9em; font-weight: bold;">Dark Mode</span>
-                <label class="switch"><input type="checkbox" id="theme-toggle"><span
-                        class="slider round"></span></label>
+                <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider round"></span></label>
             </div>
         </div>
 
@@ -40,38 +124,27 @@
         <div class="controls" style="align-items: flex-start;">
             <div style="display: flex; flex-direction: column; gap: 15px;">
                 <h2 style="margin: 0; display: flex; align-items: center; gap: 5px;">
-                    Viewing:
-                    <input type="text" id="current-class-input" class="inline-class-edit" value="Loading..."
-                        title="Click to rename class">
+                    Viewing: 
+                    <input type="text" id="current-class-input" class="inline-class-edit" value="Loading..." title="Click to rename class">
                 </h2>
-                <button class="btn btn-primary" style="width: fit-content;" onclick="toggleAddStudentForm()">+ Add
-                    Student</button>
+                <button class="btn btn-primary" style="width: fit-content;" onclick="toggleAddStudentForm()">+ Add Student</button>
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 10px; min-width: 250px;">
-                <button class="btn btn-success" style="width: 100%;" onclick="emailAllStudents()">📧 Email
-                    Class</button>
-                <button class="btn btn-danger" style="width: 100%;" onclick="deleteClassRoster()">🗑️ Delete
-                    Class</button>
+                <button class="btn btn-success" style="width: 100%;" onclick="emailAllStudents()">📧 Email Class</button>
+                <button class="btn btn-danger" style="width: 100%;" onclick="deleteClassRoster()">🗑️ Delete Class</button>
                 <span id="emailStatus" style="text-align: center;"></span>
             </div>
         </div>
-
-        <div id="add-student-form"
-            style="display: none; background: var(--bg-color); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+        
+        <div id="add-student-form" style="display: none; background: var(--bg-color); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
             <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <input type="text" id="new-fname" placeholder="First Name"
-                    style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
-                <input type="text" id="new-lname" placeholder="Last Name"
-                    style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
-                <input type="text" id="new-semail" placeholder="Student Email (Optional)"
-                    style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
-                <input type="text" id="new-cname" placeholder="Contact Name"
-                    style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
-                <input type="text" id="new-crel" placeholder="Relationship"
-                    style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
-                <input type="text" id="new-cemail" placeholder="Contact Email"
-                    style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+                <input type="text" id="new-fname" placeholder="First Name" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+                <input type="text" id="new-lname" placeholder="Last Name" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+                <input type="text" id="new-semail" placeholder="Student Email (Optional)" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+                <input type="text" id="new-cname" placeholder="Contact Name" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+                <input type="text" id="new-crel" placeholder="Relationship" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+                <input type="text" id="new-cemail" placeholder="Contact Email" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
                 <button class="btn btn-success" onclick="saveNewStudent()">Save Student</button>
             </div>
         </div>
@@ -90,14 +163,12 @@
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
             <div style="display: flex; flex-direction: column; gap: 5px;">
                 <h3 style="margin: 0; font-size: 1.3em;">2. Student Roster</h3>
-                <button class="btn btn-primary" style="width: fit-content; font-size: 0.8em; padding: 4px 8px;"
-                    onclick="openTemplateModal()">✎ Edit Class Email Template</button>
+                <button class="btn btn-primary" style="width: fit-content; font-size: 0.8em; padding: 4px 8px;" onclick="openTemplateModal()">✎ Edit Class Email Template</button>
             </div>
-
+            
             <div style="display: flex; align-items: center; gap: 10px;">
                 <label style="font-weight: bold; font-size: 1em; color: var(--text-color);">Next Eval:</label>
-                <input type="text" id="next-eval-input" placeholder="e.g. May 25" title="Date of next evaluation"
-                    style="padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; font-size: 0.95em;">
+                <input type="text" id="next-eval-input" placeholder="e.g. May 25" title="Date of next evaluation" style="padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; font-size: 0.95em;">
             </div>
         </div>
         <div id="roster-container" class="table-responsive"></div>
@@ -106,82 +177,65 @@
     <div id="profile-modal" class="modal">
         <div class="modalcontent" style="max-width: 450px; width: 100%;">
             <h2 style="margin-top:0;">Edit Profile</h2>
-            <div class="signupinput" style="justify-content: space-between;"><label>First Name:</label><input
-                    type="text" id="prof-fname"></div>
-            <div class="signupinput" style="justify-content: space-between;"><label>Last Name:</label><input type="text"
-                    id="prof-lname"></div>
-            <div class="signupinput" style="justify-content: space-between;"><label>Username:</label><input type="email"
-                    id="prof-email"></div>
-
+            <div class="signupinput" style="justify-content: space-between;"><label>First Name:</label><input type="text" id="prof-fname"></div>
+            <div class="signupinput" style="justify-content: space-between;"><label>Last Name:</label><input type="text" id="prof-lname"></div>
+            <div class="signupinput" style="justify-content: space-between;"><label>Username:</label><input type="email" id="prof-email"></div>
+            
             <div class="signupinput" style="justify-content: space-between;">
                 <label>App Password:</label>
                 <div style="position: relative; flex: 1;">
-                    <input type="password" id="prof-apppass"
-                        style="width: 100%; box-sizing: border-box; padding-right: 30px;">
-                    <span id="toggleProfApp"
-                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
+                    <input type="password" id="prof-apppass" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
+                    <span id="toggleProfApp" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
                 </div>
             </div>
-
+            
             <hr style="width:100%; border: 0; border-top: 1px solid var(--border-color, #ccc); margin: 20px 0;">
-
+            
             <div class="signupinput" style="justify-content: space-between;">
                 <label style="color:var(--danger, #e74c3c);">Confirm PIN:</label>
                 <div style="position: relative; flex: 1;">
-                    <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes"
-                        style="width: 100%; box-sizing: border-box; padding-right: 30px;">
-                    <span id="toggleProfPin"
-                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
+                    <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
+                    <span id="toggleProfPin" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
                 </div>
             </div>
-
+            
             <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
                 <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
-                <button class="btn" style="background-color: #c0392b; color: white;" onclick="deleteAccount()">Delete
-                    Account</button>
-                <button class="btn" style="background-color: #95a5a6; color: white;"
-                    onclick="closeProfileModal()">Cancel</button>
+                <button class="btn" style="background-color: #c0392b; color: white;" onclick="deleteAccount()">Delete Account</button>
+                <button class="btn" style="background-color: #95a5a6; color: white;" onclick="closeProfileModal()">Cancel</button>
             </div>
         </div>
     </div>
 
     <div id="template-modal" class="modal">
-        <div class="modalcontent" style="max-width: 600px; width: 100%;">
+        <div class="modalcontent" style="max-width: 800px; width: 100%;">
             <h2 style="margin-top:0; margin-bottom: 5px;">Edit Class Email Template</h2>
             <p style="font-size: 0.85em; color: gray; margin-top: 0; margin-bottom: 10px;">
                 Available Tags: [RecipientName], [StudentName], [Week], [Grades], [TeacherNotes], [TeacherName]
             </p>
-            <textarea id="template-textarea"
-                style="width: 100%; height: 250px; padding: 10px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); font-family: inherit; resize: vertical; box-sizing: border-box;"></textarea>
-
+            
+            <div id="template-textarea" class="rich-editor" contenteditable="true"></div>
+            
             <div style="margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
-                <button class="btn" style="background-color: #95a5a6; color: white;"
-                    onclick="closeTemplateModal()">Cancel</button>
-                <button class="btn" style="background-color: #2980b9; color: black;"
-                    onclick="restoreDefaultGlobalTemplate()">Default</button>
-                <button class="btn btn-primary" onclick="saveTemplate()" style="background-color: #27ae60;">Save
-                    Template</button>
+                <button class="btn" style="background-color: #95a5a6; color: white;" onclick="closeTemplateModal()">Cancel</button>
+                <button class="btn" style="background-color: #2980b9; color: white;" onclick="restoreDefaultGlobalTemplate()">Default</button>
+                <button class="btn btn-primary" onclick="saveTemplate()" style="background-color: #27ae60;">Save Template</button>
             </div>
         </div>
     </div>
 
     <div id="individual-email-modal" class="modal">
-        <div class="modalcontent" style="max-width: 600px; width: 100%;">
-            <h2 style="margin-top:0; margin-bottom: 5px;">Send Individual Email</h2>
+        <div class="modalcontent" style="max-width: 800px; width: 100%;">
+            <h2 style="margin-top:0; margin-bottom: 5px;">Edit Individual Email</h2>
             <p style="font-size: 0.85em; color: gray; margin-top: 0; margin-bottom: 10px;">
-                Edit the text below. When you click Send, this exact text will be dispatched to all of the student's
-                contacts.
+                Edit the text below. Changes <strong>save automatically</strong> as you type. Once complete, just click the green Send button on their roster card!
             </p>
-            <textarea id="individual-email-textarea"
-                style="width: 100%; height: 250px; padding: 10px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); font-family: inherit; resize: vertical; box-sizing: border-box;"></textarea>
-
+            
+            <div id="individual-email-textarea" class="rich-editor" contenteditable="true" oninput="autoSaveIndividualEmail()"></div>
+            
             <div style="margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
-                <button class="btn" style="background-color: #95a5a6; color: white;"
-                    onclick="closeIndividualEmailModal()">Cancel</button>
-                <button class="btn" style="background-color: #2980b9; color: black;"
-                    onclick="restoreDefaultIndividualEmail()">Default</button>
-                <button id="send-edited-btn" class="btn btn-success" onclick="sendEditedIndividualEmail()">Send Edited
-                    Email</button>
+                <button class="btn" style="background-color: #2980b9; color: white;" onclick="restoreDefaultIndividualEmail()">Revert to Default</button>
+                <button class="btn btn-primary" onclick="closeIndividualEmailModal()" style="background-color: #27ae60;">Done</button>
             </div>
         </div>
     </div>
@@ -189,5 +243,4 @@
     <script src="studentScript.js"></script>
 
 </body>
-
 </html>

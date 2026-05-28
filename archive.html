@@ -9,12 +9,16 @@
     <link href="styles.css" rel="stylesheet" />
     <link href="darkmode.css" rel="stylesheet" />
     <style>
+        select,
+        textarea {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .top-widget {
@@ -40,8 +44,8 @@
 
         .profile-widget {
             right: 20px;
-            text-align: right;
             cursor: pointer;
+            text-align: right;
         }
 
         .date-widget {
@@ -58,15 +62,6 @@
 
         body.darkmode .date-widget-text {
             color: rgb(212, 175, 55);
-        }
-
-        .newclass {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            max-width: 1000px;
-            margin: 0 auto 40px auto;
-            justify-items: center;
         }
 
         .modal {
@@ -116,6 +111,17 @@
             font-family: inherit;
         }
 
+        /* Ensure 4 items per row matching select.html */
+        .newclass {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto 40px auto;
+            justify-items: center;
+        }
+
+        /* Profile Modal Button Colors */
         .btn-primary {
             background-color: #3498db;
             color: white;
@@ -129,6 +135,33 @@
         .btn-cancel {
             background-color: #95a5a6;
             color: white;
+        }
+
+        /* Custom Override Styles for the Archived Card Corner Buttons */
+        .btn-recover-card {
+            background-color: #27ae60 !important;
+            /* Green */
+            color: white !important;
+            opacity: 1 !important;
+            transition: background-color 0.2s ease !important;
+        }
+
+        .btn-recover-card:hover {
+            background-color: #2ecc71 !important;
+            /* Lighter Green on hover */
+        }
+
+        .btn-delete-card {
+            background-color: #c0392b !important;
+            /* Red */
+            color: white !important;
+            opacity: 1 !important;
+            transition: background-color 0.2s ease !important;
+        }
+
+        .btn-delete-card:hover {
+            background-color: #e74c3c !important;
+            /* Lighter Red on hover */
         }
     </style>
 </head>
@@ -385,43 +418,53 @@
             }
         }
 
-        const archiveKey = `archivedClasses_${currentUser.email}`;
-        const storageKey = `savedClasses_${currentUser.email}`;
+        const storageKey = currentUser ? `savedClasses_${currentUser.email}` : 'savedClasses';
+        const archiveKey = currentUser ? `archivedClasses_${currentUser.email}` : 'archivedClasses';
+
         let archivedData = JSON.parse(localStorage.getItem(archiveKey)) || [];
-        // Make sure classData uses the fixed 8-slot format
-        let classData = JSON.parse(localStorage.getItem(storageKey)) || new Array(8).fill(null);
 
         function renderArchives() {
             const grid = document.getElementById('archive-container');
             grid.innerHTML = '';
 
             if (archivedData.length === 0) {
-                grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-color, #333); font-size: 1.2em;">No archived classes found.</div>`;
+                grid.innerHTML = '<p style="color: var(--text-color, #333); font-size: 1.2em; grid-column: 1/-1; text-align: center; margin-top: 50px;">No archived classes found.</p>';
                 return;
             }
 
             for (let i = 0; i < archivedData.length; i++) {
+                const cls = archivedData[i];
+                if (!cls) continue;
+
                 const wrapper = document.createElement('div');
                 wrapper.className = 'cardwrapper';
 
                 const letter = document.createElement('div');
                 letter.className = 'cardletter';
-                // Retrieve original letter or default to ?
-                letter.textContent = archivedData[i].originalIndex !== undefined ? String.fromCharCode(65 + (archivedData[i].originalIndex % 4)) : "?";
 
+                // Matches the gray aesthetic styling
+                //letter.style.backgroundColor = '#a9a9a9';
+                letter.style.color = 'white';
+
+                // Recalls the original letter of the slot it was in
+                letter.textContent = cls.originalIndex !== undefined ? String.fromCharCode(65 + (cls.originalIndex % 4)) : '?';
+
+                // Build the active-style class card structure
                 const card = document.createElement('div');
                 card.className = 'classcard';
-                card.style.backgroundColor = archivedData[i].bgColor || '#eee';
-                card.style.opacity = '0.7';
+                card.style.backgroundColor = cls.bgColor || '#f9f9f9';
+                card.style.opacity = '0.75'; // Slightly faded to indicate it's archived
 
+                // .cardedit pushes top-left, .carddelete pushes top-right via styles.css
                 card.innerHTML = `
-                    <button class="buttons cardedit" style="background-color: #27ae60; color: white; opacity: 1;" onclick="event.stopPropagation(); recoverClass(${i})">↩</button>
-                    <button class="buttons carddelete" style="opacity: 1;" onclick="event.stopPropagation(); permanentDelete(${i})">🗑️</button>
+                    <button class="buttons cardedit btn-recover-card" title="Recover Class" onclick="event.stopPropagation(); recoverClass(${i})">↩</button>
+                    <button class="buttons carddelete btn-delete-card" title="Permanently Delete" onclick="event.stopPropagation(); permanentDelete(${i})">🗑️</button>
                    
-                    <div style="padding-top: 10px; text-align: center; font-family: ${archivedData[i].font || 'inherit'};">
-                        <div class="class-title" style="color: ${archivedData[i].textColor || 'rgb(139, 107, 35)'};">${archivedData[i].name}</div>
-                        <p style="color: ${archivedData[i].textColor || 'black'}; margin-top: 15px; font-weight: bold;">Status: Archived</p>
-                        <p style="color: ${archivedData[i].textColor || 'black'}; font-size: 0.85em;">All grades & students preserved.</p>
+                    <div style="padding-top: 10px; font-family: ${cls.font || 'inherit'}; text-align: center;">
+                        <div class="class-title" style="color: ${cls.textColor || 'rgb(139, 107, 35)'};">${cls.name}</div>
+                       
+                        <p style="color: ${cls.textColor || 'black'}; margin-top: 15px;">Students: <span style="font-weight:normal">${cls.students || 0}</span></p>
+                        <p style="color: ${cls.textColor || 'black'};">Status: <span style="font-weight:bold; color: #e67e22;">Archived</span></p>
                     </div>
                 `;
 
@@ -432,14 +475,20 @@
         }
 
         function recoverClass(index) {
+            let classData = JSON.parse(localStorage.getItem(storageKey));
+
+            // Reinitialize if array structure is corrupted or missing
+            if (!Array.isArray(classData) || classData.length !== 8) {
+                classData = new Array(8).fill(null);
+            }
+
             let recoveredClass = archivedData[index];
             let targetIndex = recoveredClass.originalIndex;
 
-            // Check if the original slot is empty
+            // Check if the original slot is empty, otherwise find the first available
             if (targetIndex !== undefined && classData[targetIndex] === null) {
                 classData[targetIndex] = recoveredClass;
             } else {
-                // Find first available slot if original is taken
                 let foundSlot = false;
                 for (let j = 0; j < 8; j++) {
                     if (classData[j] === null) {
@@ -449,11 +498,12 @@
                     }
                 }
                 if (!foundSlot) {
-                    alert("You already have 8 active classes. Please archive or delete an active class before recovering this one.");
+                    alert("Your active roster is full (Max 8 slots). Please archive or delete an active class before recovering this one.");
                     return;
                 }
             }
 
+            // Remove from archive and set to active
             archivedData.splice(index, 1);
             localStorage.setItem(archiveKey, JSON.stringify(archivedData));
             localStorage.setItem(storageKey, JSON.stringify(classData));
@@ -467,20 +517,23 @@
                 const uniqueDbClassName = currentUser.email + "_" + archivedData[index].name;
 
                 try {
+                    // Permanently purge data arrays from database tracking system
                     await fetch(`http://localhost:3000/api/delete-class/${encodeURIComponent(uniqueDbClassName)}`, { method: 'DELETE' });
 
+                    // Purge isolated structures out of LocalStorage
                     localStorage.removeItem(`units_${uniqueDbClassName}`);
                     localStorage.removeItem(`lessons_${uniqueDbClassName}`);
                     localStorage.removeItem(`marks_${uniqueDbClassName}`);
                     localStorage.removeItem(`studentOrder_${uniqueDbClassName}`);
                     localStorage.removeItem(`emailTemplate_${uniqueDbClassName}`);
 
+                    // Remove from active archive array layout
                     archivedData.splice(index, 1);
                     localStorage.setItem(archiveKey, JSON.stringify(archivedData));
 
                     renderArchives();
                 } catch (e) {
-                    alert("Failed to permanently delete from server.");
+                    alert("Failed to permanently delete class information from server.");
                 }
             }
         }
