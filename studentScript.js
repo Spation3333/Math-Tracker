@@ -27,7 +27,7 @@ let studentsData = [];
 
 // Refined default formatting to reduce white space and look highly professional
 const DEFAULT_EMAIL_TEMPLATE = `<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.4; color: #333;">
-Hello [RecipientName],<br><br>
+Hello [RecipientName],<br>
 Here is [StudentName]'s progress for the week of [Week]:
 [Grades]
 [TeacherNotes]

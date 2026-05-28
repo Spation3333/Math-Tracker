@@ -1,78 +1,86 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html> <!-- Start of HTML -->
+<html lang="en"> <!-- Primary Language is English -->
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathTrack - Sign Up</title>
-    <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
-    <link href="styles.css" rel="stylesheet" />
-    <link href="darkmode.css" rel="stylesheet" />
-    <style>
-        select,
-        textarea {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-    </style>
-</head>
+<head> <!-- Start of Head -->
+    <meta charset="UTF-8"> <!-- Tells What Characters to Use -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Matches Screen Width -->
+    <title>MathTrack - Sign Up</title> <!-- Title of Page -->
+    <link rel="icon" type="image/jpeg" href="Images/logo.jpg"> <!-- Favicon -->
+    <link href="styles.css" rel="stylesheet" /> <!-- Links to styles.css file -->
+    <link href="darkmode.css" rel="stylesheet" /> <!-- Links to darkmode.css file -->
+</head> <!-- End of Head -->
 
-<body>
+<body> <!-- Start of Body -->
+
     <div class="themewrapper" style="position: absolute; top: 20px; right: 20px;">
-        <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider round"></span></label>
-    </div>
+        <!-- Start of Location for Darkmode Toggle -->
+        <label class="switch"> <!-- Start of Darkmode Toggle -->
+            <input type="checkbox" id="theme-toggle"> <!-- Creates Toffle -->
+            <span class="slider round"></span> <!-- Makes it Circle Toggle -->
+        </label> <!-- End of Darkmode Toggle -->
+    </div> <!-- End of Location for Darkmode Toggle -->
 
-    <div class="signupportal">
-        <h1 class="welcomeheader" style="margin-bottom: 10px; font-size: 40px;">Create Account</h1>
-        <p style="margin-bottom: 30px; opacity: 0.8;">Join the MathTrack Portal</p>
+    <div class="signupportal"> <!-- Start of Portal for signup.html -->
 
-        <div class="doubleinput">
+        <h1 class="welcomeheader" style="margin-bottom: 10px; font-size: 40px;">Create Account</h1> <!-- Main Title -->
+        <p style="margin-bottom: 30px; opacity: 0.8;">Join the MathTrack Portal</p> <!-- Subtitle -->
+
+        <div class="doubleinput"> <!-- Start of Name Input -->
             <div class="signupinput" style="flex: 1;"><label>First Name</label><input type="text" id="firstName"
-                    placeholder="e.g. Jane"></div>
+                    placeholder="e.g. Jane"></div> <!-- Textbox for First Name -->
             <div class="signupinput" style="flex: 1;"><label>Last Name</label><input type="text" id="lastName"
-                    placeholder="e.g. Doe"></div>
-        </div>
+                    placeholder="e.g. Doe"></div> <!-- Textbox for Last Name -->
+        </div> <!-- End of Name Input -->
 
         <div class="signupinput"><label>Email Address (Username)</label><input type="email" id="email"
-                placeholder="teacher@school.com"></div>
+                placeholder="teacher@school.com"></div> <!-- Textbox for Email Address -->
 
-        <div class="signupinput" style="position: relative;">
-            <label>Gmail App Password</label>
+        <div class="signupinput" style="position: relative;"> <!-- Start of App Password Input -->
+            <label>Gmail App Password</label> <!-- App Password Label -->
             <input type="password" id="appPassword" placeholder="16-letter password" style="padding-right: 35px;">
+            <!-- Textbox for App Password -->
             <span id="toggleAppPass"
                 style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
-        </div>
+            <!-- Show Password Toggle -->
+        </div> <!-- End of App Password Input -->
 
-        <div class="doubleinput">
-            <div class="signupinput" style="flex: 1; position: relative;">
+        <div class="doubleinput"> <!-- Start of Password Pin Input -->
+
+            <div class="signupinput" style="flex: 1; position: relative;"> <!-- Start of First Password Input -->
                 <label>4-Digit PIN</label><input type="password" id="pin" placeholder="1234" maxlength="4"
-                    style="padding-right: 35px;">
+                    style="padding-right: 35px;"> <!-- Textbox for Password -->
                 <span id="togglePin"
                     style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
-            </div>
-            <div class="signupinput" style="flex: 1; position: relative;">
+                <!-- Show Password Toggle -->
+            </div> <!-- End of Password Pin Input -->
+
+            <div class="signupinput" style="flex: 1; position: relative;"> <!-- Start of Confirm Password Pin Input -->
                 <label>Confirm PIN</label><input type="password" id="confPin" placeholder="1234" maxlength="4"
-                    style="padding-right: 35px;">
+                    style="padding-right: 35px;"> <!-- Textbox for Confirm Password -->
                 <span id="toggleConfPin"
                     style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
-            </div>
-        </div>
+                <!-- Show Password Toggle -->
+            </div> <!-- End of Confirm Password Pin Input -->
 
-        <div class="rulebox" id="rulesBox">
-            <div id="rule-length" class="rule">❌ Must be exactly 4 characters</div>
-            <div id="rule-number" class="rule">❌ Must contain only numbers</div>
-            <div id="rule-match" class="rule">❌ PINs must match</div>
-        </div>
+        </div> <!-- End of Password Pin Input -->
+
+        <div class="rulebox" id="rulesBox"> <!-- Start of Rule Box to Display Rules for Password -->
+            <div id="rule-length" class="rule">❌ Must be exactly 4 characters</div> <!-- Must be 4 Characters -->
+            <div id="rule-number" class="rule">❌ Must contain only numbers</div> <!-- Must be only Numbers -->
+            <div id="rule-match" class="rule">❌ PINs must match</div> <!-- Must be Matching -->
+        </div> <!-- End of Rule Box to Display Rules for Password -->
 
         <button class="buttons largebuttons" id="signupBtn" onclick="createAccount()" disabled
             style="opacity: 0.5;">Create
-            Account & Login</button>
+            Account & Login</button> <!-- Create Account Button -->
         <a href="index.html"
             style="display: block; margin-top: 20px; color: rgb(139, 107, 35); font-weight: bold; text-decoration: none;">←
-            Back to Login</a>
-    </div>
+            Back to Login</a> <!-- Back Button Link -->
 
-    <script src="signupScript.js"></script>
+    </div> <!-- End of Portal for signup.html -->
 
-</body>
+    <script src="signupScript.js"></script> <!-- Links to signupScript.js File -->
 
-</html>
+</body> <!-- End of Body -->
+
+</html> <!-- End of HTML -->

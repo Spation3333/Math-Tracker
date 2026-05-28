@@ -111,32 +111,6 @@
             font-family: inherit;
         }
 
-        /* Ensure 4 items per row matching select.html */
-        .newclass {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            max-width: 1000px;
-            margin: 0 auto 40px auto;
-            justify-items: center;
-        }
-
-        /* Profile Modal Button Colors */
-        .btn-primary {
-            background-color: #3498db;
-            color: white;
-        }
-
-        .btn-danger {
-            background-color: #c0392b;
-            color: white;
-        }
-
-        .btn-cancel {
-            background-color: #95a5a6;
-            color: white;
-        }
-
         /* Custom Override Styles for the Archived Card Corner Buttons */
         .btn-recover-card {
             background-color: #27ae60 !important;
@@ -178,7 +152,7 @@
     </div>
 
     <div style="flex: 1; width: 100%;">
-        <h1 class="welcomeheader" style="margin-top: 130px; margin-bottom: 10px; text-align: center;">Archived Classes
+        <h1 class="welcomeheader" style="margin-top: 50px; margin-bottom: 10px; text-align: center;">Archived Classes
         </h1>
         <h2 class="subtitle" style="text-align: center; margin-bottom: 40px;">Recover or permanently delete your
             inactive classes:</h2>
@@ -220,11 +194,11 @@
 
             <div class="modalaction"
                 style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                <button class="buttons btn-primary" style="border:none; border-radius:5px; padding: 10px 20px;"
+                <button class="buttons saveprofile" style="border:none; border-radius:5px; padding: 10px 20px;"
                     onclick="saveProfile()">Save Changes</button>
-                <button class="buttons btn-danger" style="border:none; border-radius:5px; padding: 10px 20px;"
+                <button class="buttons deleteprofile" style="border:none; border-radius:5px; padding: 10px 20px;"
                     onclick="deleteAccount()">Delete Account</button>
-                <button class="buttons btn-cancel" style="border:none; border-radius:5px; padding: 10px 20px;"
+                <button class="buttons cancelprofile" style="border:none; border-radius:5px; padding: 10px 20px;"
                     onclick="closeProfileModal()">Cancel</button>
             </div>
         </div>

@@ -10,6 +10,11 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+select,
+textarea {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 /*---------------------------Headers------------------------------------*/
 /*Titles*/
 h1 {
@@ -302,6 +307,55 @@ input[type="color"] {
     margin-bottom: 5px;
 }
 
+.top-widget {
+    position: absolute;
+    top: 20px;
+    background: var(--card-bg, #fff);
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 2px solid rgb(139, 107, 35);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 65px;
+    box-sizing: border-box;
+}
+
+.profile-widget {
+    right: 20px;
+    cursor: pointer;
+    text-align: right;
+}
+
+.date-widget {
+    left: 20px;
+    text-align: left;
+}
+
+.date-widget-text {
+    font-weight: bold;
+    color: rgb(139, 107, 35);
+    font-size: 1.1em;
+    margin: 0;
+}
+
+.saveprofile {
+    background-color: #3498db;
+    color: white;
+}
+
+.deleteprofile {
+    background-color: #c0392b;
+    color: white;
+}
+
+.cancelprofile {
+    background-color: #95a5a6;
+    color: white;
+}
+
 .selectinput {
     display: flex;
     align-items: center;
@@ -327,15 +381,12 @@ input[type="color"] {
 }
 
 .newclass {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 2px;
-    margin-top: 30px;
-    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
     max-width: 1000px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto 40px auto;
+    justify-items: center;
 }
 
 /*Create Class Button*/
@@ -455,7 +506,7 @@ input[type="color"] {
 }
 
 .modalcontent {
-    background-color: white;
+    background-color: var(--card-bg, #fff);
     padding: 30px;
     border-radius: 10px;
     border: 3px solid rgb(139, 107, 35);
@@ -490,6 +541,7 @@ input[type="color"] {
     /*margin-top: 0px;
     margin-bottom: 30px;*/
 }
+
 
 /*-------------------Dragging Classes-----------------------------------*/
 .dragging {
