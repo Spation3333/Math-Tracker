@@ -69,19 +69,6 @@ h2 {
     align-self: flex-start;
 }
 
-/*Shows or Hides Password Button*/
-/*.togglebuttons {
-    margin-left: 10px;
-    padding: 5px 10px;
-    background-color: #f0f0f0;
-    border: 1px solid rgb(139, 107, 35);
-    cursor: pointer;
-    font-weight: bold;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}*/
-
 /*Show or Hide Button When Hovering*/
 .togglebuttons:hover {
     background-color: #ddd;
@@ -141,8 +128,12 @@ input[type="color"] {
 }
 
 /*---------------------------------Signup Page--------------------------*/
+
+/* ========================================================================= */
+/* TO MAKE THE PORTAL LARGER: Change the max-width value below (e.g. 600px). */
+/* ========================================================================= */
 .indexportal {
-    max-width: 450px;
+    max-width: 550px;
     margin: 60px auto;
     text-align: center;
     background-color: var(--card-bg, #fff);
@@ -298,7 +289,6 @@ input[type="color"] {
 
 /*--------------------------Class Selection Page------------------------*/
 .welcomeheader {
-    /*margin-top: 5px;*/
     margin-bottom: 45px;
 }
 
@@ -527,7 +517,6 @@ input[type="color"] {
     align-self: flex-end;
 }
 
-/*-------------------Current Date---------------------------------------*/
 /*Displays Current Date*/
 .datedisplay {
     position: absolute;
@@ -538,12 +527,8 @@ input[type="color"] {
     top: 20px;
     left: 20px;
     margin: 0;
-    /*margin-top: 0px;
-    margin-bottom: 30px;*/
 }
 
-
-/*-------------------Dragging Classes-----------------------------------*/
 .dragging {
     opacity: 0.4;
 }
@@ -611,19 +596,14 @@ input:checked+.slider:before {
     transform: translateX(26px);
 }
 
-/*Makes Toggle Round*/
 .slider.round {
     border-radius: 34px;
 }
-
 
 .slider.round:before {
     border-radius: 50%;
 }
 
--------------------------Dark Theme-----------------------------------
-
-/*Toggle Switch Bar*/
 .themewrapper {
     position: absolute;
     top: 20px;

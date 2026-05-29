@@ -12,10 +12,9 @@
 
 <body> <!-- Start of Body -->
 
-    <div class="themewrapper" style="position: absolute; top: 20px; right: 20px;">
-        <!-- Start of Location for Darkmode Toggle -->
+    <div class="themewrapper" style="position: absolute; top: 20px; right: 20px;"><!-- Start of Location for Darkmode Toggle -->
         <label class="switch"> <!-- Start of Darkmode Toggle -->
-            <input type="checkbox" id="theme-toggle"> <!-- Creates Toffle -->
+            <input type="checkbox" id="theme-toggle"> <!-- Creates Toggle -->
             <span class="slider round"></span> <!-- Makes it Circle Toggle -->
         </label> <!-- End of Darkmode Toggle -->
     </div> <!-- End of Location for Darkmode Toggle -->
@@ -26,40 +25,28 @@
         <p style="margin-bottom: 30px; opacity: 0.8;">Join the MathTrack Portal</p> <!-- Subtitle -->
 
         <div class="doubleinput"> <!-- Start of Name Input -->
-            <div class="signupinput" style="flex: 1;"><label>First Name</label><input type="text" id="firstName"
-                    placeholder="e.g. Jane"></div> <!-- Textbox for First Name -->
-            <div class="signupinput" style="flex: 1;"><label>Last Name</label><input type="text" id="lastName"
-                    placeholder="e.g. Doe"></div> <!-- Textbox for Last Name -->
+            <div class="signupinput" style="flex: 1;"><label>First Name</label><input type="text" id="firstName" placeholder="e.g. Jane"></div> <!-- Textbox for First Name -->
+            <div class="signupinput" style="flex: 1;"><label>Last Name</label><input type="text" id="lastName" placeholder="e.g. Doe"></div> <!-- Textbox for Last Name -->
         </div> <!-- End of Name Input -->
 
-        <div class="signupinput"><label>Email Address (Username)</label><input type="email" id="email"
-                placeholder="teacher@school.com"></div> <!-- Textbox for Email Address -->
+        <div class="signupinput"><label>Email Address (Username)</label><input type="email" id="email" placeholder="teacher@school.com"></div> <!-- Textbox for Email Address -->
 
         <div class="signupinput" style="position: relative;"> <!-- Start of App Password Input -->
             <label>Gmail App Password</label> <!-- App Password Label -->
-            <input type="password" id="appPassword" placeholder="16-letter password" style="padding-right: 35px;">
-            <!-- Textbox for App Password -->
-            <span id="toggleAppPass"
-                style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
-            <!-- Show Password Toggle -->
+            <input type="password" id="appPassword" placeholder="16-letter password" style="padding-right: 35px;"> <!-- Textbox for App Password -->
+            <span id="toggleAppPass" style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span> <!-- Show Password Toggle -->
         </div> <!-- End of App Password Input -->
 
         <div class="doubleinput"> <!-- Start of Password Pin Input -->
 
             <div class="signupinput" style="flex: 1; position: relative;"> <!-- Start of First Password Input -->
-                <label>4-Digit PIN</label><input type="password" id="pin" placeholder="1234" maxlength="4"
-                    style="padding-right: 35px;"> <!-- Textbox for Password -->
-                <span id="togglePin"
-                    style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
-                <!-- Show Password Toggle -->
+                <label>4-Digit PIN</label><input type="password" id="pin" placeholder="1234" maxlength="4" style="padding-right: 35px;"> <!-- Textbox for Password -->
+                <span id="togglePin" style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span> <!-- Show Password Toggle -->
             </div> <!-- End of Password Pin Input -->
 
             <div class="signupinput" style="flex: 1; position: relative;"> <!-- Start of Confirm Password Pin Input -->
-                <label>Confirm PIN</label><input type="password" id="confPin" placeholder="1234" maxlength="4"
-                    style="padding-right: 35px;"> <!-- Textbox for Confirm Password -->
-                <span id="toggleConfPin"
-                    style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span>
-                <!-- Show Password Toggle -->
+                <label>Confirm PIN</label><input type="password" id="confPin" placeholder="1234" maxlength="4" style="padding-right: 35px;"> <!-- Textbox for Confirm Password -->
+                <span id="toggleConfPin" style="position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 18px;">👁️</span> <!-- Show Password Toggle -->
             </div> <!-- End of Confirm Password Pin Input -->
 
         </div> <!-- End of Password Pin Input -->
@@ -70,12 +57,8 @@
             <div id="rule-match" class="rule">❌ PINs must match</div> <!-- Must be Matching -->
         </div> <!-- End of Rule Box to Display Rules for Password -->
 
-        <button class="buttons largebuttons" id="signupBtn" onclick="createAccount()" disabled
-            style="opacity: 0.5;">Create
-            Account & Login</button> <!-- Create Account Button -->
-        <a href="index.html"
-            style="display: block; margin-top: 20px; color: rgb(139, 107, 35); font-weight: bold; text-decoration: none;">←
-            Back to Login</a> <!-- Back Button Link -->
+        <button class="buttons largebuttons" id="signupBtn" onclick="createAccount()" disabled style="opacity: 0.5;">Create Account & Login</button> <!-- Create Account Button -->
+        <a href="index.html" style="display: block; margin-top: 20px; color: rgb(139, 107, 35); font-weight: bold; text-decoration: none;">← Back to Login</a> <!-- Back Button Link -->
 
     </div> <!-- End of Portal for signup.html -->
 

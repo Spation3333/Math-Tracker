@@ -25,15 +25,8 @@ let classLessonsData = {};
 let classMarksData = {};
 let studentsData = [];
 
-// Refined default formatting to reduce white space and look highly professional
-const DEFAULT_EMAIL_TEMPLATE = `<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.4; color: #333;">
-Hello [RecipientName],<br>
-Here is [StudentName]'s progress for the week of [Week]:
-[Grades]
-[TeacherNotes]
-Best Regards,<br>
-[TeacherName]
-</div>`;
+// Refined single-spacing format with tags intact
+const DEFAULT_EMAIL_TEMPLATE = `<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.2; color: #333;">Hello [RecipientName],<br>Here is [StudentName]'s progress for the week of [Week]:<br>[Grades][TeacherNotes]Best Regards,<br>[TeacherName]</div>`;
 
 // --- DATE UTILITY ---
 function getSafeMonday(dateString) {
@@ -1041,14 +1034,13 @@ let currentIndividualEmailId = null;
 function openIndividualEmailModal(event, id) {
     event.stopPropagation();
     currentIndividualEmailId = id;
-    const student = studentsData.find(s => s.id === id);
-    const sMarks = (classMarksData[id] && classMarksData[id][activeUnitIndex]) || {};
 
+    // Load the raw tag template saved specific to this student, or default back to global template
     const overrideKey = `emailOverride_${currentClass}_${activeUnitIndex}_${id}`;
     let draftMsg = localStorage.getItem(overrideKey);
 
     if (!draftMsg) {
-        draftMsg = buildGradeMessage(student.name, "Guardian / Student", sMarks, false);
+        draftMsg = localStorage.getItem(`emailTemplate_${currentClass}`) || DEFAULT_EMAIL_TEMPLATE;
     }
 
     document.getElementById('individual-email-textarea').innerHTML = draftMsg;
@@ -1071,19 +1063,16 @@ function autoSaveIndividualEmail() {
 function restoreDefaultIndividualEmail() {
     if (confirm("Are you sure you want to revert to the default email format? This will overwrite your current edits.")) {
         const id = currentIndividualEmailId;
-        const student = studentsData.find(s => s.id === id);
-        const sMarks = (classMarksData[id] && classMarksData[id][activeUnitIndex]) || {};
-
         const overrideKey = `emailOverride_${currentClass}_${activeUnitIndex}_${id}`;
         localStorage.removeItem(overrideKey);
 
-        const draftMsg = buildGradeMessage(student.name, "Guardian / Student", sMarks, false, true);
+        let draftMsg = localStorage.getItem(`emailTemplate_${currentClass}`) || DEFAULT_EMAIL_TEMPLATE;
         document.getElementById('individual-email-textarea').innerHTML = draftMsg;
     }
 }
 
-
-function buildGradeMessage(studentName, recipientName, sMarks, isStudent, forceDefault = false) {
+// Dynamically assembles the final HTML string with active values from database right before send
+function buildGradeMessage(studentName, recipientName, sMarks, isStudent, customTemplate = null) {
     const mondayStr = unitsData[activeUnitIndex];
     let weekDate = getSafeMonday(mondayStr);
 
@@ -1095,16 +1084,16 @@ function buildGradeMessage(studentName, recipientName, sMarks, isStudent, forceD
         let d = getSafeMonday(mondayStr);
         d.setDate(d.getDate() + i);
         let fullDateName = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-        
+
         let title = (classLessonsData[activeUnitIndex] && classLessonsData[activeUnitIndex].titles) ? classLessonsData[activeUnitIndex].titles[i] : "";
 
         const mark = sMarks[`d${i}`] || "";
         const markText = mark === "" ? "" : `${mark}%`;
         const isLate = sMarks[`d${i}_late`] ? " (late)" : "";
 
-        tableHeaders += `<th style="border: 1px solid black; padding: 10px; text-align: left; font-weight: normal;">${fullDateName}</th>`;
-        tableTitles += `<td style="border: 1px solid black; padding: 10px; text-align: left;">${title}</td>`;
-        tableMarks += `<td style="border: 1px solid black; padding: 10px; text-align: left;">${markText}${isLate}</td>`;
+        tableHeaders += `<th style="border: 1px solid black; padding: 5px; text-align: left; font-weight: normal;">${fullDateName}</th>`;
+        tableTitles += `<td style="border: 1px solid black; padding: 5px; text-align: left;">${title}</td>`;
+        tableMarks += `<td style="border: 1px solid black; padding: 5px; text-align: left;">${markText}${isLate}</td>`;
     });
 
     let gradesHTMLTable = `
@@ -1116,16 +1105,16 @@ function buildGradeMessage(studentName, recipientName, sMarks, isStudent, forceD
 
     let notesText = "";
     if (sMarks['notes'] && sMarks['notes'].trim() !== "") {
-        notesText = `<strong>Teacher Notes:</strong><br>${sMarks['notes']}<br><br>`;
+        // Appends a single line break to push down the signature
+        notesText = `${sMarks['notes'].replace(/\n/g, '<br>')}<br>`;
     }
 
-    let template = forceDefault ? DEFAULT_EMAIL_TEMPLATE : localStorage.getItem(`emailTemplate_${currentClass}`);
-    if (!template) {
-        template = DEFAULT_EMAIL_TEMPLATE;
-    }
+    let template = customTemplate || localStorage.getItem(`emailTemplate_${currentClass}`) || DEFAULT_EMAIL_TEMPLATE;
+
+    // Purges old subheading text just in case it was saved natively globally before this update
+    template = template.replace(/<strong>Teacher Notes:<\/strong><br><br>/g, '');
 
     let text = template
-        .replace(/\n/g, '<br>')
         .replace(/\[RecipientName\]/g, recipientName)
         .replace(/\[StudentName\]/g, studentName)
         .replace(/\[Week\]/g, weekDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
@@ -1148,7 +1137,7 @@ function getEmailAttachments(studentId) {
     return attachments;
 }
 
-// Intercepts the roster send button, extracting the silently saved layout
+// Primary send function loops actively through dynamically generated templates
 async function emailIndividualStudent(event, id) {
     event.stopPropagation();
     const btn = event.target;
@@ -1158,17 +1147,17 @@ async function emailIndividualStudent(event, id) {
 
     let emailsToSend = [];
     const attachments = getEmailAttachments(student.id);
-
     const sMarks = (classMarksData[student.id] && classMarksData[student.id][activeUnitIndex]) || {};
 
+    // Retrieve the silent cached layout if one exists for this week
     const overrideKey = `emailOverride_${currentClass}_${activeUnitIndex}_${student.id}`;
-    const customOverride = localStorage.getItem(overrideKey);
+    const customOverrideTemplate = localStorage.getItem(overrideKey);
 
     if (student.student_email && student.student_email.trim()) {
         emailsToSend.push({
             to: student.student_email.trim(),
             subject: `MathTrack Grades - ${student.name}`,
-            text: customOverride ? customOverride : buildGradeMessage(student.name, student.name, sMarks, true),
+            text: buildGradeMessage(student.name, student.name, sMarks, true, customOverrideTemplate),
             attachments: attachments
         });
     }
@@ -1186,7 +1175,7 @@ async function emailIndividualStudent(event, id) {
             emailsToSend.push({
                 to: c.email.trim(),
                 subject: `MathTrack Grades - ${student.name}`,
-                text: customOverride ? customOverride : buildGradeMessage(student.name, contactName, sMarks, false),
+                text: buildGradeMessage(student.name, contactName, sMarks, false, customOverrideTemplate),
                 attachments: attachments
             });
         }
@@ -1224,13 +1213,13 @@ async function emailAllStudents() {
         const sMarks = (classMarksData[student.id] && classMarksData[student.id][activeUnitIndex]) || {};
 
         const overrideKey = `emailOverride_${currentClass}_${activeUnitIndex}_${student.id}`;
-        const customOverride = localStorage.getItem(overrideKey);
+        const customOverrideTemplate = localStorage.getItem(overrideKey);
 
         if (student.student_email && student.student_email.trim()) {
             emailsToSend.push({
                 to: student.student_email.trim(),
                 subject: `MathTrack Grades - ${student.name}`,
-                text: customOverride ? customOverride : buildGradeMessage(student.name, student.name, sMarks, true),
+                text: buildGradeMessage(student.name, student.name, sMarks, true, customOverrideTemplate),
                 attachments: attachments
             });
         }
@@ -1248,7 +1237,7 @@ async function emailAllStudents() {
                 emailsToSend.push({
                     to: c.email.trim(),
                     subject: `MathTrack Grades - ${student.name}`,
-                    text: customOverride ? customOverride : buildGradeMessage(student.name, contactName, sMarks, false),
+                    text: buildGradeMessage(student.name, contactName, sMarks, false, customOverrideTemplate),
                     attachments: attachments
                 });
             }
