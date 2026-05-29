@@ -122,3 +122,7 @@ body.darkmode .top-widget {
     background: #2d2d2d;
     border-color: rgb(212, 175, 55);
 }
+
+body.darkmode .darkmode-label {
+    color: white !important;
+}

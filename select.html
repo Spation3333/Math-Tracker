@@ -1,23 +1,23 @@
-<!DOCTYPE html> <!-- Start of HTML -->
-<html lang="en"> <!-- Primary Language is English -->
+<!DOCTYPE html>
+<html lang="en">
 
-<head> <!-- Start of Head -->
-    <meta charset="UTF-8"> <!-- Tells What Characters to Use -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Matches Screen Width -->
-    <title>Select Class</title> <!-- Title of Page -->
-    <link rel="icon" type="image/jpeg" href="Images/logo.jpg"> <!-- Favicon -->
-    <link href="styles.css" rel="stylesheet" /> <!-- Links to styles.css file -->
-    <link href="darkmode.css" rel="stylesheet" /> <!-- Links to darkmode.css file -->
-</head> <!-- End of Head -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Class</title>
+    <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
+    <link href="styles.css" rel="stylesheet" />
+    <link href="darkmode.css" rel="stylesheet" />
+</head>
 
-<body> <!-- Start of Body -->
+<body>
 
     <div class="top-widget date-widget">
         <p id="currentdate" class="date-widget-text"></p>
     </div>
 
     <div class="top-widget profile-widget" onclick="openProfileModal()">
-        <div id="profile-name" style="font-weight: bold; font-size: 1.1em; color: rgb(139, 107, 35);"></div>
+        <div id="profile-name" style="font-weight: bold; font-size: 1.1em; color: #3498db;"></div>
         <div id="profile-email" style="font-size: 0.85em; color: gray;"></div>
     </div>
 
@@ -138,7 +138,7 @@
         </div>
 
         <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
-            <span style="font-size: 0.9em; font-weight: bold; color: var(--text-color, #333);">Dark Mode</span>
+            <span class="darkmode-label">Dark Mode</span>
             <label class="switch" style="margin: 0;">
                 <input type="checkbox" id="theme-toggle">
                 <span class="slider round"></span>
@@ -147,8 +147,8 @@
 
     </div>
 
-    <script src="script.js"></script> <!-- Links to script.js File -->
+    <script src="script.js"></script>
 
-</body> <!-- End of Body -->
+</body>
 
-</html> <!-- End of HTML -->
+</html>

@@ -147,7 +147,7 @@
     </div>
 
     <div class="top-widget profile-widget" onclick="openProfileModal()">
-        <div id="profile-name" style="font-weight: bold; font-size: 1.1em; color: rgb(139, 107, 35);"></div>
+        <div id="profile-name" style="font-weight: bold; font-size: 1.1em; color: #3498db;"></div>
         <div id="profile-email" style="font-size: 0.85em; color: gray;"></div>
     </div>
 
@@ -163,20 +163,15 @@
     <div id="profile-modal" class="modal">
         <div class="modalcontent" style="max-width: 450px; width: 100%;">
             <h2 style="margin-top:0;">Edit Profile</h2>
-            <div class="selectinput" style="justify-content: space-between;"><label>First Name:</label><input
-                    type="text" id="prof-fname"></div>
-            <div class="selectinput" style="justify-content: space-between;"><label>Last Name:</label><input type="text"
-                    id="prof-lname"></div>
-            <div class="selectinput" style="justify-content: space-between;"><label>Username:</label><input type="email"
-                    id="prof-email"></div>
+            <div class="selectinput" style="justify-content: space-between;"><label>First Name:</label><input type="text" id="prof-fname"></div>
+            <div class="selectinput" style="justify-content: space-between;"><label>Last Name:</label><input type="text" id="prof-lname"></div>
+            <div class="selectinput" style="justify-content: space-between;"><label>Username:</label><input type="email" id="prof-email"></div>
 
             <div class="selectinput" style="justify-content: space-between;">
                 <label>App Password:</label>
                 <div style="position: relative; flex: 1;">
-                    <input type="password" id="prof-apppass"
-                        style="width: 100%; box-sizing: border-box; padding-right: 30px;">
-                    <span id="toggleProfApp"
-                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
+                    <input type="password" id="prof-apppass" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
+                    <span id="toggleProfApp" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
                 </div>
             </div>
 
@@ -185,36 +180,28 @@
             <div class="selectinput" style="justify-content: space-between;">
                 <label style="color:var(--danger, #e74c3c);">Confirm PIN:</label>
                 <div style="position: relative; flex: 1;">
-                    <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes"
-                        style="width: 100%; box-sizing: border-box; padding-right: 30px;">
-                    <span id="toggleProfPin"
-                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
+                    <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
+                    <span id="toggleProfPin" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
                 </div>
             </div>
 
-            <div class="modalaction"
-                style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                <button class="buttons saveprofile" style="border:none; border-radius:5px; padding: 10px 20px;"
-                    onclick="saveProfile()">Save Changes</button>
-                <button class="buttons deleteprofile" style="border:none; border-radius:5px; padding: 10px 20px;"
-                    onclick="deleteAccount()">Delete Account</button>
-                <button class="buttons cancelprofile" style="border:none; border-radius:5px; padding: 10px 20px;"
-                    onclick="closeProfileModal()">Cancel</button>
+            <div class="modalaction" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                <button class="buttons saveprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="saveProfile()">Save Changes</button>
+                <button class="buttons deleteprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="deleteAccount()">Delete Account</button>
+                <button class="buttons cancelprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="closeProfileModal()">Cancel</button>
             </div>
         </div>
     </div>
 
-    <div
-        style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 20px 30px; width: 100%; box-sizing: border-box; margin-top: auto;">
+    <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 20px 30px; width: 100%; box-sizing: border-box; margin-top: auto;">
         <div style="display: flex; justify-content: flex-start;">
-            <a href="select.html" class="buttons backbuttons"
-                style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0;"> back </a>
+            <a href="select.html" class="buttons backbuttons" style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0;"> back </a>
         </div>
 
         <div></div>
 
         <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
-            <span style="font-size: 0.9em; font-weight: bold; color: var(--text-color, #333);">Dark Mode</span>
+            <span class="darkmode-label">Dark Mode</span>
             <label class="switch" style="margin: 0;">
                 <input type="checkbox" id="theme-toggle">
                 <span class="slider round"></span>
@@ -251,7 +238,6 @@
         const profNameEl = document.getElementById('profile-name');
         if (profNameEl) {
             profNameEl.textContent = `${currentUser.firstName} ${currentUser.lastName}`;
-            if (body.classList.contains('darkmode')) profNameEl.style.color = "rgb(212, 175, 55)";
         }
         document.getElementById('profile-email').textContent = currentUser.email;
 
@@ -417,7 +403,7 @@
                 letter.className = 'cardletter';
 
                 // Matches the gray aesthetic styling
-                //letter.style.backgroundColor = '#a9a9a9';
+                letter.style.backgroundColor = '#a9a9a9';
                 letter.style.color = 'white';
 
                 // Recalls the original letter of the slot it was in

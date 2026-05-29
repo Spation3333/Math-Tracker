@@ -3,6 +3,7 @@ if (!currentUser) window.location.href = 'index.html';
 
 const storageKey = `savedClasses_${currentUser.email}`;
 
+// Enforce the rigid 8-slot array structure immediately on load
 let rawClassData = JSON.parse(localStorage.getItem(storageKey));
 if (!Array.isArray(rawClassData) || rawClassData.length !== 8) {
     let fixedArray = new Array(8).fill(null);
@@ -25,8 +26,15 @@ let classLessonsData = {};
 let classMarksData = {};
 let studentsData = [];
 
-// Refined single-spacing format with tags intact
-const DEFAULT_EMAIL_TEMPLATE = `<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.2; color: #333;">Hello [RecipientName],<br>Here is [StudentName]'s progress for the week of [Week]:<br>[Grades][TeacherNotes]Best Regards,<br>[TeacherName]</div>`;
+// Refined default formatting matching your exact requested layout
+const DEFAULT_EMAIL_TEMPLATE = `<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.4; color: #333;">
+Hello [RecipientName],<br><br>
+Here is [StudentName]'s progress for the week of [Week]:<br><br>
+[Grades]<br><br>
+[TeacherNotes]<br><br>
+Best Regards,<br>
+[TeacherName]
+</div>`;
 
 // --- DATE UTILITY ---
 function getSafeMonday(dateString) {
@@ -1105,14 +1113,18 @@ function buildGradeMessage(studentName, recipientName, sMarks, isStudent, custom
 
     let notesText = "";
     if (sMarks['notes'] && sMarks['notes'].trim() !== "") {
-        // Appends a single line break to push down the signature
-        notesText = `${sMarks['notes'].replace(/\n/g, '<br>')}<br>`;
+        notesText = sMarks['notes'].replace(/\n/g, '<br>');
     }
 
     let template = customTemplate || localStorage.getItem(`emailTemplate_${currentClass}`) || DEFAULT_EMAIL_TEMPLATE;
 
     // Purges old subheading text just in case it was saved natively globally before this update
-    template = template.replace(/<strong>Teacher Notes:<\/strong><br><br>/g, '');
+    template = template.replace(/<strong>Teacher Notes:<\/strong><br>/g, '');
+
+    // Clean up empty notes spacing elegantly so we don't get double spaces if notes are empty
+    if (notesText === "") {
+        template = template.replace(/\s*\[TeacherNotes\]\s*(?:<br>\s*){0,2}/g, '');
+    }
 
     let text = template
         .replace(/\[RecipientName\]/g, recipientName)

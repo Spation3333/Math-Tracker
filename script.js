@@ -81,9 +81,6 @@ window.addEventListener('DOMContentLoaded', function () {
             document.getElementById('profile-name').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
             document.getElementById('profile-email').textContent = currentUser.email;
         }
-        if (document.body.classList.contains('darkmode') && document.getElementById('profile-name')) {
-            document.getElementById('profile-name').style.color = "rgb(212, 175, 55)";
-        }
     }
 });
 

@@ -1,56 +1,49 @@
-<!DOCTYPE html> <!-- Start of HTML -->
-<html lang="en"> <!-- Primary Language is English -->
+<!DOCTYPE html>
+<html lang="en">
 
-<head> <!-- Start of Head -->
-    <meta charset="UTF-8"> <!-- Tells What Characters to Use -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Matches Screen Width -->
-    <title>MathTrack - Portal</title> <!-- Title of Page -->
-    <link rel="icon" type="image/jpeg" href="Images/logo.jpg"> <!-- Favicon -->
-    <link href="styles.css" rel="stylesheet" /> <!-- Links to styles.css file -->
-    <link href="darkmode.css" rel="stylesheet" /> <!-- Links to darkmode.css file -->
-</head> <!-- End of Head -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathTrack - Portal</title>
+    <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
+    <link href="styles.css" rel="stylesheet" />
+    <link href="darkmode.css" rel="stylesheet" />
+</head>
 
-<body> <!-- Start of Body -->
+<body>
+    
+    <div class="themewrapper" style="position: absolute; top: 20px; right: 20px;">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider round"></span> 
+        </label>
+    </div>
 
-    <div class="themewrapper" style="position: absolute; top: 20px; right: 20px;"><!-- Start of Location for Darkmode Toggle -->
-        <label class="switch"> <!-- Start of Darkmode Toggle -->
-            <input type="checkbox" id="theme-toggle"> <!-- Creates Toggle -->
-            <span class="slider round"></span> <!-- Makes it Circle Toggle -->
-        </label> <!-- End of Darkmode Toggle -->
-    </div> <!-- End of Location for Darkmode Toggle -->
+    <div class="indexportal">
+        <h1 class="welcomeheader" style="margin-bottom: 0px; font-size: 50px;">MathTrack</h1>
+        <h2 class="subtitle" style="margin-bottom: 30px; margin-top: 5px; font-size: 45px;">Teacher Portal</h2>
+        <div style="display: flex; flex-direction: column; align-items: stretch; max-width: 350px; margin: 0 auto 30px auto;">
+            <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                <label for="loginPin" style="white-space: nowrap; margin-right: 15px;">4-Digit PIN:</label>
+                <div class="passwordwrapper" style="position: relative; flex: 1;">
+                    <input type="password" id="loginPin" placeholder="e.g. 1234" maxlength="4" autocomplete="current-password" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
+                    <button type="button" class="eye-icon" onclick="togglePassword()" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0;">👁️</button>
+                </div>
+            </div>
+            <div class="linkrow" style="display: flex; justify-content: space-between; align-items: center;">
+                <a href="recovery.html" class="forgotlink">Forgot PIN?</a>
+                <button class="buttons" onclick="window.location.href='signup.html'" style="margin: 0; padding: 6px 12px; font-size: 0.9em; border: none; border-radius: 4px; cursor: pointer;">Create Account</button>
+            </div>
+        </div>
+        <hr style="border: 0; border-top: 1px solid var(--border-color, #ccc); margin-bottom: 20px;">
+        <div class="mainbuttonsrow">
+            <button class="buttons mainbuttons" style="border: none; border-radius: 4px; cursor: pointer;" onclick="window.location.href='credits.html'">Credits</button>
+            <button class="buttons cancelbutton mainbuttons" style="border: none; border-radius: 4px; cursor: pointer;" onclick="quitApp()">Quit</button>
+        </div>
+    </div>
 
-    <div class="indexportal"> <!-- Start of Portal for index.html -->
+    <script src="signupScript.js"></script>
 
-        <h1 class="welcomeheader" style="margin-bottom: 0px; font-size: 50px;">MathTrack</h1> <!-- Main Title -->
-        <h2 class="subtitle" style="margin-bottom: 30px; margin-top: 5px; font-size: 45px;">Teacher Portal</h2> <!-- Subtitle -->
+</body>
 
-        <div style="display: flex; flex-direction: column; align-items: stretch; max-width: 350px; margin: 0 auto 30px auto;"> <!-- Start of Top Row -->
-
-            <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 10px;"> <!-- Start of Login Input -->
-                <label for="loginPin" style="white-space: nowrap; margin-right: 15px;">4-Digit PIN:</label> <!-- Login Label -->
-                <div class="passwordwrapper" style="position: relative; flex: 1;"> <!-- Start of Password Pin -->
-                    <input type="password" id="loginPin" placeholder="e.g. 1234" maxlength="4" autocomplete="current-password" style="width: 100%; box-sizing: border-box; padding-right: 30px;"> <!-- Login Textbox -->
-                    <button type="button" class="eye-icon" onclick="togglePassword()" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0;">👁️</button> <!-- Show Password Toggle -->
-                </div> <!-- End of Password Pin -->
-            </div> <!-- End of Login Input -->
-
-            <div class="linkrow" style="display: flex; justify-content: space-between; align-items: center;"> <a href="recovery.html" class="forgotlink" style="font-size: 0.9em; color: var(--accent, #3498db); text-decoration: none;">Forgot PIN?</a> <!-- Start of Recovery Link -->
-                <button class="buttons" onclick="window.location.href='signup.html'" style="margin: 0; padding: 6px 12px; font-size: 0.9em; border: none; border-radius: 4px; cursor: pointer;">Create Account</button> <!-- Create Account Button -->
-            </div> <!-- End of Recovery Link -->
-
-        </div> <!-- End of Top Row -->
-
-        <hr style="border: 0; border-top: 1px solid var(--border-color, #ccc); margin-bottom: 20px;"> <!-- White Bar to Seperate Top and Bottom Rows-->
-
-        <div class="mainbuttonsrow"> <!-- Start of Bottom Row -->
-            <button class="buttons mainbuttons" style="border: none; border-radius: 4px; cursor: pointer;" onclick="window.location.href='credits.html'">Credits</button> <!-- Works Cited Button -->
-            <button class="buttons cancelbutton mainbuttons" style="border: none; border-radius: 4px; cursor: pointer;" onclick="quitApp()">Quit</button> <!-- Quit Button -->
-        </div> <!-- End of Bottom Row -->
-
-    </div> <!-- End of Portal for index.html -->
-
-    <script src="signupScript.js"></script> <!-- Links to signupScript.js File -->
-
-</body> <!-- End of Body -->
-
-</html> <!-- End of HTML -->
+</html>

@@ -1,4 +1,3 @@
-/*-----------------------------Body-------------------------------------*/
 /*Body*/
 body {
     display: flex;
@@ -248,7 +247,7 @@ input[type="color"] {
 
 /*---------------------------Recovery Page------------------------------*/
 .forgotlink {
-    color: var(--accent, #3498db);
+    color: #3498db;
     text-decoration: none;
     font-size: 0.9em;
     font-weight: bold;
@@ -617,4 +616,11 @@ input:checked+.slider:before {
     border: none;
     cursor: pointer;
     font-size: 1.2em;
+}
+
+/* Smart Dark Mode Label for Toggle Switches */
+.darkmode-label {
+    font-size: 0.9em;
+    font-weight: bold;
+    color: gray;
 }
