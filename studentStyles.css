@@ -194,8 +194,10 @@ body.darkmode .btn-class-nav {
 
 .unit-box {
     background-color: var(--card-bg);
-    border: 2px solid rgb(139, 107, 35);
-    color: rgb(139, 107, 35);
+    /*border: 2px solid rgb(139, 107, 35);*/
+    border: 2px solid rgb(212, 175, 55);
+    /*color: rgb(139, 107, 35);*/
+    color: black;
     padding: 15px 25px;
     border-radius: 8px;
     font-weight: bold;
@@ -217,8 +219,9 @@ body.darkmode .unit-box {
 }
 
 .unit-box.active {
-    background-color: rgb(139, 107, 35);
-    color: white;
+    /*background-color: rgb(139, 107, 35);*/
+    background-color: rgb(212, 175, 55);
+    color: black;
 }
 
 body.darkmode .unit-box.active {
@@ -680,4 +683,87 @@ body.darkmode .inline-class-edit:focus {
     margin: 0 !important;
     width: 100% !important;
     box-sizing: border-box;
+}
+
+#print-area {
+    display: none;
+}
+
+.print-class-btn {
+    background-color: rgb(212, 175, 55);
+    color: #000;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 0.8em;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: background-color 0.2s;
+}
+
+.print-class-btn:hover {
+    background-color: rgb(240, 203, 83);
+}
+
+@media print {
+    @page {
+        size: landscape;
+        margin: 1cm;
+    }
+    body {
+        padding: 0;
+        background-color: white;
+    }
+    .container {
+        display: none !important;
+    }
+    #print-area {
+        display: block !important;
+    }
+    .table-responsive {
+        overflow: visible !important;
+    }
+    .roster-table {
+        min-width: unset !important;
+        width: 100% !important;
+        table-layout: fixed;
+    }
+    .roster-table th, .roster-table td {
+        word-wrap: break-word;
+        padding: 5px !important;
+        font-size: 0.85em;
+    }
+    .top-widget, 
+    .nav-link, 
+    .switch, 
+    .darkmode-label,
+    #class-nav-bar,
+    .controls,
+    #add-student-form,
+    .import-section,
+    .units-section,
+    .student-actions,
+    .btn-add-circle,
+    .btn-add-lesson,
+    .col-delete,
+    .unit-add-box,
+    .unit-delete,
+    .parent-email-row,
+    label[style*="cursor:pointer"] input[type="file"],
+    button[title="Remove Image"] {
+        display: none !important;
+    }
+    th button {
+        display: none !important;
+    }
+    button[onclick="openTemplateModal()"] {
+        display: none !important;
+    }
+    input, textarea {
+        border: none !important;
+        background: transparent !important;
+        resize: none;
+    }
 }

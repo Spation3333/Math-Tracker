@@ -16,6 +16,7 @@ const dbPath = path.join(__dirname, 'world.db');
 const db = new sqlite3.Database(dbPath, (err) => {
     if (!err) {
         db.serialize(() => {
+            // Original Student Tables
             db.run(`CREATE TABLE IF NOT EXISTS Students (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT,
@@ -25,6 +26,36 @@ const db = new sqlite3.Database(dbPath, (err) => {
                 class_name TEXT
             )`);
             db.run("ALTER TABLE Students ADD COLUMN contacts_info TEXT", (err) => { });
+
+            // New Textbook Inventory Tables
+            db.run(`CREATE TABLE IF NOT EXISTS Courses (
+                course_code TEXT PRIMARY KEY,
+                title TEXT,
+                publisher TEXT,
+                replacement_cost REAL,
+                total_quantity INTEGER
+            )`);
+
+            db.run(`CREATE TABLE IF NOT EXISTS Copies (
+                copy_number TEXT PRIMARY KEY,
+                course_code TEXT,
+                student_name TEXT,
+                teacher_name TEXT,
+                location_status TEXT,
+                last_updated TEXT
+            )`);
+
+            db.run(`CREATE TABLE IF NOT EXISTS Liabilities (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                date_logged TEXT,
+                student_name TEXT,
+                teacher_name TEXT,
+                course_code TEXT,
+                copy_number TEXT,
+                fine_amount REAL,
+                outcome TEXT,
+                resolved INTEGER DEFAULT 0
+            )`);
         });
     }
 });
@@ -59,7 +90,7 @@ app.post('/api/send-emails', (req, res) => {
         });
 });
 
-// --- STANDARD API ROUTES ---
+// --- STANDARD STUDENT API ROUTES ---
 app.post('/api/add', (req, res) => {
     const { name, student_email, guardian_email, contacts_info, class_name } = req.body;
     db.run(`INSERT INTO Students (name, student_email, guardian_email, contacts_info, class_name) VALUES (?, ?, ?, ?, ?)`,
@@ -109,6 +140,111 @@ app.put('/api/migrate-email', (req, res) => {
         res.json({ status: "Migrated", rows: this.changes });
     });
 });
+
+
+// --- NEW TEXTBOOK INVENTORY API ROUTES ---
+
+// Courses
+app.get('/api/inventory/courses', (req, res) => {
+    db.all("SELECT * FROM Courses", [], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ courses: rows });
+    });
+});
+
+app.post('/api/inventory/courses', (req, res) => {
+    const { course_code, title, publisher, replacement_cost, total_quantity } = req.body;
+    db.run(`INSERT INTO Courses (course_code, title, publisher, replacement_cost, total_quantity) VALUES (?, ?, ?, ?, ?)`,
+        [course_code, title, publisher, replacement_cost, total_quantity], function (err) {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ status: "Success" });
+        });
+});
+
+app.delete('/api/inventory/courses/:course_code', (req, res) => {
+    db.run("DELETE FROM Courses WHERE course_code = ?", [req.params.course_code], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        // Clean up linked copies
+        db.run("DELETE FROM Copies WHERE course_code = ?", [req.params.course_code], (err2) => {
+            res.json({ status: "Deleted" });
+        });
+    });
+});
+
+// Copies (Individual Books)
+app.get('/api/inventory/copies/:course_code', (req, res) => {
+    db.all("SELECT * FROM Copies WHERE course_code = ?", [req.params.course_code], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ copies: rows });
+    });
+});
+
+app.post('/api/inventory/copies', (req, res) => {
+    const { copy_number, course_code, student_name, teacher_name, location_status } = req.body;
+    const last_updated = new Date().toISOString();
+    db.run(`INSERT INTO Copies (copy_number, course_code, student_name, teacher_name, location_status, last_updated) VALUES (?, ?, ?, ?, ?, ?)`,
+        [copy_number, course_code, student_name, teacher_name, location_status, last_updated], function (err) {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ status: "Success" });
+        });
+});
+
+app.put('/api/inventory/copies/:copy_number', (req, res) => {
+    const { student_name, teacher_name, location_status } = req.body;
+    const last_updated = new Date().toISOString();
+    db.run("UPDATE Copies SET student_name = ?, teacher_name = ?, location_status = ?, last_updated = ? WHERE copy_number = ?",
+        [student_name, teacher_name, location_status, last_updated, req.params.copy_number], (err) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ status: "Updated" });
+        });
+});
+
+app.delete('/api/inventory/copies/:copy_number', (req, res) => {
+    db.run("DELETE FROM Copies WHERE copy_number = ?", [req.params.copy_number], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ status: "Deleted" });
+    });
+});
+
+// Liabilities (Ledger)
+app.get('/api/inventory/liabilities', (req, res) => {
+    db.all("SELECT * FROM Liabilities", [], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ liabilities: rows });
+    });
+});
+
+app.post('/api/inventory/liabilities', (req, res) => {
+    const { date_logged, student_name, teacher_name, course_code, copy_number, fine_amount } = req.body;
+    db.run(`INSERT INTO Liabilities (date_logged, student_name, teacher_name, course_code, copy_number, fine_amount, outcome, resolved) VALUES (?, ?, ?, ?, ?, ?, '', 0)`,
+        [date_logged, student_name, teacher_name, course_code, copy_number, fine_amount], function (err) {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ status: "Success" });
+        });
+});
+
+app.put('/api/inventory/liabilities/:id/resolve', (req, res) => {
+    db.run("UPDATE Liabilities SET resolved = 1 WHERE id = ?", [req.params.id], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ status: "Resolved" });
+    });
+});
+
+app.delete('/api/inventory/liabilities/:id', (req, res) => {
+    db.run("DELETE FROM Liabilities WHERE id = ?", [req.params.id], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ status: "Deleted" });
+    });
+});
+
+app.put('/api/inventory/liabilities/:id', (req, res) => {
+    const { outcome } = req.body;
+    db.run("UPDATE Liabilities SET outcome = ? WHERE id = ?", [outcome, req.params.id], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ status: "Updated" });
+    });
+});
+
 
 // --- SYSTEM EMAIL SETUP ---
 const systemTransporter = nodemailer.createTransport({

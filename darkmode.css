@@ -101,6 +101,10 @@ body.darkmode .recoveryportal {
     background-color: #2d2d2d;
 }
 
+body.darkmode .classportal {
+    background-color: #2d2d2d;
+}
+
 body.darkmode .portal-container {
     background-color: #2d2d2d;
 }
@@ -114,11 +118,11 @@ body.darkmode .rulebox {
     border-color: rgb(212, 175, 55);
 }
 
-body.darkmode .date-widget-text {
+body.darkmode .datedisplayedtext {
     color: rgb(212, 175, 55);
 }
 
-body.darkmode .top-widget {
+body.darkmode .topnav {
     background: #2d2d2d;
     border-color: rgb(212, 175, 55);
 }

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathTrack - Spreadsheet Textbook Inventory</title>
+    <link rel="icon" type="image/png" href="images/image.png">
+    <link href="styles.css" rel="stylesheet" />
+    <link href="darkmode.css" rel="stylesheet" />
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: var(--card-bg, #fff);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        body.darkmode .container { background: #2d2d2d; color: #f4f4f4; }
+        
+        .tab-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgb(139, 107, 35);
+            padding-bottom: 10px;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #ccc;
+            background: #eee;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 5px 5px 0 0;
+            border-bottom: none;
+        }
+        .tab-btn.active {
+            background: rgb(139, 107, 35);
+            color: white;
+            border-color: rgb(139, 107, 35);
+        }
+        body.darkmode .tab-btn { background: #444; color: white; border-color: #555; }
+        body.darkmode .tab-btn.active { background: rgb(212, 175, 55); color: black; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Spreadsheet styles */
+        table.spreadsheet {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+        table.spreadsheet th, table.spreadsheet td {
+            border: 1px solid #ccc;
+            padding: 6px 10px;
+            text-align: left;
+            position: relative;
+        }
+        table.spreadsheet th { background: #f0f0f0; font-weight: bold; }
+        body.darkmode table.spreadsheet th { background: #444; border-color: #555; }
+        body.darkmode table.spreadsheet td { border-color: #555; }
+
+        /* Input fields in cells */
+        table.spreadsheet input[type="text"], table.spreadsheet select {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid transparent;
+            background: transparent;
+            padding: 4px;
+            font-size: 14px;
+            color: inherit;
+        }
+        table.spreadsheet input[type="text"]:focus, table.spreadsheet select:focus {
+            border: 1px solid #3498db;
+            background: #fff;
+            outline: none;
+        }
+        body.darkmode table.spreadsheet input[type="text"]:focus, body.darkmode table.spreadsheet select:focus {
+            background: #333;
+        }
+
+        /* Color Coding Rules */
+        .row-missing { background-color: #ffcccc !important; }
+        body.darkmode .row-missing { background-color: #8b0000 !important; color: white; }
+        .row-binding { background-color: #ffccff !important; }
+        body.darkmode .row-binding { background-color: #8b008b !important; color: white; }
+        .row-teacher { background-color: #ccffcc !important; }
+        body.darkmode .row-teacher { background-color: #006400 !important; color: white; }
+
+        .btn { padding: 6px 12px; font-weight: bold; cursor: pointer; border: none; border-radius: 4px; font-size: 14px; }
+        .btn-primary { background: rgb(139, 107, 35); color: white; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        /* Forms */
+        .form-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+        body.darkmode .form-row { background: #333; border-color: #555; }
+        .form-row input, .form-row select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color, #ccc);
+            background: var(--input-bg, #fff);
+            color: var(--text-color, #000);
+        }
+        .status-message {
+            margin-top: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        .status-message.success { color: #27ae60; }
+        .status-message.error { color: #e74c3c; }
+        .ledger-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="themewrapper" style="position: absolute; top: 20px; right: 20px;">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider round"></span>
+        </label>
+    </div>
+
+    <h1 class="welcomeheader" style="margin-bottom: 0px; font-size: 50px;">MathTrack</h1>
+    <h2 class="subtitle" style="margin-bottom: 30px; margin-top: 5px; font-size: 35px;">Spreadsheet Inventory</h2>
+
+    <div class="container">
+        <div class="tab-bar" id="dynamic-tabs">
+            <button class="tab-btn active" id="tabbtn-setup" onclick="switchTab('setup')">Instructions & Setup</button>
+            <!-- Course Tabs will be injected here -->
+            <button class="tab-btn" id="tabbtn-liabilities" style="margin-left:auto; background:#e74c3c; color:white;" onclick="switchTab('liabilities')">Liabilities Ledger</button>
+        </div>
+
+        <!-- SETUP & MASTER TOTALS TAB -->
+        <div id="tab-setup" class="tab-content active">
+            <div style="margin-bottom: 20px; padding: 15px; background: #eef7ff; border-left: 4px solid #3498db; color: #333; border-radius: 4px;">
+                <h3 style="margin-top:0;">Instructions</h3>
+                <ul>
+                    <li><strong>Active Sign-Outs:</strong> Type student name, teacher, and location.</li>
+                    <li><strong>Returns:</strong> Delete the student's name from the row to clear it.</li>
+                    <li><strong>Missing Books:</strong> Type "missing" in the location column. It will turn <span style="color:red; font-weight:bold;">RED</span> and prompt you to add the student to the Liabilities Ledger.</li>
+                    <li><strong>Repairs:</strong> Type "Binding" in the location. It will turn <span style="color:magenta; font-weight:bold;">PINK</span>.</li>
+                    <li><strong>Teacher Holds:</strong> Type "teacher" in the location. It will turn <span style="color:green; font-weight:bold;">GREEN</span>.</li>
+                    <li><strong>Before Distributing:</strong> Check the Liabilities Ledger tab to ensure the student has no outstanding fines.</li>
+                </ul>
+            </div>
+
+            <div class="header-controls">
+                <h3>Textbook Prices & Totals (Master List)</h3>
+            </div>
+            
+            <div class="form-row">
+                <input type="text" id="new-course" placeholder="Course Code (e.g. MPM2D)">
+                <input type="text" id="new-title" placeholder="Title">
+                <input type="text" id="new-publisher" placeholder="Publisher">
+                <input type="number" id="new-cost" placeholder="Replacement Cost ($)" step="0.01">
+                <input type="number" id="new-qty" placeholder="Total Qty">
+                <button class="btn btn-primary" onclick="addCourse()">Add Book</button>
+            </div>
+            <div id="course-status" class="status-message" aria-live="polite"></div>
+
+            <table class="spreadsheet" id="courses-table">
+                <thead>
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Title</th>
+                        <th>Publisher</th>
+                        <th>Replacement Cost ($)</th>
+                        <th>Total Qty</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="courses-tbody"></tbody>
+            </table>
+        </div>
+
+        <!-- COURSE SIGN-OUT SHEETS WILL BE INJECTED HERE -->
+        <div id="course-tabs-container"></div>
+
+        <!-- LIABILITIES LEDGER -->
+        <div id="tab-liabilities" class="tab-content">
+            <div class="header-controls">
+                <h3 style="color: #e74c3c;">Liabilities Ledger</h3>
+            </div>
+            
+            <table class="spreadsheet" id="liabilities-table">
+                <thead>
+                    <tr>
+                        <th>Date Logged</th>
+                        <th>Student Name</th>
+                        <th>Teacher</th>
+                        <th>Course Code</th>
+                        <th>Textbook #</th>
+                        <th>Fine Amount</th>
+                        <th>Outcome</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="liabilities-tbody"></tbody>
+            </table>
+        </div>
+
+        <div class="bottomnav" style="padding-top: 20px;">
+            <a href="select.html" class="buttons backbuttons"> back </a>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+        let coursesData = [];
+        let copiesData = [];
+        let activeTab = 'setup';
+
+        function setCourseStatus(message, type = '') {
+            const status = document.getElementById('course-status');
+            if (!status) return;
+            status.textContent = message || '';
+            status.className = 'status-message' + (type ? ` ${type}` : '');
+        }
+
+        function showLedgerError(message) {
+            alert(message);
+            setCourseStatus(message, 'error');
+        }
+
+        // Theme toggle logic
+        const themeToggle = document.getElementById('theme-toggle');
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('darkmode');
+            themeToggle.checked = true;
+        }
+        themeToggle.addEventListener('change', () => {
+            document.body.classList.toggle('darkmode');
+            localStorage.setItem('theme', document.body.classList.contains('darkmode') ? 'dark' : 'light');
+        });
+
+        function switchTab(tabId) {
+            let btn = document.getElementById('tabbtn-' + tabId);
+            let content = document.getElementById('tab-' + tabId);
+            if (!btn && !content && tabId !== 'setup') {
+                tabId = 'setup';
+                btn = document.getElementById('tabbtn-setup');
+                content = document.getElementById('tab-setup');
+            }
+
+            activeTab = tabId;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if(btn) btn.classList.add('active');
+            
+            if(content) content.classList.add('active');
+        }
+
+        async function loadData() {
+            try {
+                // 1. Fetch Courses
+                let res = await fetch(API_BASE + '/api/inventory/courses');
+                let data = await res.json();
+                coursesData = data.courses || [];
+                renderCourses();
+                renderCourseTabs();
+
+                // 2. Fetch Copies for all courses (just looping for simplicity or build single endpoint later)
+                // For now, I'll fetch them individually as they are needed, or all at once.
+                copiesData = [];
+                for(let c of coursesData) {
+                    let cRes = await fetch(API_BASE + '/api/inventory/copies/' + c.course_code);
+                    let cData = await cRes.json();
+                    copiesData = copiesData.concat(cData.copies || []);
+                }
+                renderAllCourseSheets();
+
+                // 3. Fetch Liabilities
+                await loadLiabilities();
+
+                // Restore whichever tab the user was already viewing before the refresh.
+                switchTab(activeTab);
+
+            } catch(e) {
+                console.error("Failed to load data", e);
+            }
+        }
+
+        async function loadLiabilities() {
+            try {
+                let lRes = await fetch(API_BASE + '/api/inventory/liabilities');
+                let lData = await lRes.json();
+                renderLiabilities(lData.liabilities || []);
+            } catch(e) {
+                console.error("Failed to load liabilities", e);
+            }
+        }
+
+        function renderCourses() {
+            let html = '';
+            coursesData.forEach(c => {
+                html += `
+                    <tr>
+                        <td><strong>${c.course_code}</strong></td>
+                        <td>${c.title || ''}</td>
+                        <td>${c.publisher || ''}</td>
+                        <td>$${(c.replacement_cost || 0).toFixed(2)}</td>
+                        <td>${c.total_quantity || 0}</td>
+                        <td><button class="btn btn-danger" onclick="deleteCourse('${c.course_code}')">Del</button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('courses-tbody').innerHTML = html;
+        }
+
+        function renderCourseTabs() {
+            // Remove old dynamic tabs
+            document.querySelectorAll('.dynamic-course-tab').forEach(e => e.remove());
+            
+            let tabContainer = document.getElementById('dynamic-tabs');
+            let liabilitiesBtn = document.getElementById('tabbtn-liabilities');
+            
+            coursesData.forEach(c => {
+                let btn = document.createElement('button');
+                btn.className = 'tab-btn dynamic-course-tab';
+                btn.id = 'tabbtn-' + c.course_code;
+                btn.innerText = c.course_code;
+                btn.onclick = () => switchTab(c.course_code);
+                tabContainer.insertBefore(btn, liabilitiesBtn); // Insert before liabilities tab
+            });
+        }
+
+        function renderAllCourseSheets() {
+            let container = document.getElementById('course-tabs-container');
+            container.innerHTML = '';
+
+            coursesData.forEach(course => {
+                let copies = copiesData.filter(copy => copy.course_code === course.course_code);
+                
+                let html = `
+                    <div id="tab-${course.course_code}" class="tab-content">
+                        <div class="header-controls">
+                            <h3>${course.course_code} - ${course.title || 'Unknown Title'}</h3>
+                            <button class="btn btn-success" onclick="addCopyRow('${course.course_code}')">+ Add Textbook Row</button>
+                        </div>
+                        <table class="spreadsheet" id="table-${course.course_code}">
+                            <thead>
+                                <tr>
+                                    <th style="width:15%;">Textbook Number</th>
+                                    <th style="width:25%;">Student Name</th>
+                                    <th style="width:20%;">Teacher</th>
+                                    <th style="width:30%;">Current Location</th>
+                                    <th style="width:15%;">Last Updated</th>
+                                    <th style="width:10%;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                copies.forEach(copy => {
+                    let rowClass = '';
+                    let loc = (copy.location_status || '').toLowerCase().trim();
+                    if(loc === 'missing') rowClass = 'row-missing';
+                    if(loc === 'binding') rowClass = 'row-binding';
+                    if(loc === 'teacher') rowClass = 'row-teacher';
+
+                    html += `
+                        <tr class="${rowClass}" id="row-${copy.copy_number}">
+                            <td><strong>${copy.copy_number}</strong></td>
+                            <td><input type="text" value="${copy.student_name || ''}" onchange="updateCopy('${copy.copy_number}', 'student_name', this.value)"></td>
+                            <td><input type="text" value="${copy.teacher_name || ''}" onchange="updateCopy('${copy.copy_number}', 'teacher_name', this.value)"></td>
+                            <td><input type="text" value="${copy.location_status || ''}" onchange="updateCopy('${copy.copy_number}', 'location_status', this.value)"></td>
+                            <td class="last-updated-cell">${formatTimestamp(copy.last_updated)}</td>
+                            <td><button class="btn btn-danger" onclick="deleteCopy('${copy.copy_number}')">Del</button></td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        function renderLiabilities(data) {
+            let html = '';
+            data.forEach(l => {
+                let resolvedText = l.resolved ? '<span style="color:green;font-weight:bold;">PAID</span>' : '<span style="color:red;font-weight:bold;">UNPAID</span>';
+                let actionBtn = `
+                    <div class="ledger-actions">
+                        ${l.resolved ? '' : `<button class="btn btn-success" onclick="resolveLiability(${l.id})">Mark Paid</button>`}
+                        <button class="btn btn-danger" onclick="deleteLiability(${l.id})">Delete</button>
+                    </div>
+                `;
+                
+                html += `
+                    <tr>
+                        <td>${l.date_logged || ''}</td>
+                        <td><strong>${l.student_name || ''}</strong></td>
+                        <td>${l.teacher_name || ''}</td>
+                        <td>${l.course_code || ''}</td>
+                        <td>${l.copy_number || ''}</td>
+                        <td>$${(l.fine_amount || 0).toFixed(2)}</td>
+                        <td><input type="text" value="${l.outcome || ''}" onchange="updateLiabilityOutcome(${l.id}, this.value)" style="width:100%; box-sizing:border-box;"></td>
+                        <td>${resolvedText}</td>
+                        <td>${actionBtn}</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('liabilities-tbody').innerHTML = html;
+        }
+
+        function formatTimestamp(value) {
+            if (!value) return '';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return value;
+            return date.toLocaleString();
+        }
+
+        function getCopyRow(copy_number) {
+            return document.getElementById(`row-${copy_number}`);
+        }
+
+        function getCopyTimestampCell(copy_number) {
+            const row = getCopyRow(copy_number);
+            return row ? row.querySelector('.last-updated-cell') : null;
+        }
+
+        // --- API Calls ---
+
+        async function addCourse() {
+            let course_code = document.getElementById('new-course').value.trim().toUpperCase();
+            if(!course_code) return alert("Course Code required.");
+            
+            let payload = {
+                course_code,
+                title: document.getElementById('new-title').value,
+                publisher: document.getElementById('new-publisher').value,
+                replacement_cost: parseFloat(document.getElementById('new-cost').value) || 0,
+                total_quantity: parseInt(document.getElementById('new-qty').value) || 0
+            };
+
+            let res = await fetch(API_BASE + '/api/inventory/courses', {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                let errorText = 'Failed to add course.';
+                try {
+                    const errorData = await res.json();
+                    if (errorData && errorData.error) errorText = errorData.error;
+                } catch (_) {}
+                setCourseStatus(errorText, 'error');
+                alert(errorText);
+                return;
+            }
+            
+            // clear inputs
+            document.getElementById('new-course').value = '';
+            document.getElementById('new-title').value = '';
+            document.getElementById('new-publisher').value = '';
+            document.getElementById('new-cost').value = '';
+            document.getElementById('new-qty').value = '';
+            setCourseStatus(`Added ${course_code}.`, 'success');
+
+            await loadData();
+        }
+
+        async function deleteCourse(course_code) {
+            if(!confirm(`Delete course ${course_code} AND all its textbooks?`)) return;
+            await fetch(API_BASE + '/api/inventory/courses/' + course_code, { method: 'DELETE' });
+            await loadData();
+        }
+
+        async function addCopyRow(course_code) {
+            let copy_number = prompt("Enter the new Textbook Stamped Number:");
+            if(!copy_number) return;
+            
+            const res = await fetch(API_BASE + '/api/inventory/copies', {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ copy_number, course_code, student_name: '', teacher_name: '', location_status: '' })
+            });
+            if (!res.ok) {
+                showLedgerError('Could not add the textbook row. Please check the server.');
+                return;
+            }
+            await loadData();
+        }
+
+        async function updateCopy(copy_number, field, value) {
+            // Find current data
+            let copy = copiesData.find(c => c.copy_number === copy_number);
+            if(!copy) return;
+            
+            // Update local object
+            copy[field] = value;
+
+            // Save to DB
+            await fetch(API_BASE + '/api/inventory/copies/' + copy_number, {
+                method: 'PUT', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({
+                    student_name: copy.student_name,
+                    teacher_name: copy.teacher_name,
+                    location_status: copy.location_status
+                })
+            });
+            copy.last_updated = new Date().toISOString();
+            const timestampCell = getCopyTimestampCell(copy_number);
+            if (timestampCell) timestampCell.textContent = formatTimestamp(copy.last_updated);
+
+            // Workflow rules
+            if(field === 'location_status') {
+                let loc = value.toLowerCase().trim();
+                let row = getCopyRow(copy_number);
+                row.className = '';
+                
+                if(loc === 'missing') {
+                    row.className = 'row-missing';
+                    if(confirm(`Add ${copy.student_name || 'Unknown Student'} to Liabilities Ledger?`)) {
+                        await promptLiability(copy);
+                    }
+                } else if(loc === 'binding') {
+                    row.className = 'row-binding';
+                } else if(loc === 'teacher') {
+                    row.className = 'row-teacher';
+                }
+            }
+        }
+
+        async function promptLiability(copy) {
+            let course = coursesData.find(c => c.course_code === copy.course_code);
+            let cost = course ? course.replacement_cost : 0;
+            
+            let today = new Date().toISOString().split('T')[0];
+            
+            const res = await fetch(API_BASE + '/api/inventory/liabilities', {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({
+                    date_logged: today,
+                    student_name: copy.student_name || 'Unknown',
+                    teacher_name: copy.teacher_name || 'Unknown',
+                    course_code: copy.course_code,
+                    copy_number: copy.copy_number,
+                    fine_amount: cost
+                })
+            });
+            if (!res.ok) {
+                showLedgerError('Could not add the liability entry. Please check the server.');
+                return;
+            }
+            alert("Added to Liabilities Ledger.");
+            await loadLiabilities();
+        }
+
+        async function deleteCopy(copy_number) {
+            if(!confirm(`Delete textbook ${copy_number}?`)) return;
+            await fetch(API_BASE + '/api/inventory/copies/' + copy_number, { method: 'DELETE' });
+            await loadData();
+        }
+
+        async function resolveLiability(id) {
+            if(!confirm("Mark this fine as Paid/Resolved?")) return;
+            await fetch(API_BASE + '/api/inventory/liabilities/' + id + '/resolve', { method: 'PUT' });
+            await loadLiabilities();
+        }
+
+        async function deleteLiability(id) {
+            if(!confirm("Delete this liability entry?")) return;
+            const res = await fetch(API_BASE + '/api/inventory/liabilities/' + id, { method: 'DELETE' });
+            if (!res.ok) {
+                showLedgerError('Delete failed. The server may be offline.');
+                return;
+            }
+            await loadLiabilities();
+        }
+
+        async function updateLiabilityOutcome(id, value) {
+            const res = await fetch(API_BASE + '/api/inventory/liabilities/' + id, {
+                method: 'PUT',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ outcome: value })
+            });
+            if (!res.ok) {
+                showLedgerError('Could not save the outcome note.');
+                return;
+            }
+        }
+
+        // Init
+        window.onload = loadData;
+        setInterval(loadLiabilities, 30000);
+    </script>
+</body>
+</html>

@@ -643,7 +643,7 @@ function renderRosterTable() {
         }
     }
 
-    let thHTML = `<th style="text-align:left;">Student Details</th>`;
+    let thHTML = `<th style="text-align:left;">Student Details<br><button class="print-class-btn" onclick="printClassRoster()">Print Class</button></th>`;
     const mondayStr = unitsData[activeUnitIndex];
 
     [0, 1, 2, 3, 4].forEach(i => {
@@ -1084,9 +1084,9 @@ function buildGradeMessage(studentName, recipientName, sMarks, isStudent, custom
     const mondayStr = unitsData[activeUnitIndex];
     let weekDate = getSafeMonday(mondayStr);
 
-    let tableHeaders = "";
-    let tableTitles = "";
-    let tableMarks = "";
+    let tableHeaders = `<th style="border: 1px solid black; padding: 5px; text-align: left; font-weight: bold;">Date</th>`;
+    let tableTitles = `<td style="border: 1px solid black; padding: 5px; text-align: left; font-weight: bold;">Lesson</td>`;
+    let tableMarks = `<td style="border: 1px solid black; padding: 5px; text-align: left; font-weight: bold;">Marks</td>`;
 
     [0, 1, 2, 3, 4].forEach(i => {
         let d = getSafeMonday(mondayStr);
@@ -1385,4 +1385,139 @@ async function handleCSV() {
         loadStudentsData();
     };
     reader.readAsText(file);
+}
+
+// --- KEYBOARD NAVIGATION ---
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        const target = e.target;
+
+        // Check if we are inside a mark cell
+        const currentTd = target.closest('td.mark-cell');
+        if (!currentTd) return;
+
+        if (target.tagName.toLowerCase() === 'input' && (target.type === 'radio' || target.type === 'checkbox' || target.type === 'range')) {
+            e.preventDefault(); // Stop default up/down behavior
+
+            const currentRow = target.closest('tr.student-row');
+            if (!currentRow) return;
+
+            const tbody = currentRow.parentElement;
+            const rows = Array.from(tbody.querySelectorAll('tr.student-row'));
+            const rowIndex = rows.indexOf(currentRow);
+            const cellIndex = Array.from(currentRow.children).indexOf(currentTd);
+
+            let nextRowIndex = rowIndex + (e.key === 'ArrowDown' ? 1 : -1);
+            if (nextRowIndex >= 0 && nextRowIndex < rows.length) {
+                const nextRow = rows[nextRowIndex];
+                const nextCell = nextRow.children[cellIndex];
+
+                if (nextCell) {
+                    // If target was a radio, find corresponding radio or slider
+                    if (target.type === 'radio') {
+                        const nextSliderContainer = nextCell.querySelector('.custom-slider-container');
+                        if (nextSliderContainer && nextSliderContainer.style.display !== 'none') {
+                            const nextSlider = nextCell.querySelector('input[type="range"]');
+                            if (nextSlider) nextSlider.focus();
+                        } else {
+                            const nextRadios = Array.from(nextCell.querySelectorAll('input[type="radio"]'));
+                            if (nextRadios.length > 0) {
+                                const toFocus = nextRadios.find(r => r.value === target.value) || nextRadios.find(r => r.checked) || nextRadios[0];
+                                toFocus.focus();
+                            }
+                        }
+                    }
+                    // If target was a slider, find the slider or radio
+                    else if (target.type === 'range') {
+                        const nextSliderContainer = nextCell.querySelector('.custom-slider-container');
+                        if (nextSliderContainer && nextSliderContainer.style.display !== 'none') {
+                            const nextSlider = nextCell.querySelector('input[type="range"]');
+                            if (nextSlider) nextSlider.focus();
+                        } else {
+                            const nextRadios = Array.from(nextCell.querySelectorAll('input[type="radio"]'));
+                            if (nextRadios.length > 0) {
+                                const toFocus = nextRadios.find(r => r.checked) || nextRadios[0];
+                                if (toFocus) toFocus.focus();
+                            }
+                        }
+                    }
+                    // If target was a checkbox, find the checkbox with the same label
+                    else if (target.type === 'checkbox') {
+                        const isLate = target.nextElementSibling && target.nextElementSibling.innerText.includes('Late');
+                        const nextCheckboxes = Array.from(nextCell.querySelectorAll('input[type="checkbox"]'));
+                        for (let cb of nextCheckboxes) {
+                            if (cb.nextElementSibling && cb.nextElementSibling.innerText.includes(isLate ? 'Late' : 'Custom')) {
+                                cb.focus();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+});
+
+// --- PRINTING LOGIC ---
+function printClassRoster() {
+    let printDiv = document.getElementById('print-area');
+    if (!printDiv) {
+        printDiv = document.createElement('div');
+        printDiv.id = 'print-area';
+        document.body.appendChild(printDiv);
+    }
+    
+    const mondayStr = unitsData[activeUnitIndex];
+    let dateHeaders = `<th style="border: 1px solid black; padding: 8px; text-align: left; font-weight: bold; background-color: #f2f2f2;">Date</th>`;
+    let lessonHeaders = `<th style="border: 1px solid black; padding: 8px; text-align: left; font-weight: bold; background-color: #f2f2f2;">Lesson</th>`;
+    
+    [0, 1, 2, 3, 4].forEach(i => {
+        let d = getSafeMonday(mondayStr);
+        d.setDate(d.getDate() + i);
+        let fullDateName = d.toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' });
+        let title = (classLessonsData[activeUnitIndex] && classLessonsData[activeUnitIndex].titles) ? classLessonsData[activeUnitIndex].titles[i] : "";
+        
+        dateHeaders += `<th style="border: 1px solid black; padding: 8px; text-align: left; font-weight: normal;">${fullDateName}</th>`;
+        lessonHeaders += `<td style="border: 1px solid black; padding: 8px; text-align: left;">${title}</td>`;
+    });
+    
+    let rowsHtml = '';
+    studentsData.forEach(student => {
+        const sMarks = (classMarksData[student.id] && classMarksData[student.id][activeUnitIndex]) || {};
+        let studentRow = `<td style="border: 1px solid black; padding: 8px; font-weight: normal; width: 250px;">${student.name}</td>`;
+        
+        [0, 1, 2, 3, 4].forEach(i => {
+            const mark = sMarks[`d${i}`] || "";
+            const markText = mark === "" ? "" : `${mark}%`;
+            const isLate = sMarks[`d${i}_late`] ? " (late)" : "";
+            studentRow += `<td style="border: 1px solid black; padding: 8px; text-align: left;">${markText}${isLate}</td>`;
+        });
+        
+        rowsHtml += `<tr>${studentRow}</tr>`;
+    });
+    
+    let currentClassName = "Unknown Class";
+    if (currentClass) {
+        let parts = currentClass.split('_');
+        if (parts.length > 1) {
+            currentClassName = parts.slice(1).join('_');
+        }
+    }
+
+    printDiv.innerHTML = `
+        <div style="margin-bottom: 20px; font-family: Arial, sans-serif;">
+            <h2 style="margin-top: 0; margin-bottom: 15px; color: #333;">${currentClassName} - Class List</h2>
+            <table style="border-collapse: collapse; width: 100%; max-width: 1200px; font-family: Arial, sans-serif; color: #333;">
+                <thead>
+                    <tr>${dateHeaders}</tr>
+                    <tr>${lessonHeaders}</tr>
+                </thead>
+                <tbody>
+                    ${rowsHtml}
+                </tbody>
+            </table>
+        </div>
+    `;
+    
+    window.print();
 }
