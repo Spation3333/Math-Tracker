@@ -1,80 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html> <!-- Start of HTML -->
+<html lang="en"> <!-- Primary Language is English -->
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archived Classes</title>
-    <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
-    <link href="styles.css" rel="stylesheet" />
-    <link href="darkmode.css" rel="stylesheet" />
-</head>
+<head> <!-- Start of Head -->
+    <meta charset="UTF-8"> <!-- Tells What Characters to Use -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Matches Screen Width -->
+    <title>MathTrack - Archive</title> <!-- Title of Page -->
+    <link rel="icon" type="image/png" href="Images/logo.png"> <!-- Favicon -->
+    <link href="styles.css" rel="stylesheet" /> <!-- Links to styles.css file -->
+    <link href="darkmode.css" rel="stylesheet" /> <!-- Links to darkmode.css file -->
+</head> <!-- End of Head -->
 
-<body>
+<body> <!-- Start of Body -->
 
-    <div class="topnav datedisplayed">
-        <p id="currentdate" class="datedisplayedtext"></p>
-    </div>
+    <div class="topnav datedisplayed"> <!-- Start of Date Displayed in Top Left -->
+        <p id="currentdate" class="datedisplayedtext"></p> <!-- The Current Date -->
+    </div> <!-- End of Date Displayed in Top Left -->
 
-    <div class="topnav profile" onclick="openProfileModal()">
-        <div id="profile-name" style="font-weight: bold; font-size: 1.1em; color: #3498db;"></div>
-        <div id="profile-email" style="font-size: 0.85em; color: gray;"></div>
-    </div>
+    <div class="topnav profile" onclick="openProfileModal()"> <!-- Start of Profile Displayed in Top Right -->
+        <div id="profile-name" style="font-weight: bold; font-size: 1.1em; color: #3498db;"></div> <!-- Accounts Name -->
+        <div id="profile-email" style="font-size: 0.85em; color: gray;"></div> <!-- Accounts Email Address -->
+    </div> <!-- End of Profile Displayed in Top Right -->
 
-    <div class="classportal">
-        <h1 class="welcomeheader" style="margin-top: 0; margin-bottom: 10px; text-align: center;">Archived Classes</h1>
-        <h2 class="subtitle" style="text-align: center; margin-bottom: 40px;">Recover or permanently delete your inactive classes:</h2>
+    <div class="classportal"> <!-- Start of Portal for archive.html -->
 
-        <div class="newclass" id="archive-container"></div>
+        <h1 class="welcomeheader" style="margin-top: 0; margin-bottom: 10px; text-align: center;">Archived Classes</h1> <!-- Main Title -->
+        <h2 class="subtitle" style="text-align: center; margin-bottom: 40px;">Recover or permanently delete your inactive classes:</h2> <!-- Subtitle -->
 
-    <div id="profile-modal" class="modal">
-        <div class="modalcontent" style="max-width: 450px; width: 100%;">
-            <h2 style="margin-top:0;">Edit Profile</h2>
-            <div class="selectinput" style="justify-content: space-between;"><label>First Name:</label><input type="text" id="prof-fname"></div>
-            <div class="selectinput" style="justify-content: space-between;"><label>Last Name:</label><input type="text" id="prof-lname"></div>
-            <div class="selectinput" style="justify-content: space-between;"><label>Username:</label><input type="email" id="prof-email"></div>
+        <div class="newclass" id="archive-container"></div> <!-- The Bottom Area Where All The Classes Are Displayed -->
 
-            <div class="selectinput" style="justify-content: space-between;">
-                <label>App Password:</label>
-                <div style="position: relative; flex: 1;">
-                    <input type="password" id="prof-apppass" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
-                    <span id="toggleProfApp" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
-                </div>
-            </div>
+        <div id="profile-modal" class="modal"> <!-- Start of Profile Modal -->
+            <div class="modalcontent" style="max-width: 450px; width: 100%;"> <!-- Start of Profile Modal Contents -->
 
-            <hr style="width:100%; border: 0; border-top: 1px solid var(--border-color, #ccc); margin: 20px 0;">
+                <h2 style="margin-top:0;">Edit Profile</h2> <!-- Title -->
 
-            <div class="selectinput" style="justify-content: space-between;">
-                <label style="color: #e74c3c !important;">Confirm PIN:</label>
-                <div style="position: relative; flex: 1;">
-                    <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
-                    <span id="toggleProfPin" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
-                </div>
-            </div>
+                <div class="selectinput" style="justify-content: space-between;"> <!-- Start of First Name -->
+                    <label>First Name:</label> <!-- Label For First Name -->
+                    <input type="text" id="prof-fname"> <!-- Textbox for First Name -->
+                </div> <!-- End of First Name -->
 
-            <div class="modalaction" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                <button class="buttons saveprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="saveProfile()">Save Changes</button>
-                <button class="buttons deleteprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="deleteAccount()">Delete Account</button>
-                <button class="buttons cancelprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="closeProfileModal()">Cancel</button>
-            </div>
-        </div>
-    </div>
+                <div class="selectinput" style="justify-content: space-between;"> <!-- Start of Last Name -->
+                    <label>Last Name:</label> <!-- Label For Last Name -->
+                    <input type="text" id="prof-lname"> <!-- Textbox for Last Name -->
+                </div> <!-- End of Last Name -->
 
-        <hr style="border: 0; border-top: 1px solid var(--border-color, #ccc); margin: 40px 0 20px 0; width: 100%;">
-        <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; box-sizing: border-box;">
-            <div style="display: flex; justify-content: flex-start;">
-                <a href="select.html" class="buttons backbuttons" style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0;"> back </a>
-            </div>
-            <div></div>
-            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
-                <span class="darkmode-label">Dark Mode</span>
-                <label class="switch" style="margin: 0;">
-                    <input type="checkbox" id="theme-toggle">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-        </div>
-    </div>
+                <div class="selectinput" style="justify-content: space-between;"> <!-- Start of Email Address -->
+                    <label>Username:</label> <!-- Label For Email Address -->
+                    <input type="email" id="prof-email"> <!-- Textbox for Email Address -->
+                </div> <!-- End of Email Address -->
+
+                <div class="selectinput" style="justify-content: space-between;"> <!-- Start of App Password -->
+                    <label>App Password:</label> <!-- Label For App Password -->
+                    <div style="position: relative; flex: 1;"> <!-- Start of App Password Input -->
+                        <input type="password" id="prof-apppass" style="width: 100%; box-sizing: border-box; padding-right: 30px;"> <!-- Textbox for App Password -->
+                        <span id="toggleProfApp" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span> <!-- Show Password Eye Toggle -->
+                    </div> <!-- End of App Password Input -->
+                </div> <!-- End of App Password -->
+
+                <hr style="width:100%; border: 0; border-top: 1px solid var(--border-color, #ccc); margin: 20px 0;"> <!-- White Bar to Divide Top and Bottom Rows -->
+
+                <div class="selectinput" style="justify-content: space-between;"> <!-- Start of Password -->
+                    <label style="color: #e74c3c !important;">Confirm PIN:</label> <!-- Label For Password -->
+                    <div style="position: relative; flex: 1;"> <!-- Start of Password Input -->
+                        <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes" style="width: 100%; box-sizing: border-box; padding-right: 30px;"> <!-- Textbox for Password -->
+                        <span id="toggleProfPin" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span> <!-- Show Password Eye Toggle -->
+                    </div> <!-- End of Password Input -->
+                </div> <!-- End of Password -->
+
+                <div class="modalaction" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;"> <!-- Start of Bottom Row With Buttons -->
+                    <button class="buttons saveprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="saveProfile()">Save Changes</button> <!-- Save Profile Button -->
+                    <button class="buttons deleteprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="deleteAccount()">Delete Account</button> <!-- Delete Profile Button -->
+                    <button class="buttons cancelprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="closeProfileModal()">Cancel</button> <!-- Close Profile Popup Button -->
+                </div> <!-- End of Bottom Row With Buttons -->
+
+            </div> <!-- End of Profile Modal Contents -->
+        </div> <!-- End of Profile Modal -->
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color, #ccc); margin: 40px 0 20px 0; width: 100%;"> <!-- White Bar to Divide Top and Bottom Rows -->
+
+        <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; box-sizing: border-box;"> <!-- Start of Bottom Row -->
+            <div style="display: flex; justify-content: flex-start;"> <!-- Start of Bottom Left -->
+                <a href="select.html" class="buttons backbuttons" style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0;"> back </a> <!-- Back Button -->
+            </div> <!-- End of Bottom Left -->
+            
+            <div></div> <!-- Bottom Middle -->
+
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px;"> <!-- Start of Location for Darkmode Toggle -->
+                <span class="darkmode-label">Dark Mode</span> <!-- Darkmode Label -->
+                <label class="switch"> <!-- Start of Darkmode Toggle -->
+                    <input type="checkbox" id="theme-toggle"> <!-- Creates Toffle -->
+                    <span class="slider round"></span> <!-- Makes it Circle Toggle -->
+                </label> <!-- End of Darkmode Toggle -->
+            </div> <!-- End of Location for Darkmode Toggle -->
+        </div> <!-- End of Bottom Row -->
+
+    </div> <!-- End of Portal for archive.html -->
 
     <script>
         const themeToggle = document.getElementById('theme-toggle');
@@ -363,7 +382,8 @@
 
         window.onload = renderArchives;
     </script>
-    <script src="keyboardNav.js"></script>
-</body>
+    <script src="keyboardNav.js"></script> <!-- Links to keyboardNav.js File -->
 
-</html>
+</body> <!-- End of Body -->
+
+</html> <!-- End of HTML -->

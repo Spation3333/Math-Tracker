@@ -89,7 +89,8 @@ body {
     width: 26px;
     left: 4px;
     bottom: 4px;
-    background-color: black;
+    background-color: white;
+    -webkit-transition: .4s;
     transition: .4s;
     border-radius: 50%;
 }
@@ -99,8 +100,11 @@ input:checked+.slider {
 }
 
 input:checked+.slider:before {
-    transform: translateX(26px);
+    background-color: black;
+    -webkit-transform: translateX(26px);
     content: "🌙";
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
 }
 
 .controls {
@@ -117,17 +121,13 @@ input:checked+.slider:before {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    color: white;
+    color: black;
     font-weight: bold;
     transition: 0.2s;
 }
 
 .btn:hover {
     opacity: 0.8;
-}
-
-body.darkmode .btn {
-    color: black;
 }
 
 .btn-success {
@@ -699,7 +699,7 @@ body.darkmode .inline-class-edit:focus {
     margin-top: 10px;
     font-size: 0.8em;
     font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     transition: background-color 0.2s;
 }
 
@@ -712,32 +712,40 @@ body.darkmode .inline-class-edit:focus {
         size: landscape;
         margin: 1cm;
     }
+
     body {
         padding: 0;
         background-color: white;
     }
+
     .container {
         display: none !important;
     }
+
     #print-area {
         display: block !important;
     }
+
     .table-responsive {
         overflow: visible !important;
     }
+
     .roster-table {
         min-width: unset !important;
         width: 100% !important;
         table-layout: fixed;
     }
-    .roster-table th, .roster-table td {
+
+    .roster-table th,
+    .roster-table td {
         word-wrap: break-word;
         padding: 5px !important;
         font-size: 0.85em;
     }
-    .top-widget, 
-    .nav-link, 
-    .switch, 
+
+    .top-widget,
+    .nav-link,
+    .switch,
     .darkmode-label,
     #class-nav-bar,
     .controls,
@@ -755,15 +763,26 @@ body.darkmode .inline-class-edit:focus {
     button[title="Remove Image"] {
         display: none !important;
     }
+
     th button {
         display: none !important;
     }
+
     button[onclick="openTemplateModal()"] {
         display: none !important;
     }
-    input, textarea {
+
+    input,
+    textarea {
         border: none !important;
         background: transparent !important;
         resize: none;
     }
+}
+
+.buttons,
+.saveprofile,
+.deleteprofile,
+.cancelprofile {
+    color: black !important;
 }

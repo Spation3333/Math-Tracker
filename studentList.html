@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html> <!-- Start of HTML -->
+<html lang="en"> <!-- Primary Language is English -->
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathTrack - Class Gradebook</title>
-    <link rel="icon" type="image/jpeg" href="Images/logo.jpg">
-    <link href="studentStyles.css" rel="stylesheet" />
+<head> <!-- Start of Head -->
+    <meta charset="UTF-8"> <!-- Tells What Characters to Use -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Matches Screen Width -->
+    <title>MathTrack - Student List</title> <!-- Title of Page -->
+    <link rel="icon" type="image/png" href="Images/logo.png"> <!-- Favicon -->
+    <link href="studentStyles.css" rel="stylesheet" /> <!-- Links to studentStyles.css file -->
     <style>
         body,
         button,
@@ -164,9 +164,9 @@
             box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
         }
     </style>
-</head>
+</head> <!-- End of Head -->
 
-<body>
+<body> <!-- Start of Body -->
 
     <div class="top-widget date-widget">
         <p id="currentdate" class="date-widget-text"></p>
@@ -221,13 +221,14 @@
                 <input type="text" id="new-crel" placeholder="Relationship" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
                 <input type="text" id="new-cemail" placeholder="Contact Email" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
                 <button class="btn btn-success" onclick="saveNewStudent()">Save Student</button>
+                <button class="btn" style="background-color: #95a5a6;" onclick="toggleAddStudentForm()">Cancel</button>
             </div>
         </div>
 
         <div class="import-section" id="import-box">
             <p style="margin-top: 0;"><strong>Import Roster (.csv)</strong></p>
             <input type="file" id="csv-file" accept=".csv" style="margin-bottom: 10px;">
-            <button class="btn" style="background: var(--primary);" onclick="handleCSV()">Upload & Process</button>
+            <button class="btn" style="background: var(--primary); color: white;" onclick="handleCSV()">Upload & Process</button>
         </div>
 
         <div class="units-section">
@@ -235,15 +236,26 @@
             <div id="units-container" class="unit-container"></div>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
-            <div style="display: flex; flex-direction: column; gap: 5px;">
-                <h3 style="margin: 0; font-size: 1.3em;">2. Student Roster</h3>
-                <button class="btn btn-primary" style="width: fit-content; font-size: 0.8em; padding: 4px 8px;" onclick="openTemplateModal()">✎ Edit Class Email Template</button>
+        <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 8px 15px; align-items: center; margin-bottom: 15px;">
+            <!-- Left column spans both rows -->
+            <div style="grid-row: 1 / 3; display: inline-flex; flex-direction: column; gap: 5px; align-self: start;">
+                <h3 style="margin: 0; font-size: 1.3em; line-height: 1; white-space: nowrap;">2. Student Roster</h3>
+                <button class="btn btn-primary" style="width: 24%; font-size: 0.8em; padding: 4px 8px; box-sizing: border-box; white-space: nowrap;" onclick="openTemplateModal()">✎ Edit Class Email Template</button>
+                <button class="btn" style="width: 24%; font-size: 0.8em; padding: 4px 8px; background: #c9a227; box-sizing: border-box; white-space: nowrap;" onclick="printClassRoster()">🖨️ Print Class</button>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <label style="font-weight: bold; font-size: 1em; color: var(--text-color);">Next Eval:</label>
-                <input type="text" id="next-eval-input" placeholder="e.g. May 25" title="Date of next evaluation" style="padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; font-size: 0.95em;">
+            <label style="font-weight: bold; font-size: 1em; color: var(--text-color); text-align: right;">Next Eval:</label>
+            <input type="text" id="next-eval-input" placeholder="e.g. May 25" title="Date of next evaluation" style="padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; font-size: 0.95em; width: 100%; box-sizing: border-box; min-width: 280px;">
+
+            <label style="font-weight: bold; font-size: 1em; color: var(--text-color); text-align: right;">Search:</label>
+            <div style="display: flex; gap: 5px; width: 100%; box-sizing: border-box; min-width: 280px;">
+                <input type="text" id="search-student-input" placeholder="e.g. John" title="Search student by name" oninput="filterStudents()" style="flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; font-size: 0.95em; box-sizing: border-box; width: 100%;">
+                <select id="sort-student-select" onchange="sortStudents()" style="padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; font-size: 0.95em; cursor: pointer;">
+                    <option value="first-asc">First Name (A-Z)</option>
+                    <option value="first-desc">First Name (Z-A)</option>
+                    <option value="last-asc">Last Name (A-Z)</option>
+                    <option value="last-desc">Last Name (Z-A)</option>
+                </select>
             </div>
         </div>
         <div id="roster-container" class="table-responsive"></div>
@@ -305,23 +317,22 @@
             <h2 style="margin-top:0; margin-bottom: 5px;">Edit Individual Email</h2>
             <p style="font-size: 0.85em; color: gray; margin-top: 0; margin-bottom: 10px;">
                 Edit the template below for this specific student. Use tags like <strong>[RecipientName]</strong> and
-                <strong>[Grades]</strong> so they update automatically! Changes <strong>save automatically</strong> as
-                you type. Once complete, just click the green Send button on their roster card.
+                <strong>[Grades]</strong> so they update automatically! Once complete, just click the green Done button.
             </p>
 
-            <div id="individual-email-textarea" class="rich-editor" contenteditable="true" oninput="autoSaveIndividualEmail()"></div>
+            <div id="individual-email-textarea" class="rich-editor" contenteditable="true"></div>
 
             <div style="margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
-                <button class="btn" style="background-color: #95a5a6; color: white;" onclick="closeIndividualEmailModal()">Cancel</button>
-                <button class="btn" style="background-color: #2980b9; color: white;" onclick="restoreDefaultIndividualEmail()">Revert to Default</button>
-                <button class="btn btn-primary" onclick="closeIndividualEmailModal()" style="background-color: #27ae60;">Done</button>
+                <button class="btn" style="background-color: #95a5a6;" onclick="closeIndividualEmailModal()">Cancel</button>
+                <button class="btn" style="background-color: #2980b9;" onclick="restoreDefaultIndividualEmail()">Revert to Default</button>
+                <button class="btn btn-primary" onclick="saveIndividualEmailModal()" style="background-color: #27ae60;">Done</button>
             </div>
         </div>
     </div>
 
-    <script src="studentScript.js"></script>
+    <script src="studentScript.js"></script> <!-- Links to studentScript.js File -->
+    <script src="keyboardNav.js"></script> <!-- Links to keyboardNav.js File -->
 
-    <script src="keyboardNav.js"></script>
-</body>
+</body> <!-- End of Body -->
 
-</html>
+</html> <!-- End of HTML -->

@@ -611,6 +611,62 @@ function buildMarkCellHTML(studentId, markKey, markVal, isLate, isCustom) {
             </td>`;
 }
 
+function filterStudents() {
+    const searchVal = document.getElementById('search-student-input').value.toLowerCase();
+    const rows = document.querySelectorAll('.student-row');
+    
+    rows.forEach(row => {
+        const studentId = row.getAttribute('data-student-id');
+        const student = studentsData.find(s => s.id == studentId);
+        if (!student) return;
+        
+        if (student.name.toLowerCase().includes(searchVal)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function sortStudents() {
+    const sortVal = document.getElementById('sort-student-select').value;
+    
+    studentsData.sort((a, b) => {
+        let nameA = a.name ? a.name.trim().toLowerCase() : "";
+        let nameB = b.name ? b.name.trim().toLowerCase() : "";
+        
+        let aParts = nameA.split(' ');
+        let bParts = nameB.split(' ');
+        
+        let aFirst = aParts[0] || "";
+        let aLast = aParts.length > 1 ? aParts.slice(1).join(' ') : "";
+        
+        let bFirst = bParts[0] || "";
+        let bLast = bParts.length > 1 ? bParts.slice(1).join(' ') : "";
+        
+        if (sortVal === "first-asc") {
+            return nameA.localeCompare(nameB);
+        } else if (sortVal === "first-desc") {
+            return nameB.localeCompare(nameA);
+        } else if (sortVal === "last-asc") {
+            let res = aLast.localeCompare(bLast);
+            if (res === 0) res = aFirst.localeCompare(bFirst);
+            return res;
+        } else if (sortVal === "last-desc") {
+            let res = bLast.localeCompare(aLast);
+            if (res === 0) res = bFirst.localeCompare(aFirst);
+            return res;
+        }
+        return 0;
+    });
+
+    const newOrder = studentsData.map(s => s.id);
+    localStorage.setItem(`studentOrder_${currentClass}`, JSON.stringify(newOrder));
+    
+    renderRosterTable();
+    filterStudents();
+}
+
 function renderRosterTable() {
     const container = document.getElementById('roster-container');
     if (!container) return;
@@ -643,7 +699,7 @@ function renderRosterTable() {
         }
     }
 
-    let thHTML = `<th style="text-align:left;">Student Details<br><button class="print-class-btn" onclick="printClassRoster()">Print Class</button></th>`;
+    let thHTML = `<th style="text-align:left;">Student Details</th>`;
     const mondayStr = unitsData[activeUnitIndex];
 
     [0, 1, 2, 3, 4].forEach(i => {
@@ -771,7 +827,7 @@ function renderRosterTable() {
         }
 
         tbodyHTML += `<td class="notes-cell" style="vertical-align: top;">
-                        <textarea class="mark-input" style="width: 100%; height: 60px; resize: vertical; text-align: left; font-weight: normal; font-family: inherit; margin-bottom: 5px;" 
+                        <textarea class="mark-input" spellcheck="true" autocorrect="on" style="width: 100%; height: 60px; resize: vertical; text-align: left; font-weight: normal; font-family: inherit; margin-bottom: 5px;" 
                             placeholder="Add private notes here..." 
                             onchange="updateNote(${student.id}, this.value)">${studentNote}</textarea>
                         
@@ -953,6 +1009,14 @@ async function deleteClassRoster() {
 function toggleAddStudentForm() {
     const form = document.getElementById('add-student-form');
     form.style.display = form.style.display === 'none' || form.style.display === '' ? 'block' : 'none';
+    if (form.style.display === 'none') {
+        document.getElementById('new-fname').value = '';
+        document.getElementById('new-lname').value = '';
+        document.getElementById('new-semail').value = '';
+        document.getElementById('new-cname').value = '';
+        document.getElementById('new-crel').value = '';
+        document.getElementById('new-cemail').value = '';
+    }
 }
 
 async function saveNewStudent() {
@@ -1060,12 +1124,13 @@ function closeIndividualEmailModal() {
     currentIndividualEmailId = null;
 }
 
-// Silently caches the custom text directly into localStorage as you type
-function autoSaveIndividualEmail() {
+// Saves the custom text into localStorage and closes modal
+function saveIndividualEmailModal() {
     if (currentIndividualEmailId === null) return;
     const customText = document.getElementById('individual-email-textarea').innerHTML;
     const overrideKey = `emailOverride_${currentClass}_${activeUnitIndex}_${currentIndividualEmailId}`;
     localStorage.setItem(overrideKey, customText);
+    closeIndividualEmailModal();
 }
 
 function restoreDefaultIndividualEmail() {
@@ -1477,8 +1542,8 @@ function printClassRoster() {
         let fullDateName = d.toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' });
         let title = (classLessonsData[activeUnitIndex] && classLessonsData[activeUnitIndex].titles) ? classLessonsData[activeUnitIndex].titles[i] : "";
         
-        dateHeaders += `<th style="border: 1px solid black; padding: 8px; text-align: left; font-weight: normal;">${fullDateName}</th>`;
-        lessonHeaders += `<td style="border: 1px solid black; padding: 8px; text-align: left;">${title}</td>`;
+        dateHeaders += `<th style="border: 1px solid black; padding: 8px; text-align: left; font-weight: bold;">${fullDateName}</th>`;
+        lessonHeaders += `<td style="border: 1px solid black; padding: 8px; text-align: left; font-weight: bold;">${title}</td>`;
     });
     
     let rowsHtml = '';
