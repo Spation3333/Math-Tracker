@@ -130,3 +130,9 @@ body.darkmode .topnav {
 body.darkmode .darkmode-label {
     color: white !important;
 }
+
+/* Dark Mode Email Template Editor */
+body.darkmode .rich-editor {
+    background-color: white !important;
+    color: black !important;
+}

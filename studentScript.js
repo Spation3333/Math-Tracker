@@ -784,7 +784,10 @@ function renderRosterTable() { // Define function to draw the main gradebook gri
                                     <button class="btn btn-success" style="font-size: 0.75em; padding: 4px 8px;" onclick="emailIndividualStudent(event, ${student.id})">Send</button>
                                     <button class="btn btn-danger" style="font-size: 0.75em; padding: 4px 8px;" onclick="deleteStudent(event, ${student.id})">Del</button>
                                 </div>
-                                <button class="btn btn-primary" style="font-size: 0.75em; padding: 4px 8px; width: 100%; box-sizing: border-box;" onclick="openIndividualEmailModal(event, ${student.id})">✎ Edit Email</button>
+                                <div style="display: flex; gap: 5px; width: 100%;">
+                                    <button class="btn btn-primary" style="font-size: 0.75em; padding: 4px 8px; flex: 1; box-sizing: border-box;" onclick="openIndividualEmailModal(event, ${student.id})">Edit</button>
+                                    <button class="btn" style="font-size: 0.75em; padding: 4px 8px; flex: 1; box-sizing: border-box; background-color: rgb(212, 175, 55); color: #000;" onclick="addToRewriteList(event, ${student.id})">Test</button>
+                                </div>
                             </div>
                         </div>
                         <div class="student-details" id="details-${student.id}" style="display:none; margin-top: 10px;">
@@ -1556,4 +1559,38 @@ function printClassRoster() { // Draw printable black and white DOM override for
     
     window.print(); // Prompt native browser OS dialogue immediately
 } // Final line execution wrap
-//m
+
+function addToRewriteList(event, studentId) { // Function to add a student to the rewrite tests list
+    event.stopPropagation(); // Stop click from toggling accordion
+    
+    const student = studentsData.find(s => s.id === studentId); // Find the student from the local memory array
+    if (!student) return alert("Student not found."); // Guard clause
+    
+    let displayClass = currentClass; // Start with the raw class name
+    const underscoreIndex = displayClass.indexOf('_'); // Find where the email prefix ends
+    if (underscoreIndex !== -1) { // If there's an underscore
+        displayClass = displayClass.substring(underscoreIndex + 1); // Strip the email prefix
+    } // End of prefix stripping
+    
+    const rewriteEntry = { // Construct the data payload
+        id: student.id, // Include student ID
+        name: student.name, // Include student name
+        className: displayClass, // Include formatted active class name for easy editing
+        date: "", // Initial blank date for direct input
+        test: "" // Initial blank test field for direct input
+    }; // End of payload construction
+    
+    const rewriteList = JSON.parse(localStorage.getItem('rewriteList') || '[]'); // Fetch the array from local storage, defaulting to empty
+    
+    const existingIndex = rewriteList.findIndex(entry => entry.id === student.id && entry.className === currentClass); // Check if the student is already listed for this specific class
+    
+    if (existingIndex !== -1) { // If a match was found
+        alert(`${student.name} is already on the Rewrite Tests list.`); // Notify user
+        return; // Halt execution
+    } // End of existing check
+    
+    rewriteList.push(rewriteEntry); // Append the new entry to the array
+    localStorage.setItem('rewriteList', JSON.stringify(rewriteList)); // Save the array back to local storage
+    
+    alert(`${student.name} has been added to the Rewrite Tests list.`); // Confirm success to the user
+} // End of addToRewriteList

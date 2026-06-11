@@ -16,46 +16,52 @@ const dbPath = path.join(__dirname, 'world.db'); // Construct the absolute path 
 const db = new sqlite3.Database(dbPath, (err) => { // Connect to the SQLite database
     if (!err) { // Check if the connection was successful without errors
         db.serialize(() => { // Force the execution of database queries in a strict sequential order
-            // Original Student Tables // Comment marking the section for original student-related database tables
-            db.run(`CREATE TABLE IF NOT EXISTS Students ( // Execute a query to create the Students table if it doesn't already exist
-                id INTEGER PRIMARY KEY AUTOINCREMENT, // Define the 'id' column as an auto-incrementing primary key
-                name TEXT, // Define the 'name' column as a text field
-                student_email TEXT, // Define the 'student_email' column as a text field
-                guardian_email TEXT, // Define the 'guardian_email' column as a text field
-                contacts_info TEXT, // Define the 'contacts_info' column to store JSON-formatted contact objects
-                class_name TEXT // Define the 'class_name' column to associate the student with a specific class group
-            )`); // End of the Students table creation query
+            // Original Student Tables
+            // BUG FIX: The original code had // comments INSIDE the SQL template
+            // literal strings (backticks). JavaScript does NOT treat // as a comment
+            // inside backtick strings — the text becomes part of the SQL query,
+            // causing SQLite to throw: "SQLITE_ERROR: near "/": syntax error"
+            // which crashed the server on startup.
+            // All inline comments have been moved outside the SQL strings.
+            db.run(`CREATE TABLE IF NOT EXISTS Students (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                student_email TEXT,
+                guardian_email TEXT,
+                contacts_info TEXT,
+                class_name TEXT
+            )`);
             db.run("ALTER TABLE Students ADD COLUMN contacts_info TEXT", (err) => { }); // Attempt to add the contacts_info column just in case an older version of the table exists; ignore errors if it already does
 
-            // New Textbook Inventory Tables // Comment marking the section for the new textbook inventory system tables
-            db.run(`CREATE TABLE IF NOT EXISTS Courses ( // Execute a query to create the Courses table for textbook tracking
-                course_code TEXT PRIMARY KEY, // Define 'course_code' as the unique text-based primary key
-                title TEXT, // Define the 'title' column for the textbook name
-                publisher TEXT, // Define the 'publisher' column for the publisher's name
-                replacement_cost REAL, // Define 'replacement_cost' as a floating-point number for fines
-                total_quantity INTEGER // Define 'total_quantity' to track how many copies exist
-            )`); // End of the Courses table creation query
+            // New Textbook Inventory Tables
+            db.run(`CREATE TABLE IF NOT EXISTS Courses (
+                course_code TEXT PRIMARY KEY,
+                title TEXT,
+                publisher TEXT,
+                replacement_cost REAL,
+                total_quantity INTEGER
+            )`);
 
-            db.run(`CREATE TABLE IF NOT EXISTS Copies ( // Execute a query to create the Copies table tracking individual books
-                copy_number TEXT PRIMARY KEY, // Define 'copy_number' as the unique barcode/ID for this specific book
-                course_code TEXT, // Define 'course_code' to link this copy back to its parent course
-                student_name TEXT, // Define 'student_name' to track who currently holds the book
-                teacher_name TEXT, // Define 'teacher_name' to track which teacher issued it
-                location_status TEXT, // Define 'location_status' (e.g., Checked Out, Lost, Available)
-                last_updated TEXT // Define 'last_updated' as a timestamp of the last scan
-            )`); // End of the Copies table creation query
+            db.run(`CREATE TABLE IF NOT EXISTS Copies (
+                copy_number TEXT PRIMARY KEY,
+                course_code TEXT,
+                student_name TEXT,
+                teacher_name TEXT,
+                location_status TEXT,
+                last_updated TEXT
+            )`);
 
-            db.run(`CREATE TABLE IF NOT EXISTS Liabilities ( // Execute a query to create the Liabilities ledger for tracking fines
-                id INTEGER PRIMARY KEY AUTOINCREMENT, // Define the liability ID as an auto-incrementing primary key
-                date_logged TEXT, // Define 'date_logged' to store the timestamp the fine was issued
-                student_name TEXT, // Define 'student_name' to know who owes the fine
-                teacher_name TEXT, // Define 'teacher_name' to know who issued the fine
-                course_code TEXT, // Define the linked 'course_code'
-                copy_number TEXT, // Define the linked 'copy_number'
-                fine_amount REAL, // Define the monetary 'fine_amount'
-                outcome TEXT, // Define 'outcome' to store notes on how it was resolved
-                resolved INTEGER DEFAULT 0 // Define 'resolved' as a boolean flag (0=No, 1=Yes)
-            )`); // End of the Liabilities table creation query
+            db.run(`CREATE TABLE IF NOT EXISTS Liabilities (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                date_logged TEXT,
+                student_name TEXT,
+                teacher_name TEXT,
+                course_code TEXT,
+                copy_number TEXT,
+                fine_amount REAL,
+                outcome TEXT,
+                resolved INTEGER DEFAULT 0
+            )`);
         }); // End of serialized database initialization
     } // End of error check
 }); // End of database connection block

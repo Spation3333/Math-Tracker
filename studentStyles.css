@@ -786,3 +786,9 @@ body.darkmode .inline-class-edit:focus {
 .cancelprofile {
     color: black !important;
 }
+
+/* Dark Mode Email Template Editor */
+body.darkmode .rich-editor {
+    background-color: white !important;
+    color: black !important;
+}

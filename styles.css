@@ -301,11 +301,13 @@ input[type="color"] {
 }
 
 .btn-archive {
-    background-color: #3498db;
+    background-color: #e74c3c;
     color: white;
 }
+
 .btn-archive:hover {
-    background-color: #5dade2;
+    background-color: #e74c3c;
+    opacity: 0.8;
 }
 
 .btn-textbooks {
@@ -314,6 +316,14 @@ input[type="color"] {
 }
 .btn-textbooks:hover {
     background-color: #2ecc71;
+}
+
+.btn-rewrites {
+    background-color: rgb(212, 175, 55);;
+    color: white;
+}
+.btn-rewrites:hover {
+    background-color: rgb(240, 203, 83);;
 }
 
 .selectinput {

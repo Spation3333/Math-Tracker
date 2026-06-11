@@ -1,5 +1,11 @@
 @echo off
 echo Starting MathTrack...
-:: Go into the engine folder and run node
-start "" "index.html"
-.\node.exe server.js
+
+::Start the Node Server 
+start "" .\node.exe server.js
+
+::Waits 2 seconds for the server to initialize and bind to port 3000
+timeout /t 2 /nobreak >nul
+
+::Opens the browser
+start "" "http://localhost:3000"
