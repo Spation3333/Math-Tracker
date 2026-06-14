@@ -1,3 +1,8 @@
+/* ========================================= */
+/* SECTION: Variables & Global */
+/* ========================================= */
+
+/* Styles for  */
 :root {
     --bg-color: #f4f7f6;
     --text-color: #333;
@@ -10,16 +15,7 @@
     --input-bg: #fff;
 }
 
-body.darkmode {
-    --bg-color: #1a1a1a;
-    --text-color: #f4f4f4;
-    --card-bg: #2d2d2d;
-    --border-color: #444;
-    --primary: #ecf0f1;
-    --accent: #2980b9;
-    --input-bg: #444;
-}
-
+/* Styles for body */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
@@ -27,45 +23,21 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     transition: background 0.3s, color 0.3s;
+    padding: 0;
 }
 
-.container {
-    max-width: 1200px;
-    margin: auto;
-    background: var(--card-bg);
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+/* ========================================= */
+/* SECTION: Typography */
+/* ========================================= */
 
-.header-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-}
-
+/* Styles for date-display */
 .date-display {
     font-weight: bold;
     margin: 0;
     color: var(--accent);
 }
 
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-}
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
+/* Styles for slider */
 .slider {
     position: absolute;
     cursor: pointer;
@@ -78,6 +50,7 @@ body {
     border-radius: 34px;
 }
 
+/* Styles for slider */
 .slider:before {
     position: absolute;
     content: "☀️";
@@ -95,27 +68,132 @@ body {
     border-radius: 50%;
 }
 
-input:checked+.slider {
-    background-color: white;
-}
-
-input:checked+.slider:before {
-    background-color: black;
-    -webkit-transform: translateX(26px);
-    content: "🌙";
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
-}
-
-.controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+/* Styles for import-section */
+.import-section {
+    border: 2px dashed var(--border-color);
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
     margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 15px;
+    background: var(--bg-color);
 }
 
+/* Styles for nav-link */
+.nav-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+/* Styles for parent-email-row */
+.parent-email-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+/* Styles for top-widget */
+.top-widget {
+    position: absolute;
+    top: 20px;
+    background: var(--card-bg, #fff);
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 65px;
+    box-sizing: border-box;
+    position: absolute;
+    top: 20px;
+    background: var(--card-bg, #fff);
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 65px;
+    box-sizing: border-box;
+}
+
+/* Styles for bodydarkmode top-widget */
+body.darkmode .top-widget {
+    background: #2d2d2d;
+    border-color: rgb(212, 175, 55);
+    background: #2d2d2d;
+    border-color: rgb(212, 175, 55);
+}
+
+/* Styles for profile-widget */
+.profile-widget {
+    right: 20px;
+    cursor: pointer;
+    text-align: right;
+    border-color: rgb(139, 107, 35);
+    right: 20px;
+    cursor: pointer;
+    text-align: right;
+    border-color: rgb(139, 107, 35);
+}
+
+/* Styles for inline-class-edit */
+.inline-class-edit {
+    background: transparent;
+    border: none;
+    border-bottom: 2px dashed transparent;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: bold;
+    outline: none;
+    padding: 0 5px;
+    width: 350px;
+    transition: all 0.2s;
+    background: transparent;
+    border: none;
+    border-bottom: 2px dashed transparent;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: bold;
+    outline: none;
+    padding: 0 5px;
+    width: 350px;
+    transition: all 0.2s;
+}
+
+/* Styles for inline-class-edit */
+.inline-class-edit:hover, .inline-class-edit:focus {
+    border-bottom: 2px dashed var(--accent);
+    background: rgba(0, 0, 0, 0.05);
+    border-bottom: 2px dashed var(--accent);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Styles for bodydarkmode inline-class-edit */
+body.darkmode .inline-class-edit:hover, body.darkmode .inline-class-edit:focus {
+    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Styles for print-area */
+#print-area {
+    display: none;
+}
+
+/* ========================================= */
+/* SECTION: Buttons */
+/* ========================================= */
+
+/* Styles for buttons */
 .btn {
     padding: 10px 15px;
     border: none;
@@ -126,45 +204,27 @@ input:checked+.slider:before {
     transition: 0.2s;
 }
 
+/* Styles for buttons */
 .btn:hover {
     opacity: 0.8;
 }
 
+/* Styles for btn-success */
 .btn-success {
     background: var(--success);
 }
 
+/* Styles for btn-danger */
 .btn-danger {
     background: var(--danger);
 }
 
+/* Styles for btn-primary */
 .btn-primary {
     background: var(--accent);
 }
 
-.import-section {
-    border: 2px dashed var(--border-color);
-    padding: 20px;
-    text-align: center;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    background: var(--bg-color);
-}
-
-.nav-link {
-    color: var(--accent);
-    text-decoration: none;
-    font-weight: bold;
-    display: inline-block;
-    margin-bottom: 15px;
-}
-
-.class-nav-bar {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
-}
-
+/* Styles for btn-class-nav */
 .btn-class-nav {
     flex: 1;
     padding: 10px;
@@ -174,29 +234,317 @@ input:checked+.slider:before {
     cursor: pointer;
     color: white;
     transition: 0.2s;
+    margin: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box;
 }
 
+/* Styles for bodydarkmode btn-class-nav */
 body.darkmode .btn-class-nav {
     color: black;
 }
 
-.units-section {
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid var(--border-color);
+/* Styles for btn-add-lesson */
+.btn-add-lesson {
+    background: #95a5a6;
+    color: white;
+    font-size: 0.8em;
+    padding: 5px;
+    width: 100%;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
+/* Styles for btn-add-circle */
+.btn-add-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #95a5a6;
+    color: white;
+    border: none;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Styles for elements (body and  button and...) */
+body, button, input, select, textarea {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Styles for print-class-buttons */
+.print-class-buttons {
+    background-color: rgb(212, 175, 55);
+    color: #000;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 0.8em;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s;
+}
+
+/* Styles for print-class-buttons */
+.print-class-buttons:hover {
+    background-color: rgb(240, 203, 83);
+}
+
+/* Styles for elements (top-widget and  nav-...) */
+
+
+/* Styles for th button */
+
+
+/* Styles for elements (button[onclick="open...) */
+
+
+
+
+/* ========================================= */
+/* SECTION: Forms & Inputs */
+/* ========================================= */
+
+/* Styles for switch input */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Styles for input */
+input:checked+.slider {
+    background-color: white;
+}
+
+/* Styles for input */
+input:checked+.slider:before {
+    background-color: black;
+    -webkit-transform: translateX(26px);
+    content: "🌙";
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Styles for form-row */
+.form-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* Styles for form-group */
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Styles for form-group label */
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 0.8em;
+}
+
+/* Styles for elements (form-group input and...) */
+.form-group input, .form-group textarea {
+    padding: 6px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-size: 0.9em;
+    font-family: inherit;
+}
+
+/* Styles for parent-email-row input */
+.parent-email-row input {
+    flex: 1;
+    padding: 6px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text-color);
+}
+
+/* Styles for signupinput */
+.signupinput {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+/* Styles for signupinput label */
+.signupinput label {
+    font-weight: bold;
+    width: 140px;
+    text-align: left;
+}
+
+/* Styles for signupinput input */
+.signupinput input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-family: inherit;
+}
+
+
+
+/* ========================================= */
+/* SECTION: Layout & Containers */
+/* ========================================= */
+
+/* Styles for container */
+.container {
+    max-width: 1200px;
+    margin: auto;
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
+}
+
+/* Styles for class-nav-bar */
+.class-nav-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+/* Styles for unit-container */
 .unit-container {
     display: flex;
     gap: 15px;
     flex-wrap: wrap;
 }
 
+/* Styles for modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Styles for modalcontent */
+.modalcontent {
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: 10px;
+    border: 3px solid rgb(139, 107, 35);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: 10px;
+    border: 3px solid rgb(139, 107, 35);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Styles for class-nav-bar */
+#class-nav-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+/* ========================================= */
+/* SECTION: Tables */
+/* ========================================= */
+
+/* Styles for controls */
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+/* Styles for table-responsive */
+.table-responsive {
+    overflow-x: auto;
+    margin-top: 10px;
+    padding-bottom: 15px;
+    border-radius: 8px;
+}
+
+/* Styles for roster-table */
+.roster-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+    background: var(--card-bg);
+    min-width: unset !important;
+    width: max-content !important;
+}
+
+/* Styles for elements (roster-table th and ...) */
+.roster-table th, .roster-table td {
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Styles for roster-table th */
+.roster-table th {
+    background: var(--bg-color);
+    text-align: center;
+}
+
+/* Styles for add-col-controls */
+.add-col-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+/* ========================================= */
+/* SECTION: Components */
+/* ========================================= */
+
+/* Styles for unit-box */
 .unit-box {
     background-color: var(--card-bg);
-    /*border: 2px solid rgb(139, 107, 35);*/
     border: 2px solid rgb(212, 175, 55);
-    /*color: rgb(139, 107, 35);*/
     color: black;
     padding: 15px 25px;
     border-radius: 8px;
@@ -209,26 +557,18 @@ body.darkmode .btn-class-nav {
     transition: 0.2s;
 }
 
-body.darkmode .unit-box {
-    border-color: rgb(212, 175, 55);
-    color: rgb(212, 175, 55);
-}
-
+/* Styles for unit-box */
 .unit-box:hover {
     background-color: rgba(139, 107, 35, 0.1);
 }
 
+/* Styles for unit-boxactive */
 .unit-box.active {
-    /*background-color: rgb(139, 107, 35);*/
     background-color: rgb(212, 175, 55);
     color: black;
 }
 
-body.darkmode .unit-box.active {
-    background-color: rgb(212, 175, 55);
-    color: black;
-}
-
+/* Styles for unit-add-box */
 .unit-add-box {
     background-color: #a9a9a9;
     color: white;
@@ -243,6 +583,125 @@ body.darkmode .unit-box.active {
     transition: 0.3s;
 }
 
+/* Styles for student-card */
+.student-card {
+    border: none;
+    margin: 0;
+    border-radius: 0;
+    background: transparent;
+    overflow: hidden;
+}
+
+/* Styles for date-widget */
+.date-widget {
+    left: 20px;
+    text-align: left;
+    border-color: rgb(139, 107, 35);
+    left: 20px;
+    text-align: left;
+    border-color: rgb(139, 107, 35);
+}
+
+/* Styles for date-widget-text */
+.date-widget-text {
+    font-weight: bold;
+    color: rgb(139, 107, 35);
+    font-size: 1.1em;
+    margin: 0;
+    font-weight: bold;
+    color: rgb(139, 107, 35);
+    font-size: 1.1em;
+    margin: 0;
+}
+
+/* ========================================= */
+/* SECTION: Dark Mode & Theme */
+/* ========================================= */
+
+/* Styles for bodydarkmode */
+body.darkmode {
+    --bg-color: #1a1a1a;
+    --text-color: #f4f4f4;
+    --card-bg: #2d2d2d;
+    --border-color: #444;
+    --primary: #ecf0f1;
+    --accent: #2980b9;
+    --input-bg: #444;
+}
+
+/* Styles for switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+/* Styles for bodydarkmode unit-box */
+body.darkmode .unit-box {
+    border-color: rgb(212, 175, 55);
+    color: rgb(212, 175, 55);
+}
+
+/* Styles for bodydarkmode unit-boxactive */
+body.darkmode .unit-box.active {
+    background-color: rgb(212, 175, 55);
+    color: black;
+}
+
+/* Styles for bodydarkmode date-widget-text */
+body.darkmode .date-widget-text {
+    color: rgb(212, 175, 55);
+    color: rgb(212, 175, 55);
+}
+
+/* Styles for bodydarkmode rich-editor */
+body.darkmode .rich-editor {
+    background-color: white !important;
+    color: black !important;
+}
+
+/* ========================================= */
+/* SECTION: Print & Media Queries */
+/* ========================================= */
+
+/* Styles for @media print */
+@media print {
+    @page {
+        size: landscape;
+        margin: 1cm;
+    }
+    body > * {
+        display: none !important;
+    }
+    #print-area {
+        display: block !important;
+        width: 100%;
+    }
+}
+
+/* ========================================= */
+/* SECTION: Others */
+/* ========================================= */
+
+/* Styles for header-bar */
+.header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* Styles for units-section */
+.units-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+/* Styles for unit-delete */
 .unit-delete {
     position: absolute;
     top: -10px;
@@ -260,45 +719,21 @@ body.darkmode .unit-box.active {
     justify-content: center;
 }
 
-/* Table Layout for Roster */
-.table-responsive {
-    overflow-x: auto;
-    margin-top: 10px;
-    padding-bottom: 15px;
-    border-radius: 8px;
-}
-
-.roster-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 800px;
-    background: var(--card-bg);
-}
-
-.roster-table th,
-.roster-table td {
-    border: 1px solid var(--border-color);
-    padding: 10px;
-    vertical-align: top;
-}
-
-.roster-table th {
-    background: var(--bg-color);
-    text-align: center;
-}
-
+/* Styles for student-cell */
 .student-cell {
     width: 350px;
     min-width: 320px;
     padding: 0 !important;
 }
 
+/* Styles for mark-cell */
 .mark-cell {
     width: 140px;
     text-align: center;
     vertical-align: middle !important;
 }
 
+/* Styles for lesson-header */
 .lesson-header {
     display: flex;
     flex-direction: column;
@@ -307,6 +742,7 @@ body.darkmode .unit-box.active {
     position: relative;
 }
 
+/* Styles for lesson-date */
 .lesson-date {
     font-size: 0.8em;
     padding: 2px 4px;
@@ -319,26 +755,7 @@ body.darkmode .unit-box.active {
     color: var(--text-color);
 }
 
-.add-col-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-}
-
-.btn-add-lesson {
-    background: #95a5a6;
-    color: white;
-    font-size: 0.8em;
-    padding: 5px;
-    width: 100%;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
+/* Styles for col-delete */
 .col-delete {
     position: absolute;
     top: -12px;
@@ -358,19 +775,12 @@ body.darkmode .unit-box.active {
     z-index: 10;
 }
 
+/* Styles for col-delete */
 .col-delete:hover {
     opacity: 0.8;
 }
 
-/* Student Accordion */
-.student-card {
-    border: none;
-    margin: 0;
-    border-radius: 0;
-    background: transparent;
-    overflow: hidden;
-}
-
+/* Styles for student-header */
 .student-header {
     padding: 15px 15px;
     display: flex;
@@ -380,15 +790,18 @@ body.darkmode .unit-box.active {
     transition: background 0.2s;
 }
 
+/* Styles for student-header */
 .student-header:hover {
     background: var(--bg-color);
 }
 
+/* Styles for student-actions */
 .student-actions {
     display: flex;
     gap: 8px;
 }
 
+/* Styles for student-details */
 .student-details {
     padding: 15px;
     border-top: 1px solid var(--border-color);
@@ -396,71 +809,20 @@ body.darkmode .unit-box.active {
     display: none;
 }
 
-.form-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-}
 
-.form-group {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
+/* Profile Button Colors */
+.saveprofile { background-color: #27ae60 !important; color: white !important; }
+.deleteprofile { background-color: #c0392b !important; color: white !important; }
+.cancelprofile { background-color: #95a5a6 !important; color: white !important; }
 
-.form-group label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    font-size: 0.8em;
-}
-
-.form-group input,
-.form-group textarea {
-    padding: 6px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background: var(--input-bg);
-    color: var(--text-color);
-    font-size: 0.9em;
-    font-family: inherit;
-}
-
-.parent-email-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-}
-
-.parent-email-row input {
-    flex: 1;
-    padding: 6px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background: var(--input-bg);
-    color: var(--text-color);
-}
-
-.btn-add-circle {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background-color: #95a5a6;
-    color: white;
-    border: none;
-    font-size: 18px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-}
-
-.top-widget {
+/* Re-injected standard Topnav rules to fix profile UI */
+.topnav {
     position: absolute;
     top: 20px;
     background: var(--card-bg, #fff);
     padding: 10px 20px;
     border-radius: 8px;
-    border: 2px solid var(--border-color);
+    border: 2px solid rgb(139, 107, 35);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     z-index: 100;
     display: flex;
@@ -469,326 +831,25 @@ body.darkmode .unit-box.active {
     height: 65px;
     box-sizing: border-box;
 }
-
-body.darkmode .top-widget {
-    background: #2d2d2d;
-    border-color: rgb(212, 175, 55);
-}
-
-.profile-widget {
-    right: 20px;
-    cursor: pointer;
-    text-align: right;
-    border-color: rgb(139, 107, 35);
-}
-
-.date-widget {
+.datedisplayed {
     left: 20px;
     text-align: left;
-    border-color: rgb(139, 107, 35);
 }
-
-.date-widget-text {
+.datedisplayedtext {
     font-weight: bold;
     color: rgb(139, 107, 35);
     font-size: 1.1em;
     margin: 0;
 }
-
-body.darkmode .date-widget-text {
-    color: rgb(212, 175, 55);
+.profile {
+    right: 20px;
+    text-align: right;
+    cursor: pointer;
 }
-
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-}
-
-.modalcontent {
-    background-color: var(--card-bg);
-    padding: 30px;
-    border-radius: 10px;
-    border: 3px solid rgb(139, 107, 35);
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.signupinput {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.signupinput label {
-    font-weight: bold;
-    width: 140px;
-    text-align: left;
-}
-
-.signupinput input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background: var(--input-bg);
-    color: var(--text-color);
-    font-family: inherit;
-}
-
-/* Invisible Editable Class Name Styling */
-.inline-class-edit {
-    background: transparent;
-    border: none;
-    border-bottom: 2px dashed transparent;
-    color: var(--accent);
-    font-family: inherit;
-    font-size: inherit;
-    font-weight: bold;
-    outline: none;
-    padding: 0 5px;
-    width: 350px;
-    transition: all 0.2s;
-}
-
-.inline-class-edit:hover,
-.inline-class-edit:focus {
-    border-bottom: 2px dashed var(--accent);
-    background: rgba(0, 0, 0, 0.05);
-}
-
-body.darkmode .inline-class-edit:hover,
-body.darkmode .inline-class-edit:focus {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-body,
-button,
-input,
-select,
-textarea {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.top-widget {
-    position: absolute;
-    top: 20px;
-    background: var(--card-bg, #fff);
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: 2px solid var(--border-color);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 65px;
-    box-sizing: border-box;
-}
-
-body.darkmode .top-widget {
+body.darkmode .topnav {
     background: #2d2d2d;
     border-color: rgb(212, 175, 55);
 }
-
-.profile-widget {
-    right: 20px;
-    cursor: pointer;
-    text-align: right;
-    border-color: rgb(139, 107, 35);
-}
-
-.date-widget {
-    left: 20px;
-    text-align: left;
-    border-color: rgb(139, 107, 35);
-}
-
-.date-widget-text {
-    font-weight: bold;
-    color: rgb(139, 107, 35);
-    font-size: 1.1em;
-    margin: 0;
-}
-
-body.darkmode .date-widget-text {
+body.darkmode .datedisplayedtext {
     color: rgb(212, 175, 55);
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-}
-
-.modalcontent {
-    background-color: var(--card-bg);
-    padding: 30px;
-    border-radius: 10px;
-    border: 3px solid rgb(139, 107, 35);
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.inline-class-edit {
-    background: transparent;
-    border: none;
-    border-bottom: 2px dashed transparent;
-    color: var(--accent);
-    font-family: inherit;
-    font-size: inherit;
-    font-weight: bold;
-    outline: none;
-    padding: 0 5px;
-    width: 350px;
-    transition: all 0.2s;
-}
-
-.inline-class-edit:hover,
-.inline-class-edit:focus {
-    border-bottom: 2px dashed var(--accent);
-    background: rgba(0, 0, 0, 0.05);
-}
-
-body.darkmode .inline-class-edit:hover,
-body.darkmode .inline-class-edit:focus {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-#class-nav-bar {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-bottom: 25px;
-}
-
-.btn-class-nav {
-    margin: 0 !important;
-    width: 100% !important;
-    box-sizing: border-box;
-}
-
-#print-area {
-    display: none;
-}
-
-.print-class-btn {
-    background-color: rgb(212, 175, 55);
-    color: #000;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
-    font-size: 0.8em;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.2s;
-}
-
-.print-class-btn:hover {
-    background-color: rgb(240, 203, 83);
-}
-
-@media print {
-    @page {
-        size: landscape;
-        margin: 1cm;
-    }
-
-    body {
-        padding: 0;
-        background-color: white;
-    }
-
-    .container {
-        display: none !important;
-    }
-
-    #print-area {
-        display: block !important;
-    }
-
-    .table-responsive {
-        overflow: visible !important;
-    }
-
-    .roster-table {
-        min-width: unset !important;
-        width: 100% !important;
-        table-layout: fixed;
-    }
-
-    .roster-table th,
-    .roster-table td {
-        word-wrap: break-word;
-        padding: 5px !important;
-        font-size: 0.85em;
-    }
-
-    .top-widget,
-    .nav-link,
-    .switch,
-    .darkmode-label,
-    #class-nav-bar,
-    .controls,
-    #add-student-form,
-    .import-section,
-    .units-section,
-    .student-actions,
-    .btn-add-circle,
-    .btn-add-lesson,
-    .col-delete,
-    .unit-add-box,
-    .unit-delete,
-    .parent-email-row,
-    label[style*="cursor:pointer"] input[type="file"],
-    button[title="Remove Image"] {
-        display: none !important;
-    }
-
-    th button {
-        display: none !important;
-    }
-
-    button[onclick="openTemplateModal()"] {
-        display: none !important;
-    }
-
-    input,
-    textarea {
-        border: none !important;
-        background: transparent !important;
-        resize: none;
-    }
-}
-
-.buttons,
-.saveprofile,
-.deleteprofile,
-.cancelprofile {
-    color: black !important;
-}
-
-/* Dark Mode Email Template Editor */
-body.darkmode .rich-editor {
-    background-color: white !important;
-    color: black !important;
 }

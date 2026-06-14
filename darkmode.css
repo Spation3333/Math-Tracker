@@ -1,138 +1,171 @@
-/*-------------------------Dark Theme-----------------------------------*/
-/*Toggle Switch Bar*/
-.themewrapper {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-}
+/* ========================================= */
+/* SECTION: Typography */
+/* ========================================= */
 
-/*Dark Mode Body*/
-body.darkmode {
-    background-color: rgb(26, 26, 26);
-    color: rgb(255, 255, 255);
-}
-
-/*Dark Mode Headers*/
-body.darkmode h1,
-body.darkmode h2 {
+/* Styles for elements (bodydarkmode h1 and ...) */
+body.darkmode h1, body.darkmode h2 {
     color: rgb(212, 175, 55);
 }
 
-/*Dark Mode Label*/
-body.darkmode label {
-    color: rgb(255, 255, 255);
+/* Styles for bodydarkmode classcard p */
+body.darkmode .classcard p {
+    color: white;
 }
 
-/*Dark Mode Textboxes*/
-body.darkmode input {
-    background-color: rgb(51, 51, 51);
-    color: rgb(255, 255, 255);
+/* Styles for bodydarkmode datedisplay */
+body.darkmode .datedisplay {
+    color: #3498db;
+}
+
+/* Styles for bodydarkmode indexportal */
+body.darkmode .indexportal {
+    background-color: #2d2d2d;
+}
+
+/* Styles for bodydarkmode signupportal */
+body.darkmode .signupportal {
+    background-color: #2d2d2d;
+}
+
+/* Styles for bodydarkmode recoveryportal */
+body.darkmode .recoveryportal {
+    background-color: #2d2d2d;
+}
+
+/* Styles for bodydarkmode classportal */
+body.darkmode .classportal {
+    background-color: #2d2d2d;
+}
+
+/* Styles for bodydarkmode portal-container */
+body.darkmode .portal-container {
+    background-color: #2d2d2d;
+}
+
+/* Styles for bodydarkmode rulebox */
+body.darkmode .rulebox {
+    background: #333;
     border-color: rgb(212, 175, 55);
 }
 
-/*Dark Mode Show Password Button*/
+/* Styles for bodydarkmode datedisplayedtext */
+body.darkmode .datedisplayedtext {
+    color: rgb(212, 175, 55);
+}
+
+/* Styles for bodydarkmode topnav */
+body.darkmode .topnav {
+    background: #2d2d2d;
+    border-color: rgb(212, 175, 55);
+}
+
+/* ========================================= */
+/* SECTION: Buttons */
+/* ========================================= */
+
+/* Styles for bodydarkmode togglebuttons */
 body.darkmode .togglebuttons {
     background-color: rgb(51, 51, 51);
     color: rgb(255, 255, 255);
     border-color: rgb(212, 175, 55);
 }
 
-/*Dark Mode Show Password Button When Hovering*/
+/* Styles for bodydarkmode togglebuttons */
 body.darkmode .togglebuttons:hover {
     background-color: rgb(55, 55, 55);
 }
 
-/*Dark Mode Add Class Box*/
-body.darkmode .addbox {
-    background-color: rgb(68, 68, 68);
+/* ========================================= */
+/* SECTION: Forms & Inputs */
+/* ========================================= */
+
+/* Styles for bodydarkmode label */
+body.darkmode label {
+    color: rgb(255, 255, 255);
+    color: #ffffff !important;
 }
 
-/*Dark Mode Add Class Box When Hovering*/
-body.darkmode .addbox:hover {
-    background-color: rgb(102, 102, 102);
-}
-
-/*Dark Mode Class Box*/
-body.darkmode .classcard {
+/* Styles for bodydarkmode input */
+body.darkmode input {
     background-color: rgb(51, 51, 51);
+    color: rgb(255, 255, 255);
     border-color: rgb(212, 175, 55);
 }
 
-/*Dark Mode Class Box Text*/
-body.darkmode .classcard p {
-    color: white;
+/* Styles for bodydarkmode darkmode-label */
+body.darkmode .darkmode-label {
+    color: white !important;
 }
 
-/*Dark Mode Class Letter*/
-body.darkmode .classletter {
-    color: rgb(212, 175, 55);
-}
+/* ========================================= */
+/* SECTION: Layout & Containers */
+/* ========================================= */
 
-/*Dark Mode Class Title*/
-.body.darkmode .cardtitle {
-    color: rgb(212, 175, 55);
-}
-
-/*Dark Mode Class Box Edit Button*/
-body.darkmode .cardedit .carddelete {
-    color: rgb(212, 175, 55);
-}
-
-/*Dark Mode Class Box Delete Button*/
+/* Styles for bodydarkmode modalcontent */
 body.darkmode .modalcontent {
     background-color: rgb(34, 34, 34);
     border-color: rgb(212, 175, 55);
 }
 
-/*Dark Mode Display Current Date*/
-body.darkmode .datedisplay {
-    color: #3498db;
+/* ========================================= */
+/* SECTION: Tables */
+/* ========================================= */
+
+/* Styles for themewrapper */
+.themewrapper {
+    position: absolute;
+    top: 20px;
+    right: 20px;
 }
 
-body.darkmode .indexportal {
-    background-color: #2d2d2d;
+/* ========================================= */
+/* SECTION: Dark Mode & Theme */
+/* ========================================= */
+
+/* Styles for bodydarkmode */
+body.darkmode {
+    background-color: rgb(26, 26, 26);
+    color: rgb(255, 255, 255);
+    --text-color: rgb(255, 255, 255);
+    --input-bg: rgb(51, 51, 51);
+    --border-color: rgb(212, 175, 55);
+    --card-bg: rgb(26, 26, 26);
 }
 
-body.darkmode .signupportal {
-    background-color: #2d2d2d;
+/* Styles for bodydarkmode addbox */
+body.darkmode .addbox {
+    background-color: rgb(68, 68, 68);
 }
 
-body.darkmode .recoveryportal {
-    background-color: #2d2d2d;
+/* Styles for bodydarkmode addbox */
+body.darkmode .addbox:hover {
+    background-color: rgb(102, 102, 102);
 }
 
-body.darkmode .classportal {
-    background-color: #2d2d2d;
-}
-
-body.darkmode .portal-container {
-    background-color: #2d2d2d;
-}
-
-body.darkmode label {
-    color: #ffffff !important;
-}
-
-body.darkmode .rulebox {
-    background: #333;
+/* Styles for bodydarkmode classcard */
+body.darkmode .classcard {
+    background-color: rgb(51, 51, 51);
     border-color: rgb(212, 175, 55);
 }
 
-body.darkmode .datedisplayedtext {
+/* Styles for bodydarkmode classletter */
+body.darkmode .classletter {
     color: rgb(212, 175, 55);
 }
 
-body.darkmode .topnav {
-    background: #2d2d2d;
-    border-color: rgb(212, 175, 55);
+/* Styles for bodydarkmode cardtitle */
+.body.darkmode .cardtitle {
+    color: rgb(212, 175, 55);
 }
 
-body.darkmode .darkmode-label {
-    color: white !important;
+/* Styles for elements (bodydarkmode cardedi...) */
+body.darkmode .cardedit .carddelete {
+    color: rgb(212, 175, 55);
 }
 
-/* Dark Mode Email Template Editor */
+/* Styles for bodydarkmode rich-editor */
 body.darkmode .rich-editor {
     background-color: white !important;
     color: black !important;
 }
+

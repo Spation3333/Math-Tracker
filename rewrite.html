@@ -8,8 +8,7 @@
     <link rel="icon" type="Images/png" href="Images/logo.png"> <!-- Favicon -->
     <link href="styles.css" rel="stylesheet" /> <!-- Links to styles.css file -->
     <link href="darkmode.css" rel="stylesheet" /> <!-- Links to darkmode.css file -->
-    <link href="extraStyles.css" rel="stylesheet" /> <!-- Links to extraStyles.css file -->
-</head> <!-- End of Head -->
+    </head> <!-- End of Head -->
 
 <body> <!-- Start of Body -->
 
@@ -29,30 +28,30 @@
 
         <div id="class-nav-bar" class="class-nav-bar"></div> <!-- Class Navigation Bar -->
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0px; width: 100%;">
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <input type="text" id="rewrite-search" placeholder="Search..." title="Search student by name" oninput="renderRewriteList()" style="padding: 10px; border: 1px solid var(--border-color, #ccc); border-radius: 5px; background: var(--input-bg, #fff); color: var(--text-color, #333); font-family: inherit; font-size: 0.95em; box-sizing: border-box; min-width: 200px;">
-                <select id="rewrite-sort" onchange="sortRewriteStudents()" style="padding: 10px; border: 1px solid var(--border-color, #ccc); border-radius: 5px; background: var(--input-bg, #fff); color: var(--text-color, #333); font-family: inherit; font-size: 0.95em; cursor: pointer;">
-                    <option value="first-asc">First Name (A-Z)</option>
-                    <option value="first-desc">First Name (Z-A)</option>
-                    <option value="last-asc">Last Name (A-Z)</option>
-                    <option value="last-desc">Last Name (Z-A)</option>
-                </select>
-            </div>
-            <button id="btn-clear-all" class="btn-clear-all" onclick="clearRewriteList()" style="display: none;">Clear All</button>
-        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0px; width: 100%;"> <!-- Start of Div Container -->
+            <div style="display: flex; gap: 10px; align-items: center;"> <!-- Start of Div Container -->
+                <input type="text" id="rewrite-search" placeholder="Search..." title="Search student by name" oninput="renderRewriteList()" style="padding: 10px; border: 1px solid var(--border-color, #ccc); border-radius: 5px; background: var(--input-bg, #fff); color: var(--text-color, #333); font-family: inherit; font-size: 0.95em; box-sizing: border-box; min-width: 200px;"> <!-- Input Field -->
+                <select id="rewrite-sort" onchange="sortRewriteStudents()" style="padding: 10px; border: 1px solid var(--border-color, #ccc); border-radius: 5px; background: var(--input-bg, #fff); color: var(--text-color, #333); font-family: inherit; font-size: 0.95em; cursor: pointer;"> <!-- HTML Element -->
+                    <option value="first-asc">First Name (A-Z)</option> <!-- HTML Element -->
+                    <option value="first-desc">First Name (Z-A)</option> <!-- HTML Element -->
+                    <option value="last-asc">Last Name (A-Z)</option> <!-- HTML Element -->
+                    <option value="last-desc">Last Name (Z-A)</option> <!-- HTML Element -->
+                </select> <!-- HTML Element -->
+            </div> <!-- End of Container -->
+            <button id="btn-clear-all" class="btn-clear-all" onclick="clearRewriteList()" style="display: none;">Clear All</button> <!-- Button Element -->
+        </div> <!-- End of Container -->
 
         <div id="rewrite-list-container"></div> <!-- The Area Where The Rewrite List Is Displayed -->
 
         <div id="rewrite-student-modal" class="modal"> <!-- Start of Rewrite Student Modal -->
-            <div class="modalcontent" style="max-width: 450px; width: 100%;">
-                <h2 id="rewrite-modal-title" style="margin-top:0;">Class Name</h2>
-                <div id="rewrite-modal-student-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto;">
-                </div>
-                <div class="modalaction" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                    <button class="buttons cancelprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="closeRewriteStudentModal()">Close</button>
-                </div>
-            </div>
+            <div class="modalcontent" style="max-width: 450px; width: 100%;"> <!-- Start of modalcontent Container -->
+                <h2 id="rewrite-modal-title" style="margin-top:0;">Class Name</h2> <!-- Subtitle -->
+                <div id="rewrite-modal-student-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto;"> <!-- Start of rewrite-modal-student-list Container -->
+                </div> <!-- End of Container -->
+                <div class="modalaction" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;"> <!-- Start of modalaction Container -->
+                    <button class="btn cancelprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="closeRewriteStudentModal()">Close</button> <!-- Button Element -->
+                </div> <!-- End of Container -->
+            </div> <!-- End of Container -->
         </div> <!-- End of Rewrite Student Modal -->
 
         <div id="profile-modal" class="modal"> <!-- Start of Profile Modal -->
@@ -94,9 +93,9 @@
                 </div> <!-- End of Password -->
 
                 <div class="modalaction" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;"> <!-- Start of Bottom Row With Buttons -->
-                    <button class="buttons saveprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="saveProfile()">Save Changes</button> <!-- Save Profile Button -->
-                    <button class="buttons deleteprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="deleteAccount()">Delete Account</button> <!-- Delete Profile Button -->
-                    <button class="buttons cancelprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="closeProfileModal()">Cancel</button> <!-- Close Profile Popup Button -->
+                    <button class="btn saveprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="saveProfile()">Save Changes</button> <!-- Save Profile Button -->
+                    <button class="btn deleteprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="deleteAccount()">Delete Account</button> <!-- Delete Profile Button -->
+                    <button class="btn cancelprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="closeProfileModal()">Cancel</button> <!-- Close Profile Popup Button -->
                 </div> <!-- End of Bottom Row With Buttons -->
 
             </div> <!-- End of Profile Modal Contents -->
@@ -106,7 +105,7 @@
 
         <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; box-sizing: border-box;"> <!-- Start of Bottom Row -->
             <div style="display: flex; justify-content: flex-start;"> <!-- Start of Bottom Left -->
-                <a href="select.html" class="buttons backbuttons" style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0;"> back </a> <!-- Back Button -->
+                <a href="select.html" class="btn backbuttons" style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0;"> back </a> <!-- Back Button -->
             </div> <!-- End of Bottom Left -->
 
             <div></div> <!-- Bottom Middle -->
@@ -125,8 +124,6 @@
     <script src="script.js"></script> <!-- Links to script.js File -->
     <script src="keyboardNav.js"></script> <!-- Links to keyboardNav.js File -->
 
-    <script src="extraScript.js"></script> <!-- Links to extraScript.js File -->
-
-</body> <!-- End of Body -->
+    </body> <!-- End of Body -->
 
 </html> <!-- End of HTML -->

@@ -8,16 +8,16 @@ window.onload = () => { // Attach an event listener that runs when the entire HT
 
         if (themeToggle) { // Check if the theme toggle element actually exists on the current page
             themeToggle.checked = true;  // Set the toggle switch to the 'checked' state visually
-        }
-    }
+        } // End of block
+    } // End of block
 
     if (themeToggle) { // Check again if the theme toggle exists on the current page to attach a listener
         themeToggle.addEventListener('change', () => {  // Attach an event listener that fires whenever the toggle switch is flipped
             document.body.classList.toggle('darkmode'); // Toggle the 'darkmode' CSS class on the body on or off
             const currentTheme = document.body.classList.contains('darkmode') ? 'dark' : 'light'; // Determine if the 'darkmode' class is currently applied to the body
             localStorage.setItem('theme', currentTheme); // Save the newly determined theme preference into local storage for future visits
-        });
-    }
+        }); // Executes code logic
+    } // End of block
 
     // --- LOGIN PAGE LOGIC ---
     const pinField = document.getElementById('loginPin'); // Retrieve the PIN input field specifically from the login page
@@ -33,8 +33,8 @@ window.onload = () => { // Attach an event listener that runs when the entire HT
                     if (users[email].pin === this.value) { // Check if the PIN associated with the current looped user matches the typed PIN
                         account = users[email]; // If it matches, assign that user's object to the account variable
                         break; // Break out of the loop since the correct account has been found
-                    }
-                }
+                    } // End of block
+                } // End of block
 
                 if (account) { // Check if a matching account was successfully found in the loop
                     localStorage.setItem('currentUser', JSON.stringify(account)); // Save the matched account to local storage as the 'currentUser' to establish an active session
@@ -42,48 +42,48 @@ window.onload = () => { // Attach an event listener that runs when the entire HT
                     document.body.style.transition = 'opacity 0.2s ease'; // Apply a smooth transition effect to the opacity change
                     setTimeout(() => { // Wait for 250 milliseconds to let the fade animation play out
                         window.location.href = "select.html"; // Redirect the user's browser to the class selection portal
-                    }, 250);
-                } else {
+                    }, 250); // Executes code logic
+                } else { // Alternative condition
                     alert("Incorrect PIN."); // Alert the user via a popup box that the PIN they entered does not exist
                     this.value = ""; // Clear the input field so the user can try entering their PIN again
-                }
-            }
-        });
-    }
+                } // End of block
+            } // End of block
+        }); // Executes code logic
+    } // End of block
 
     // --- SIGNUP PAGE LOGIC ---
-    const signupBtn = document.getElementById('signupBtn'); // Retrieve the signup button from the DOM
+    const signupButtons = document.getElementById('signupButtons'); // Retrieve the signup button from the DOM
 
-    if (signupBtn) { // If the signup button exists, it means we are currently on the signup.html page
+    if (signupButtons) { // If the signup button exists, it means we are currently on the signup.html page
         const signupInputs = ['pin', 'confPin', 'firstName', 'lastName', 'email', 'appPassword']; // Define an array of all the input field IDs present on the signup form
         signupInputs.forEach(id => { // Iterate over each ID in the array
             const el = document.getElementById(id); // Retrieve the HTML element corresponding to the current ID
             if (el) { // Check to ensure the element was found in the DOM
                 el.addEventListener('input', validateSignupForm); // Add an input event listener to run the signup validation function on every keystroke
-            }
-        });
+            } // End of block
+        }); // Executes code logic
 
         setupEyeToggle('appPassword', 'toggleAppPass'); // Call the helper function to attach the show/hide eye logic to the App Password field
         setupEyeToggle('pin', 'togglePin'); // Call the helper function to attach the show/hide eye logic to the main PIN field
         setupEyeToggle('confPin', 'toggleConfPin'); // Call the helper function to attach the show/hide eye logic to the Confirm PIN field
-    }
+    } // End of block
 
     // --- RECOVERY PAGE LOGIC ---
-    const resetBtn = document.getElementById('resetBtn'); // Retrieve the reset password button from the DOM
-    if (resetBtn) { // If the reset button exists, it means we are currently on the recovery.html page
+    const resetButtons = document.getElementById('resetButtons'); // Retrieve the reset password button from the DOM
+    if (resetButtons) { // If the reset button exists, it means we are currently on the recovery.html page
         const recoveryInputs = ['newPin', 'confPin', 'recoveryCode']; // Define an array of input field IDs required for step 2 of the recovery process
         recoveryInputs.forEach(id => { // Iterate over each ID in the recovery array
             const el = document.getElementById(id); // Retrieve the HTML element corresponding to the current ID
             if (el) { // Check to ensure the element was found in the DOM
 
                 el.addEventListener('input', validateRecoveryForm); // Add an input event listener to run the recovery validation function on every keystroke
-            }
-        });
+            } // End of block
+        }); // Executes code logic
 
         setupEyeToggle('newPin', 'toggleNewPin'); // Call the helper function to attach the show/hide eye logic to the new PIN field
         setupEyeToggle('confPin', 'toggleConfPin'); // Call the helper function to attach the show/hide eye logic to the Confirm PIN field
-    }
-};
+    } // End of block
+}; // Executes code logic
 
 // --- GLOBAL FUNCTIONS ---
 window.togglePassword = function () { // Define a globally accessible function to toggle password visibility on the main login screen
@@ -93,18 +93,18 @@ window.togglePassword = function () { // Define a globally accessible function t
     if (pinInput.type === "password") { // Check if the input field's type attribute is currently set to 'password' (hidden characters)
         pinInput.type = "text"; // Change the type attribute to 'text' to reveal the inputted characters
         eyeIcon.textContent = "🔒"; // Change the button's text content to a lock emoji to indicate it can be hidden again
-    } else {
+    } else { // Alternative condition
         pinInput.type = "password"; // Change the type attribute back to 'password' to conceal the characters
         eyeIcon.textContent = "👁️"; // Change the button's text content back to an eye emoji to indicate it can be revealed again
-    }
-};
+    } // End of block
+}; // Executes code logic
 
 window.quitApp = function () { // Define a globally accessible function to simulate quitting the application
     if (confirm("Close MathTrack Portal?")) { // Prompt the user with a confirmation dialog box asking if they want to close the portal
         window.close(); // Attempt to close the current browser window (often blocked by modern browsers if not opened via script)
         document.body.innerHTML = "<h1 style='text-align:center; margin-top:50px;'>You may now close this tab.</h1>"; // Replace the entire body of the HTML with a message instructing the user to manually close the tab
-    }
-};
+    } // End of block
+}; // Executes code logic
 
 
 function setupEyeToggle(inputId, toggleId) { // Define a helper function to set up eye toggle functionality for dynamic inputs on signup/recovery
@@ -116,9 +116,9 @@ function setupEyeToggle(inputId, toggleId) { // Define a helper function to set 
             const type = inputEl.getAttribute('type') === 'password' ? 'text' : 'password'; // Determine the new type: if it is currently 'password', set to 'text', otherwise set back to 'password'
             inputEl.setAttribute('type', type); // Apply the determined type back to the input element
             this.textContent = type === 'password' ? '👁️' : '🔒'; // Change the text content of the clicked element to the corresponding emoji
-        });
-    }
-}
+        }); // Executes code logic
+    } // End of block
+} // End of block
 
 
 window.validateSignupForm = function () { // Define a globally accessible function to validate the signup form dynamically
@@ -142,17 +142,17 @@ window.validateSignupForm = function () { // Define a globally accessible functi
     const last = document.getElementById('lastName').value.trim(); // Retrieve and trim whitespace from the last name input field
     const email = document.getElementById('email').value.trim(); // Retrieve and trim whitespace from the email input field
     const appPass = document.getElementById('appPassword').value.trim(); // Retrieve and trim whitespace from the app password input field
-    const btn = document.getElementById('signupBtn'); // Retrieve the main sign up submit button element
+    const buttons = document.getElementById('signupButtons'); // Retrieve the main sign up submit button element
 
 
     if (isLengthValid && isNumValid && isMatchValid && first !== "" && last !== "" && email !== "" && appPass !== "") { // Check if all three PIN rules are valid AND none of the text fields are blank
-        btn.disabled = false; // If all conditions are met, remove the disabled attribute from the submit button
-        btn.style.opacity = '1'; // Restore the visual opacity of the submit button to 100%
-    } else {
-        btn.disabled = true; // If any condition fails, re-apply the disabled attribute to the submit button
-        btn.style.opacity = '0.5'; // Drop the visual opacity of the submit button to 50% to show it is inactive
-    }
-};
+        buttons.disabled = false; // If all conditions are met, remove the disabled attribute from the submit button
+        buttons.style.opacity = '1'; // Restore the visual opacity of the submit button to 100%
+    } else { // Alternative condition
+        buttons.disabled = true; // If any condition fails, re-apply the disabled attribute to the submit button
+        buttons.style.opacity = '0.5'; // Drop the visual opacity of the submit button to 50% to show it is inactive
+    } // End of block
+}; // Executes code logic
 
 window.createAccount = function () { // Define a globally accessible function to handle writing the new user to the database
     
@@ -162,19 +162,19 @@ window.createAccount = function () { // Define a globally accessible function to
         email: document.getElementById('email').value.trim().toLowerCase(), // Map the trimmed email value, converted to lowercase for consistency, to the email property
         appPassword: document.getElementById('appPassword').value.trim(), // Map the trimmed app password value to the appPassword property
         pin: document.getElementById('pin').value // Map the raw 4-digit PIN value to the pin property
-    };
+    }; // Executes code logic
 
     const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {}; // Fetch the existing user database from local storage, or initialize an empty object
 
     if (users[userObj.email]) { // Check if a user with the same email already exists in the local database
         return alert("An account with this email already exists!"); // Alert the user and immediately exit the function if the email is taken
-    }
+    } // End of block
 
     users[userObj.email] = userObj; // Assign the new user object to the users database using the email as the unique key
     localStorage.setItem('mathTrackUsers', JSON.stringify(users)); // Stringify and save the updated users database back into local storage
     localStorage.setItem('currentUser', JSON.stringify(userObj)); // Set the newly created user as the active current session in local storage
     window.location.href = 'select.html'; // Redirect the browser window to the class selection page
-};
+}; // Executes code logic
 
 window.sendCode = async function () { // Define an asynchronous function to handle sending the recovery code email
     const emailInput = document.getElementById('email').value.trim().toLowerCase(); // Fetch, trim, and lowercase the email provided by the user in step 1
@@ -182,19 +182,19 @@ window.sendCode = async function () { // Define an asynchronous function to hand
 
     if (!emailInput) { // Check if the email field was left completely blank
         return alert("Please enter your email."); // Alert the user and stop execution if blank
-    }
+    } // End of block
     
     if (!users[emailInput]) { // Check if the provided email actually exists in the local database
         return alert("No account found matching that email."); // Alert the user and stop execution if the email is not registered
-    }
+    } // End of block
 
     targetEmail = emailInput; // Set the global targetEmail variable to the validated email input
     generatedCode = Math.floor(1000 + Math.random() * 9000).toString(); // Generate a random 4-digit code by calculating a math floor between 1000 and 9999, then convert to string
 
-    const btn = document.getElementById('sendBtn'); // Get the "Send Recovery Code" button element from the DOM
+    const buttons = document.getElementById('sendButtons'); // Get the "Send Recovery Code" button element from the DOM
     
-    btn.innerText = "Sending..."; // Change the button text to inform the user that the sending process is ongoing
-    btn.disabled = true; // Disable the button to prevent the user from clicking it multiple times
+    buttons.innerText = "Sending..."; // Change the button text to inform the user that the sending process is ongoing
+    buttons.disabled = true; // Disable the button to prevent the user from clicking it multiple times
 
     try { // Open a try-catch block to handle the asynchronous network request safely
         
@@ -202,23 +202,23 @@ window.sendCode = async function () { // Define an asynchronous function to hand
             method: 'POST', // Specify the HTTP method as POST
             headers: { 'Content-Type': 'application/json' }, // Define the request headers to declare the payload as JSON data
             body: JSON.stringify({ email: targetEmail, code: generatedCode }) // Stringify the payload containing the target email and the generated code
-        });
+        }); // Executes code logic
 
         if (response.ok) { // Check if the server responded with an OK (200) status
             document.getElementById('step1').style.display = 'none'; // Hide the UI block representing step 1 (entering the email)
             document.getElementById('step2').style.display = 'block'; // Reveal the UI block representing step 2 (entering the code and new PIN)
             document.getElementById('instructionText').innerText = `Recovery code sent to ${targetEmail}`; // Update the instructional text at the top to confirm the email was dispatched
-        } else {
+        } else { // Alternative condition
             alert("Failed to send email. Check server console."); // Alert the user if the server responded with an error code
-            btn.innerText = "Send Recovery Code"; // Reset the button text back to its original state
-            btn.disabled = false; // Re-enable the button so the user can try again
-        }
-    } catch (err) {
+            buttons.innerText = "Send Recovery Code"; // Reset the button text back to its original state
+            buttons.disabled = false; // Re-enable the button so the user can try again
+        } // End of block
+    } catch (err) { // Executes code logic
         alert("Server offline. Ensure your node server is running."); // Alert the user if the fetch request failed entirely (e.g., server is offline)
-        btn.innerText = "Send Recovery Code"; // Reset the button text back to its original state
-        btn.disabled = false; // Re-enable the button so the user can try again
-    }
-};
+        buttons.innerText = "Send Recovery Code"; // Reset the button text back to its original state
+        buttons.disabled = false; // Re-enable the button so the user can try again
+    } // End of block
+}; // Executes code logic
 
 window.validateRecoveryForm = function () { // Define a globally accessible function to validate the recovery form dynamically
     const pin = document.getElementById('newPin').value; // Retrieve the string value from the new PIN input field
@@ -238,16 +238,16 @@ window.validateRecoveryForm = function () { // Define a globally accessible func
     document.getElementById('rule-match').className = isMatchValid ? 'rule valid' : 'rule'; // Update the CSS class of the match rule div based on the flag status
     document.getElementById('rule-match').innerText = isMatchValid ? '✅ PINs must match' : '❌ PINs must match'; // Update the inner text of the match rule div to show the corresponding visual checkmark or X
 
-    const resetBtn = document.getElementById('resetBtn'); // Retrieve the reset password final submission button element
+    const resetButtons = document.getElementById('resetButtons'); // Retrieve the reset password final submission button element
 
     if (isLengthValid && isNumValid && isMatchValid && code.length === 4) { // Verify all three PIN validation rules are true and that the inputted recovery code is exactly 4 characters
-        resetBtn.disabled = false; // If all logic checks out, remove the disabled attribute from the reset button
-        resetBtn.style.opacity = '1'; // Restore full 100% opacity to the reset button to visually show it is clickable
-    } else {
-        resetBtn.disabled = true; // If any check fails, re-apply the disabled attribute to the reset button
-        resetBtn.style.opacity = '0.5'; // Drop the opacity to 50% to visually indicate the button is inactive
-    }
-};
+        resetButtons.disabled = false; // If all logic checks out, remove the disabled attribute from the reset button
+        resetButtons.style.opacity = '1'; // Restore full 100% opacity to the reset button to visually show it is clickable
+    } else { // Alternative condition
+        resetButtons.disabled = true; // If any check fails, re-apply the disabled attribute to the reset button
+        resetButtons.style.opacity = '0.5'; // Drop the opacity to 50% to visually indicate the button is inactive
+    } // End of block
+}; // Executes code logic
 
 
 window.resetPassword = function () { // Define a globally accessible function to finalize the password reset
@@ -256,7 +256,7 @@ window.resetPassword = function () { // Define a globally accessible function to
     if (codeInput !== generatedCode) { // Cross-reference the inputted code with the generated code stored in the global variable
         alert("Incorrect recovery code. Please check your email."); // Alert the user if the codes do not match identically
         return; // Break out of the function to stop the reset process
-    }
+    } // End of block
 
     const users = JSON.parse(localStorage.getItem('mathTrackUsers')) || {}; // Retrieve the full user database from local storage
     
@@ -270,8 +270,8 @@ window.resetPassword = function () { // Define a globally accessible function to
         currentUser.pin = document.getElementById('newPin').value; // Update the active session token's PIN property to match the new one to prevent desync
         
         localStorage.setItem('currentUser', JSON.stringify(currentUser)); // Resave the updated active session token back to local storage
-    }
+    } // End of block
 
     alert("PIN successfully reset! You can now log in."); // Fire an alert to let the user know the backend processing was successful
     window.location.href = 'index.html'; // Redirect the user back to the primary index/login page
-};
+}; // Executes code logic

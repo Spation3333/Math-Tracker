@@ -440,7 +440,7 @@ function selectUnit(index) { // Define helper function to change units programma
 // --- DATA & TABLE LOGIC --- // Section header comment
 async function loadStudentsData() { // Define an asynchronous function to fetch the student roster from the SQLite database
     try { // Open try block for network request
-        const response = await fetch(`http://localhost:3000/api/data/${encodeURIComponent(currentClass)}`); // Send GET request to fetch roster matching active class
+        const response = await fetch(`http://localhost:3000/api/data/${encodeURIComponent(currentClass)}?t=${Date.now()}`); // Send GET request to fetch roster matching active class
         const json = await response.json(); // Parse the server's response
         studentsData = json.data || []; // Load the array into working memory, defaulting to empty if missing
 
@@ -1066,7 +1066,7 @@ async function saveNewStudent() { // Function to save newly input student
         loadStudentsData(); // Refetch table so new addition appears
 
     } catch (err) { // Network catch
-        alert("Error adding student. Make sure your server is running."); // Notify
+        alert("Error adding student: " + err.message + "\nMake sure your server is running."); // Notify
     } // Block end
 } // Function end
 // --- EMAIL LOGIC --- // Section header comment

@@ -3,6 +3,7 @@ const sqlite3 = require('sqlite3').verbose(); // Import the SQLite3 module for d
 const cors = require('cors'); // Import the CORS middleware to handle Cross-Origin Resource Sharing
 const path = require('path'); // Import the path module to securely construct file system paths
 const nodemailer = require('nodemailer'); // Import the Nodemailer library for sending emails
+const cron = require('node-cron'); // Import node-cron for scheduling background tasks
 
 const app = express(); // Initialize the Express application instance
 
@@ -32,6 +33,13 @@ const db = new sqlite3.Database(dbPath, (err) => { // Connect to the SQLite data
                 class_name TEXT
             )`);
             db.run("ALTER TABLE Students ADD COLUMN contacts_info TEXT", (err) => { }); // Attempt to add the contacts_info column just in case an older version of the table exists; ignore errors if it already does
+
+            // New Teachers Table to store credentials and data for background jobs
+            db.run(`CREATE TABLE IF NOT EXISTS Teachers (
+                email TEXT PRIMARY KEY,
+                app_password TEXT,
+                app_data TEXT
+            )`);
 
             // New Textbook Inventory Tables
             db.run(`CREATE TABLE IF NOT EXISTS Courses (
@@ -67,6 +75,21 @@ const db = new sqlite3.Database(dbPath, (err) => { // Connect to the SQLite data
 }); // End of database connection block
 
 // --- NEW UNIFIED EMAIL ENDPOINT WITH ATTACHMENT SUPPORT --- // Section header comment
+
+// --- SYNC DATA ENDPOINT --- //
+app.post('/api/sync-teacher', (req, res) => { // Endpoint to backup teacher data for cron jobs
+    const { email, appPassword, appData } = req.body; // Extract data
+    if (!email) return res.status(400).json({ error: "Missing email" }); // Validate
+
+    // Insert or update teacher credentials and data
+    db.run(`INSERT INTO Teachers (email, app_password, app_data) VALUES (?, ?, ?) 
+            ON CONFLICT(email) DO UPDATE SET app_password=excluded.app_password, app_data=excluded.app_data`,
+        [email, appPassword, JSON.stringify(appData)], function (err) { // Execute safely
+            if (err) return res.status(500).json({ error: err.message }); // Error check
+            res.json({ status: "Synced" }); // Success
+        }); // Executes code logic
+}); // Executes code logic
+
 app.post('/api/send-emails', (req, res) => { // Define a POST endpoint for sending batched emails to students/guardians
     const { emailsToSend, senderEmail, senderPassword } = req.body; // Destructure the required payload parameters from the incoming request body
 
@@ -275,4 +298,214 @@ app.post('/api/send-recovery', (req, res) => { // Define a POST endpoint trigger
     }); // End of dispatch function
 }); // End of send-recovery endpoint
 
-app.listen(3000, () => console.log(`Server live at http://localhost:3000`)); // Start the Express web server listening on port 3000 and log a confirmation line
+// --- AUTOMATED WEEKLY EMAIL CRON JOB --- //
+const DEFAULT_EMAIL_TEMPLATE = `<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.4; color: #333;">
+Hello [RecipientName],<br><br>
+Here is [StudentName]'s progress for the week of [Week]:<br><br>
+[Grades]<br><br>
+[TeacherNotes]<br><br>
+Best Regards,<br>
+[TeacherName]
+</div>`; // Define the standard HTML scaffolding for outgoing progress reports
+
+function getSafeMonday(dateString) { // Define a helper function to reliably calculate the Monday of a given week string
+    if (!dateString || dateString.startsWith("Unit")) { // If the string is missing or uses the legacy "Unit X" format
+        dateString = new Date().toISOString().split('T')[0]; // Override it with today's date formatted as YYYY-MM-DD
+    } // End of legacy check
+    let parts = dateString.split('-'); // Split the date string into an array of [Year, Month, Day]
+    if (parts.length === 3) { // Ensure the split resulted in exactly 3 parts
+        let d = new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0); // Construct a new Date object using local time noon to avoid timezone shift bugs
+        let day = d.getDay(); // Determine the current day of the week (0-6, where 0 is Sunday)
+        let diff = d.getDate() - day + (day === 0 ? -6 : 1); // Calculate the numerical offset needed to shift back to the most recent Monday
+        d.setDate(diff); // Apply the offset to the Date object to lock it to Monday
+        return d; // Return the adjusted Date object
+    } // End of parts validation
+    return new Date(); // If parsing fails entirely, return today's date as a fallback
+} // End of getSafeMonday function
+
+function buildServerGradeMessage(studentName, recipientName, sMarks, isStudent, activeUnitIndex, unitsData, classLessonsData, currentClass, currentUser, appData, customTemplate = null) { // Defines buildServerGradeMessage function
+    const mondayStr = unitsData[activeUnitIndex]; // Executes code logic
+    let weekDate = getSafeMonday(mondayStr); // Executes code logic
+
+    let tableHeaders = `<th style="border: 1px solid black; padding: 5px; text-align: left; font-weight: bold;">Date</th>`; // Executes code logic
+    let tableTitles = `<td style="border: 1px solid black; padding: 5px; text-align: left; font-weight: bold;">Lesson</td>`; // Executes code logic
+    let tableMarks = `<td style="border: 1px solid black; padding: 5px; text-align: left; font-weight: bold;">Marks</td>`; // Executes code logic
+
+    [0, 1, 2, 3, 4].forEach(i => { // Executes code logic
+        let d = getSafeMonday(mondayStr); // Executes code logic
+        d.setDate(d.getDate() + i); // Executes code logic
+        let fullDateName = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }); // Executes code logic
+
+        let title = (classLessonsData[activeUnitIndex] && classLessonsData[activeUnitIndex].titles) ? classLessonsData[activeUnitIndex].titles[i] : ""; // Executes code logic
+
+        const mark = sMarks[`d${i}`] || ""; // Executes code logic
+        const markText = mark === "" ? "" : `${mark}%`; // Executes code logic
+        const isLate = sMarks[`d${i}_late`] ? " (late)" : ""; // Executes code logic
+
+        tableHeaders += `<th style="border: 1px solid black; padding: 5px; text-align: left; font-weight: normal;">${fullDateName}</th>`; // Executes code logic
+        tableTitles += `<td style="border: 1px solid black; padding: 5px; text-align: left;">${title}</td>`; // Executes code logic
+        tableMarks += `<td style="border: 1px solid black; padding: 5px; text-align: left;">${markText}${isLate}</td>`; // Executes code logic
+    }); // Executes code logic
+
+    let gradesHTMLTable = `
+    <table style="border-collapse: collapse; width: 100%; max-width: 800px; font-family: Arial, sans-serif; color: #333; margin-top: 5px; margin-bottom: 5px;">
+        <tr>${tableHeaders}</tr>
+        <tr>${tableTitles}</tr>
+        <tr>${tableMarks}</tr>
+    </table>`;
+
+    let notesText = ""; // Executes code logic
+    if (sMarks['notes'] && sMarks['notes'].trim() !== "") { // Conditional check
+        notesText = sMarks['notes'].replace(/\n/g, '<br>'); // Executes code logic
+    } // End of block
+
+    let template = customTemplate || appData[`emailTemplate_${currentClass}`] || DEFAULT_EMAIL_TEMPLATE; // Executes code logic
+    template = template.replace(/<strong>Teacher Notes:<\/strong><br>/g, ''); // Executes code logic
+
+    if (notesText === "") { // Conditional check
+        template = template.replace(/\s*\[TeacherNotes\]\s*(?:<br>\s*){0,2}/g, ''); // Executes code logic
+    } // End of block
+
+    let text = template // Executes code logic
+        .replace(/\[RecipientName\]/g, recipientName) // Executes code logic
+        .replace(/\[StudentName\]/g, studentName) // Executes code logic
+        .replace(/\[Week\]/g, weekDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) // Executes code logic
+        .replace(/\[Grades\]/g, gradesHTMLTable) // Executes code logic
+        .replace(/\[TeacherNotes\]/g, notesText) // Executes code logic
+        .replace(/\[TeacherName\]/g, `${currentUser.firstName} ${currentUser.lastName}`); // Executes code logic
+
+    return text.trim(); // Returns value
+} // End of block
+
+function getServerEmailAttachments(sMarks) { // Extracts image attachments exactly like the client
+    let attachments = []; // Executes code logic
+    if (sMarks['note_image']) { // Conditional check
+        attachments.push({ // Executes code logic
+            filename: 'teacher_note.jpg', // Executes code logic
+            path: sMarks['note_image'] // Executes code logic
+        }); // Executes code logic
+    } // End of block
+    return attachments; // Returns value
+} // End of block
+
+function getCurrentUnitIndex(unitsData) { // Finds the active unit by looking at the closest past Monday
+    const today = new Date(); // Executes code logic
+    let bestIndex = "0"; // default
+    let smallestDiff = Infinity; // Executes code logic
+    
+    for (let i = 0; i < unitsData.length; i++) { // Starts loop
+        let monday = getSafeMonday(unitsData[i]); // Executes code logic
+        let diff = today.getTime() - monday.getTime(); // Executes code logic
+        if (diff >= 0 && diff < smallestDiff) { // Monday is in the past
+            smallestDiff = diff; // Executes code logic
+            bestIndex = i.toString(); // Executes code logic
+        } // End of block
+    } // End of block
+    return bestIndex; // Returns value
+} // End of block
+
+ // CRON SCHEDULE: Runs every Friday at 2:15 PM EST ('15 14 * * 5')
+// TEST INSTRUCTIONS: To test this feature every minute, change '15 14 * * 5' to '* * * * *'
+cron.schedule('15 14 * * 5', () => { // Initialize schedule
+    console.log("Running weekly automated emails..."); // Logs output to console
+    
+    // Fetch all teachers from the database
+    db.all("SELECT * FROM Teachers", [], (err, teachers) => { // Executes code logic
+        if (err) return console.error("Error fetching teachers for cron job:", err); // Conditional check
+        
+        teachers.forEach(teacher => { // Iterate over all synced teachers
+            if (!teacher.app_data) return; // Conditional check
+            let appData; // Executes code logic
+            try { appData = JSON.parse(teacher.app_data); } catch(e) { return; } // Parses JSON data
+            if (!teacher.app_password) return; // Needs password to send
+
+            const currentUser = appData.currentUser || { firstName: "Teacher", lastName: "" }; // Executes code logic
+
+            // Fetch students linked to this teacher
+            db.all("SELECT * FROM Students WHERE class_name LIKE ?", [`${teacher.email}_%`], (err, students) => { // Executes code logic
+                if (err) return console.error("Cron fetch students err:", err); // Conditional check
+                if (!students || students.length === 0) return; // Conditional check
+
+                let emailsToSend = []; // Executes code logic
+
+                students.forEach(student => { // Iterate over their students
+                    const currentClass = student.class_name; // Executes code logic
+                    const uniqueDbClassName = currentClass; // Executes code logic
+                    
+                    const classMarksData = appData[`marks_${uniqueDbClassName}`] || {}; // Executes code logic
+                    const unitsData = appData[`units_${uniqueDbClassName}`] || []; // Executes code logic
+                    const classLessonsData = appData[`lessons_${uniqueDbClassName}`] || {}; // Executes code logic
+
+                    if (unitsData.length === 0) return; // No units
+
+                    // Determine active unit based on current date
+                    const activeUnitIndex = getCurrentUnitIndex(unitsData); // Executes code logic
+                    const sMarks = (classMarksData[student.id] && classMarksData[student.id][activeUnitIndex]) || {}; // Executes code logic
+
+                    // Extract custom overrides if they exist
+                    const overrideKey = `emailOverride_${currentClass}_${activeUnitIndex}_${student.id}`; // Executes code logic
+                    const customOverrideTemplate = appData[overrideKey]; // Executes code logic
+
+                    // Extract image attachments if notes exist
+                    const attachments = getServerEmailAttachments(sMarks); // Executes code logic
+
+                    if (student.student_email && student.student_email.trim()) { // Add student email
+                        emailsToSend.push({ // Executes code logic
+                            to: student.student_email.trim(), // Executes code logic
+                            subject: `MathTrack Grades - ${student.name}`, // Executes code logic
+                            text: buildServerGradeMessage(student.name, student.name, sMarks, true, activeUnitIndex, unitsData, classLessonsData, currentClass, currentUser, appData, customOverrideTemplate), // Executes code logic
+                            attachments: attachments // Executes code logic
+                        }); // Executes code logic
+                    } // End of block
+
+                    let parsedContacts = []; // Executes code logic
+                    if (student.contacts_info) { // Conditional check
+                        try { parsedContacts = JSON.parse(student.contacts_info); } catch (e) { } // Parses JSON data
+                    } else if (student.guardian_email) { // Conditional check
+                        student.guardian_email.split(',').forEach(e => parsedContacts.push({ name: '', rel: '', email: e.trim() })); // Executes code logic
+                    } // End of block
+
+                    parsedContacts.forEach(c => { // Add guardian emails
+                        if (c.email && c.email.trim()) { // Conditional check
+                            let contactName = (c.name && c.name.trim()) ? c.name.trim() : 'Guardian'; // Executes code logic
+                            emailsToSend.push({ // Executes code logic
+                                to: c.email.trim(), // Executes code logic
+                                subject: `MathTrack Grades - ${student.name}`, // Executes code logic
+                                text: buildServerGradeMessage(student.name, contactName, sMarks, false, activeUnitIndex, unitsData, classLessonsData, currentClass, currentUser, appData, customOverrideTemplate), // Executes code logic
+                                attachments: attachments // Executes code logic
+                            }); // Executes code logic
+                        } // End of block
+                    }); // Executes code logic
+                }); // End students loop
+
+                // Send the batched emails automatically via NodeMailer
+                if (emailsToSend.length > 0) { // Conditional check
+                    const transporter = nodemailer.createTransport({ // Executes code logic
+                        service: 'gmail', // Executes code logic
+                        auth: { user: teacher.email, pass: teacher.app_password } // Executes code logic
+                    }); // Executes code logic
+
+                    let promises = emailsToSend.map(mail => { // Executes code logic
+                        return transporter.sendMail({ // Returns value
+                            from: teacher.email, // Executes code logic
+                            to: mail.to, // Executes code logic
+                            subject: mail.subject, // Executes code logic
+                            html: mail.text, // Executes code logic
+                            attachments: mail.attachments || [] // Injects images if attached
+                        }); // Executes code logic
+                    }); // Executes code logic
+
+                    Promise.all(promises) // Executes code logic
+                        .then(() => console.log(`Successfully sent ${emailsToSend.length} automated emails for ${teacher.email}`)) // Logs output to console
+                        .catch(err => console.error(`Error sending automated emails for ${teacher.email}:`, err)); // Logs error to console
+                } // End of block
+            }); // End student fetch
+        }); // End teachers loop
+    }); // End db query
+}, { // Executes code logic
+    timezone: "America/New_York" // Executes code logic
+}); // End cron configuration
+
+
+app.listen(3000, () => console.log(`Server live at http://localhost:3000`)); 
+// Start the Express web server listening on port 3000 and log a confirmation line

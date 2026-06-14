@@ -91,8 +91,8 @@
                 </div> <!-- End of Class Text Color -->
 
                 <div class="modalaction" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;"> <!-- Start of Bottom Area With Buttons -->
-                    <button class="buttons" style="border:none; border-radius:5px;" onclick="saveClass()">Save</button> <!-- Save Class Button -->
-                    <button class="buttons cancelbutton" style="border:none; border-radius:5px; background-color: #95a5a6; color: white;" onclick="closeClass()">Cancel</button> <!-- Cancel Class Button -->
+                    <button class="btn" style="border:none; border-radius:5px;" onclick="saveClass()">Save</button> <!-- Save Class Button -->
+                    <button class="btn cancelbutton" style="border:none; border-radius:5px; background-color: #95a5a6; color: white;" onclick="closeClass()">Cancel</button> <!-- Cancel Class Button -->
                 </div> <!-- End of Bottom Area With Buttons -->
 
             </div> <!-- End of Class Modal Contents -->
@@ -137,9 +137,9 @@
                 </div> <!-- End of Password -->
 
                 <div class="modalaction" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;"> <!-- Start of Bottom Row With Buttons -->
-                    <button class="buttons saveprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="saveProfile()">Save Changes</button> <!-- Save Profile Button -->
-                    <button class="buttons deleteprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="deleteAccount()">Delete Account</button> <!-- Delete Profile Button -->
-                    <button class="buttons cancelprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="closeProfileModal()">Cancel</button> <!-- Close Profile Popup Button -->
+                    <button class="btn saveprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="saveProfile()">Save Changes</button> <!-- Save Profile Button -->
+                    <button class="btn deleteprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="deleteAccount()">Delete Account</button> <!-- Delete Profile Button -->
+                    <button class="btn cancelprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="closeProfileModal()">Cancel</button> <!-- Close Profile Popup Button -->
                 </div> <!-- End of Bottom Row With Buttons -->
 
             </div> <!-- End of Profile Modal Contents -->
@@ -149,13 +149,13 @@
 
         <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; box-sizing: border-box;"> <!-- Start of Bottom Row -->
             <div style="display: flex; justify-content: flex-start;"> <!-- Start of Bottom Left -->
-                <a href="index.html" class="buttons backbuttons" style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0;"> back </a> <!-- Back Button -->
+                <a href="index.html" class="btn backbuttons" style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0;"> back </a> <!-- Back Button -->
             </div> <!-- End of Bottom Left -->
 
             <div style="display: flex; justify-content: center; gap: 15px;"> <!-- Start of Bottom Middle -->
-                <a href="textbooks.html" class="buttons btn-textbooks" style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0; font-weight: bold;">Textbooks</a> <!-- Textbook Tracker Button -->
-                <a href="rewrite.html" class="buttons btn-rewrites" style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0; font-weight: bold;">Rewrites</a> <!-- Rewrite Tests Button -->
-                <a href="archive.html" class="buttons btn-archive" style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0; font-weight: bold;">Archived Classes</a> <!-- Archived Classes Button -->
+                <a href="textbooks.html" class="btn btn-textbooks" style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0; font-weight: bold;">Textbooks</a> <!-- Textbook Tracker Button -->
+                <a href="rewrite.html" class="btn btn-rewrites" style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0; font-weight: bold;">Rewrites</a> <!-- Rewrite Tests Button -->
+                <a href="archive.html" class="btn btn-archive" style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0; font-weight: bold;">Archived Classes</a> <!-- Archived Classes Button -->
             </div> <!-- End of Bottom Middle -->
 
             <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px;"> <!-- Start of Location for Darkmode Toggle -->
@@ -171,6 +171,7 @@
 
     <script src="script.js"></script> <!-- Links to script.js File -->
     <script src="keyboardNav.js"></script> <!-- Links to keyboardNav.js File -->
+    <script src="sync.js"></script> <!-- Automated Sync -->
 
 </body> <!-- End of Body -->
 

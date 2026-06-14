@@ -1,101 +1,109 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html> <!-- Start of HTML Document -->
+<html lang="en"> <!-- Start of HTML -->
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathTrack - Spreadsheet Textbook Inventory</title>
-    <link rel="icon" type="Images/png" href="images/logo.png">
-    <link href="styles.css" rel="stylesheet" />
-    <link href="darkmode.css" rel="stylesheet" />
-    <link href="extraStyles.css" rel="stylesheet" /> <!-- Links to extraStyles.css file -->
-</head>
+<head> <!-- Start of Head -->
+    <meta charset="UTF-8"> <!-- Tells What Characters to Use -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Matches Screen Width -->
+    <title>MathTrack - Spreadsheet Textbook Inventory</title> <!-- Title of Page -->
+    <link rel="icon" type="Images/png" href="images/logo.png"> <!-- Favicon -->
+    <link href="styles.css" rel="stylesheet" /> <!-- Links to styles.css file -->
+    <link href="darkmode.css" rel="stylesheet" /> <!-- Links to darkmode.css file -->
+    </head> <!-- End of Head -->
 
-<body>
+<body> <!-- Start of Body -->
 
-    <h1 class="welcomeheader" style="margin-bottom: 0px; font-size: 50px;">MathTrack</h1>
-    <h2 class="subtitle" style="margin-bottom: 30px; margin-top: 5px; font-size: 35px;">Spreadsheet Inventory</h2>
+    
+    <div class="topnav datedisplayed">
+        <p id="currentdate" class="datedisplayedtext"></p>
+    </div>
 
-    <div class="container">
-        <div class="tab-bar" id="dynamic-tabs">
-            <button class="tab-btn active" id="tabbtn-setup" onclick="switchTab('setup')">Instructions & Setup</button>
+    <div class="topnav profile" onclick="openProfileModal()">
+        <div id="profile-name" style="font-weight: bold; font-size: 1.1em; color: #3498db;"></div>
+        <div id="profile-email" style="font-size: 0.85em; color: gray;"></div>
+    </div>
+<h1 class="welcomeheader" style="margin-bottom: 0px; font-size: 50px;">MathTrack</h1> <!-- Main Title -->
+    <h2 class="subtitle" style="margin-bottom: 30px; margin-top: 5px; font-size: 35px;">Spreadsheet Inventory</h2> <!-- Subtitle -->
+
+    <div class="container"> <!-- Start of container Container -->
+        <div class="tab-bar" id="dynamic-tabs"> <!-- Start of dynamic-tabs Container -->
+            <button class="tab-buttons active" id="tabbuttons-setup" onclick="switchTab('setup')">Instructions & Setup</button> <!-- Button Element -->
             <!-- Course Tabs will be injected here -->
-            <button class="tab-btn" id="tabbtn-liabilities" style="margin-left:auto; background:#e74c3c; color:white;" onclick="switchTab('liabilities')">Liabilities Ledger</button>
-        </div>
+            <button class="tab-buttons" id="tabbuttons-liabilities" style="margin-left:auto; background:#e74c3c; color:white;" onclick="switchTab('liabilities')">Liabilities Ledger</button> <!-- Button Element -->
+        </div> <!-- End of Container -->
 
         <!-- SETUP & MASTER TOTALS TAB -->
-        <div id="tab-setup" class="tab-content active">
-            <div style="margin-bottom: 20px; padding: 15px; background: #eef7ff; border-left: 4px solid #3498db; color: #333; border-radius: 4px;">
-                <h3 style="margin-top:0;">Instructions</h3>
-                <ul>
-                    <li><strong>Active Sign-Outs:</strong> Type student name, teacher, and location.</li>
-                    <li><strong>Returns:</strong> Delete the student's name from the row to clear it.</li>
-                    <li><strong>Missing Books:</strong> Type "missing" in the location column. It will turn <span style="color:red; font-weight:bold;">RED</span> and prompt you to add the student to the Liabilities Ledger.</li>
-                    <li><strong>Repairs:</strong> Type "Binding" in the location. It will turn <span style="color:magenta; font-weight:bold;">PINK</span>.</li>
-                    <li><strong>Teacher Holds:</strong> Type "teacher" in the location. It will turn <span style="color:green; font-weight:bold;">GREEN</span>.</li>
-                    <li><strong>Before Distributing:</strong> Check the Liabilities Ledger tab to ensure the student has no outstanding fines.</li>
-                </ul>
-            </div>
+        <div id="tab-setup" class="tab-content active"> <!-- Start of tab-setup Container -->
+            <div style="margin-bottom: 20px; padding: 15px; background: #eef7ff; border-left: 4px solid #3498db; color: #333; border-radius: 4px;"> <!-- Start of Div Container -->
+                <h3 style="margin-top:0;">Instructions</h3> <!-- Section Title -->
+                <ul> <!-- Unordered List -->
+                    <li><strong>Active Sign-Outs:</strong> Type student name, teacher, and location.</li> <!-- List Item -->
+                    <li><strong>Returns:</strong> Delete the student's name from the row to clear it.</li> <!-- List Item -->
+                    <li><strong>Missing Books:</strong> Type "missing" in the location column. It will turn <span style="color:red; font-weight:bold;">RED</span> and prompt you to add the student to the Liabilities Ledger.</li> <!-- List Item -->
+                    <li><strong>Repairs:</strong> Type "Binding" in the location. It will turn <span style="color:magenta; font-weight:bold;">PINK</span>.</li> <!-- List Item -->
+                    <li><strong>Teacher Holds:</strong> Type "teacher" in the location. It will turn <span style="color:green; font-weight:bold;">GREEN</span>.</li> <!-- List Item -->
+                    <li><strong>Before Distributing:</strong> Check the Liabilities Ledger tab to ensure the student has no outstanding fines.</li> <!-- List Item -->
+                </ul> <!-- End of List -->
+            </div> <!-- End of Container -->
 
-            <div class="header-controls">
-                <h3>Textbook Prices & Totals (Master List)</h3>
-            </div>
+            <div class="header-controls"> <!-- Start of header-controls Container -->
+                <h3>Textbook Prices & Totals (Master List)</h3> <!-- Section Title -->
+            </div> <!-- End of Container -->
 
-            <div class="form-row">
-                <input type="text" id="new-course" placeholder="Course Code (e.g. MPM2D)">
-                <input type="text" id="new-title" placeholder="Title">
-                <input type="text" id="new-publisher" placeholder="Publisher">
-                <input type="number" id="new-cost" placeholder="Replacement Cost ($)" step="0.01">
-                <input type="number" id="new-qty" placeholder="Total Qty">
-                <button class="btn btn-primary" onclick="addCourse()">Add Book</button>
-            </div>
-            <div id="course-status" class="status-message" aria-live="polite"></div>
+            <div class="form-row"> <!-- Start of form-row Container -->
+                <input type="text" id="new-course" placeholder="Course Code (e.g. MPM2D)"> <!-- Input Field -->
+                <input type="text" id="new-title" placeholder="Title"> <!-- Input Field -->
+                <input type="text" id="new-publisher" placeholder="Publisher"> <!-- Input Field -->
+                <input type="number" id="new-cost" placeholder="Replacement Cost ($)" step="0.01"> <!-- Input Field -->
+                <input type="number" id="new-qty" placeholder="Total Qty"> <!-- Input Field -->
+                <button class="btn btn-primary" onclick="addCourse()">Add Book</button> <!-- Button Element -->
+            </div> <!-- End of Container -->
+            <div id="course-status" class="status-message" aria-live="polite"></div> <!-- Start of course-status Container -->
 
-            <table class="spreadsheet" id="courses-table">
-                <thead>
-                    <tr>
-                        <th>Course Code</th>
-                        <th>Title</th>
-                        <th>Publisher</th>
-                        <th>Replacement Cost ($)</th>
-                        <th>Total Qty</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="courses-tbody"></tbody>
-            </table>
-        </div>
+            <table class="spreadsheet" id="courses-table"> <!-- Start of Table -->
+                <thead> <!-- Table Header Cell -->
+                    <tr> <!-- Table Row -->
+                        <th>Course Code</th> <!-- Table Header Cell -->
+                        <th>Title</th> <!-- Table Header Cell -->
+                        <th>Publisher</th> <!-- Table Header Cell -->
+                        <th>Replacement Cost ($)</th> <!-- Table Header Cell -->
+                        <th>Total Qty</th> <!-- Table Header Cell -->
+                        <th>Action</th> <!-- Table Header Cell -->
+                    </tr> <!-- HTML Element -->
+                </thead> <!-- HTML Element -->
+                <tbody id="courses-tbody"></tbody> <!-- HTML Element -->
+            </table> <!-- End of Table -->
+        </div> <!-- End of Container -->
 
         <!-- COURSE SIGN-OUT SHEETS WILL BE INJECTED HERE -->
-        <div id="course-tabs-container"></div>
+        <div id="course-tabs-container"></div> <!-- Start of course-tabs-container Container -->
 
         <!-- LIABILITIES LEDGER -->
-        <div id="tab-liabilities" class="tab-content">
-            <div class="header-controls">
-                <h3 style="color: #e74c3c;">Liabilities Ledger</h3>
-            </div>
+        <div id="tab-liabilities" class="tab-content"> <!-- Start of tab-liabilities Container -->
+            <div class="header-controls"> <!-- Start of header-controls Container -->
+                <h3 style="color: #e74c3c;">Liabilities Ledger</h3> <!-- Section Title -->
+            </div> <!-- End of Container -->
 
-            <table class="spreadsheet" id="liabilities-table">
-                <thead>
-                    <tr>
-                        <th>Date Logged</th>
-                        <th>Student Name</th>
-                        <th>Teacher</th>
-                        <th>Course Code</th>
-                        <th>Textbook #</th>
-                        <th>Fine Amount</th>
-                        <th>Outcome</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="liabilities-tbody"></tbody>
-            </table>
-        </div>
+            <table class="spreadsheet" id="liabilities-table"> <!-- Start of Table -->
+                <thead> <!-- Table Header Cell -->
+                    <tr> <!-- Table Row -->
+                        <th>Date Logged</th> <!-- Table Header Cell -->
+                        <th>Student Name</th> <!-- Table Header Cell -->
+                        <th>Teacher</th> <!-- Table Header Cell -->
+                        <th>Course Code</th> <!-- Table Header Cell -->
+                        <th>Textbook #</th> <!-- Table Header Cell -->
+                        <th>Fine Amount</th> <!-- Table Header Cell -->
+                        <th>Outcome</th> <!-- Table Header Cell -->
+                        <th>Status</th> <!-- Table Header Cell -->
+                        <th>Action</th> <!-- Table Header Cell -->
+                    </tr> <!-- HTML Element -->
+                </thead> <!-- HTML Element -->
+                <tbody id="liabilities-tbody"></tbody> <!-- HTML Element -->
+            </table> <!-- End of Table -->
+        </div> <!-- End of Container -->
 
         <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; box-sizing: border-box; margin-top: 20px;"> <!-- Start of Bottom Row -->
             <div style="display: flex; justify-content: flex-start;"> <!-- Start of Bottom Left -->
-                <a href="select.html" class="buttons backbuttons" style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0;"> back </a> <!-- Back Button -->
+                <a href="select.html" class="btn backbuttons" style="border:none; border-radius:5px; padding: 10px 20px; text-decoration: none; margin: 0;"> back </a> <!-- Back Button -->
             </div> <!-- End of Bottom Left -->
             
             <div></div> <!-- Bottom Middle -->
@@ -108,10 +116,56 @@
                 </label> <!-- End of Darkmode Toggle -->
             </div> <!-- End of Location for Darkmode Toggle -->
         </div> <!-- End of Bottom Row -->
-    </div>
+    </div> <!-- End of Container -->
 
-    <script src="extraScript.js"></script>
-    <script src="keyboardNav.js"></script>
-</body>
+    <script src="script.js"></script> <!-- Links to script.js file -->
+    <script src="keyboardNav.js"></script> <!-- Links to keyboardNav.js file -->
+<div id="profile-modal" class="modal"> <!-- Start of Profile Modal -->
+            <div class="modalcontent" style="max-width: 450px; width: 100%;"> <!-- Start of Profile Modal Contents -->
+                
+                <h2 style="margin-top:0;">Edit Profile</h2> <!-- Title -->
 
-</html>
+                <div class="selectinput" style="justify-content: space-between;"> <!-- Start of First Name -->
+                    <label>First Name:</label> <!-- Label For First Name -->
+                    <input type="text" id="prof-fname"> <!-- Textbox for First Name -->
+                </div> <!-- End of First Name -->
+
+                <div class="selectinput" style="justify-content: space-between;"> <!-- Start of Last Name -->
+                    <label>Last Name:</label> <!-- Label For Last Name -->
+                    <input type="text" id="prof-lname"> <!-- Textbox for Last Name -->
+                </div> <!-- End of Last Name -->
+
+                <div class="selectinput" style="justify-content: space-between;"> <!-- Start of Email Address -->
+                    <label>Username:</label> <!-- Label For Email Address -->
+                    <input type="email" id="prof-email"> <!-- Textbox for Email Address -->
+                </div> <!-- End of Email Address -->
+
+                <div class="selectinput" style="justify-content: space-between;"> <!-- Start of App Password -->
+                    <label>App Password:</label> <!-- Label For App Password -->
+                    <div style="position: relative; flex: 1;"> <!-- Start of App Password Input -->
+                        <input type="password" id="prof-apppass" style="width: 100%; box-sizing: border-box; padding-right: 30px;"> <!-- Textbox for App Password -->
+                        <span id="toggleProfApp" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span> <!-- Show Password Eye Toggle -->
+                    </div> <!-- End of App Password Input -->
+                </div> <!-- End of App Password -->
+
+                <hr style="width:100%; border: 0; border-top: 1px solid var(--border-color, #ccc); margin: 20px 0;"> <!-- White Bar to Divide Top and Bottom Rows -->
+
+                <div class="selectinput" style="justify-content: space-between;"> <!-- Start of Password -->
+                    <label style="color: #e74c3c !important;">Confirm PIN:</label> <!-- Label For Password -->
+                    <div style="position: relative; flex: 1;"> <!-- Start of Password Input -->
+                        <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes" style="width: 100%; box-sizing: border-box; padding-right: 30px;"> <!-- Textbox for Password -->
+                        <span id="toggleProfPin" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span> <!-- Show Password Eye Toggle -->
+                    </div> <!-- End of Password Input -->
+                </div> <!-- End of Password -->
+
+                <div class="modalaction" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;"> <!-- Start of Bottom Row With Buttons -->
+                    <button class="btn saveprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="saveProfile()">Save Changes</button> <!-- Save Profile Button -->
+                    <button class="btn deleteprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="deleteAccount()">Delete Account</button> <!-- Delete Profile Button -->
+                    <button class="btn cancelprofile" style="border:none; border-radius:5px; padding: 10px 20px;" onclick="closeProfileModal()">Cancel</button> <!-- Close Profile Popup Button -->
+                </div> <!-- End of Bottom Row With Buttons -->
+
+            </div> <!-- End of Profile Modal Contents -->
+        </div> <!-- End of Profile Modal -->
+</body> <!-- End of Body -->
+
+</html> <!-- End of HTML -->

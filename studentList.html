@@ -12,171 +12,180 @@
 
 <body> <!-- Start of Body -->
 
-    <div class="top-widget date-widget">
-        <p id="currentdate" class="date-widget-text"></p>
-    </div>
+    <div class="topnav datedisplayed"> <!-- Start of top-widget date-widget Container -->
+        <p id="currentdate" class="datedisplayedtext"></p> <!-- Paragraph Text -->
+    </div> <!-- End of Container -->
 
-    <div class="top-widget profile-widget" onclick="openProfileModal()">
-        <div id="profile-name" style="font-weight: bold; font-size: 1.1em; color: #3498db;"></div>
-        <div id="profile-email" style="font-size: 0.85em; color: gray;"></div>
-    </div>
+    <div class="topnav profile" onclick="openProfileModal()"> <!-- Start of top-widget profile-widget Container -->
+        <div id="profile-name" style="font-weight: bold; font-size: 1.1em; color: #3498db;"></div> <!-- Start of profile-name Container -->
+        <div id="profile-email" style="font-size: 0.85em; color: gray;"></div> <!-- Start of profile-email Container -->
+    </div> <!-- End of Container -->
 
-    <div class="container" style="margin-top: 130px;">
-        <div class="header-bar">
-            <h1 style="margin: 0;">MathTrack Progress</h1>
-        </div>
+    <div class="container" style="margin-top: 130px;"> <!-- Start of container Container -->
+        <div class="header-bar"> <!-- Start of header-bar Container -->
+            <h1 style="margin: 0;">MathTrack Progress</h1> <!-- Main Title -->
+        </div> <!-- End of Container -->
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-            <a href="select.html" class="nav-link" style="margin-bottom: 0;">← Back to Classes</a>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;"> <!-- Start of Div Container -->
+            <a href="select.html" class="nav-link" style="margin-bottom: 0;">← Back to Classes</a> <!-- Hyperlink -->
 
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span class="darkmode-label">Dark Mode</span>
-                <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider round"></span></label>
-            </div>
-        </div>
+            <div style="display: flex; align-items: center; gap: 10px;"> <!-- Start of Div Container -->
+                <span class="darkmode-label">Dark Mode</span> <!-- HTML Element -->
+                <label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider round"></span></label> <!-- Input Field -->
+            </div> <!-- End of Container -->
+        </div> <!-- End of Container -->
 
-        <div id="class-nav-bar" class="class-nav-bar"></div>
+        <div id="class-nav-bar" class="class-nav-bar"></div> <!-- Start of class-nav-bar Container -->
 
-        <div class="controls" style="align-items: flex-start;">
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                <h2 style="margin: 0; display: flex; align-items: center; gap: 5px;">
-                    Viewing:
-                    <input type="text" id="current-class-input" class="inline-class-edit" value="Loading..." title="Click to rename class">
-                </h2>
-                <button class="btn btn-primary" style="width: fit-content;" onclick="toggleAddStudentForm()">+ Add
-                    Student</button>
-            </div>
+        <div class="controls" style="align-items: flex-start;"> <!-- Start of controls Container -->
+            <div style="display: flex; flex-direction: column; gap: 15px;"> <!-- Start of Div Container -->
+                <h2 style="margin: 0; display: flex; align-items: center; gap: 5px;"> <!-- Subtitle -->
+                    Viewing: <!-- HTML Element -->
+                    <input type="text" id="current-class-input" class="inline-class-edit" value="Loading..." title="Click to rename class"> <!-- Input Field -->
+                </h2> <!-- HTML Element -->
+                <button class="btn btn-primary" style="width: fit-content;" onclick="toggleAddStudentForm()">+ Add <!-- Button Element -->
+                    Student</button> <!-- HTML Element -->
+            </div> <!-- End of Container -->
 
-            <div style="display: flex; flex-direction: column; gap: 10px; min-width: 250px;">
-                <button class="btn btn-success" style="width: 100%;" onclick="emailAllStudents()">📧 Email
-                    Class</button>
-                <button class="btn btn-danger" style="width: 100%;" onclick="deleteClassRoster()">🗑️ Delete
-                    Class</button>
-                <span id="emailStatus" style="text-align: center;"></span>
-            </div>
-        </div>
+            <div style="display: flex; flex-direction: column; gap: 10px; min-width: 250px;"> <!-- Start of Div Container -->
+                <button class="btn btn-success" style="width: 100%;" onclick="emailAllStudents()">📧 Email <!-- Button Element -->
+                    Class</button> <!-- HTML Element -->
+                <button class="btn btn-danger" style="width: 100%;" onclick="deleteClassRoster()">🗑️ Delete <!-- Button Element -->
+                    Class</button> <!-- HTML Element -->
+                <span id="emailStatus" style="text-align: center;"></span> <!-- HTML Element -->
+            </div> <!-- End of Container -->
+        </div> <!-- End of Container -->
 
         <div id="add-student-form" style="display: none; background: var(--bg-color); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
-            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <input type="text" id="new-fname" placeholder="First Name" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
-                <input type="text" id="new-lname" placeholder="Last Name" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
-                <input type="text" id="new-semail" placeholder="Student Email (Optional)" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
-                <input type="text" id="new-cname" placeholder="Contact Name" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
-                <input type="text" id="new-crel" placeholder="Relationship" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
-                <input type="text" id="new-cemail" placeholder="Contact Email" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
-                <button class="btn btn-success" onclick="saveNewStudent()">Save Student</button>
-                <button class="btn" style="background-color: #95a5a6;" onclick="toggleAddStudentForm()">Cancel</button>
-            </div>
-        </div>
+    <div style="width: 100%; display: flex; gap: 10px; margin-bottom: 10px;">
+        <input type="text" id="new-fname" placeholder="First Name" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+        <input type="text" id="new-lname" placeholder="Last Name" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+        <input type="text" id="new-semail" placeholder="Student Email (Optional)" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+    </div>
+    <div style="width: 100%; display: flex; gap: 10px; margin-bottom: 10px;">
+        <input type="text" id="new-cname1" placeholder="Guardian 1 Name" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+        <input type="text" id="new-crel1" placeholder="Guardian 1 Relationship" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+        <input type="text" id="new-cemail1" placeholder="Guardian 1 Email" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+    </div>
+    <div style="width: 100%; display: flex; gap: 10px; margin-bottom: 10px;">
+        <input type="text" id="new-cname2" placeholder="Guardian 2 Name (Optional)" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+        <input type="text" id="new-crel2" placeholder="Guardian 2 Relationship (Optional)" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+        <input type="text" id="new-cemail2" placeholder="Guardian 2 Email (Optional)" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color);">
+    </div>
+    <div style="width: 100%; display: flex; justify-content: flex-start; gap: 10px;">
+        <button class="btn btn-success" style="color: white;" onclick="saveNewStudent()">Save Student</button>
+        <button class="btn" style="background-color: #95a5a6; color: white;" onclick="toggleAddStudentForm()">Cancel</button>
+    </div>
+</div> <!-- End of Container -->
 
-        <div class="import-section" id="import-box">
-            <p style="margin-top: 0;"><strong>Import Roster (.csv)</strong></p>
-            <input type="file" id="csv-file" accept=".csv" style="margin-bottom: 10px;">
-            <button class="btn" style="background-color: #2c3e50; color: white;" onclick="handleCSV()">Upload & Process</button>
-        </div>
+        <div class="import-section" id="import-box"> <!-- Start of import-box Container -->
+            <p style="margin-top: 0;"><strong>Import Roster (.csv)</strong></p> <!-- Paragraph Text -->
+            <input type="file" id="csv-file" accept=".csv" style="margin-bottom: 10px;"> <!-- Input Field -->
+            <button class="btn" style="background-color: #2c3e50; color: white;" onclick="handleCSV()">Upload & Process</button> <!-- Button Element -->
+        </div> <!-- End of Container -->
 
-        <div class="units-section">
-            <h3 style="margin-top: 0; margin-bottom: 15px; font-size: 1.3em;">1. Select Week</h3>
-            <div id="units-container" class="unit-container"></div>
-        </div>
+        <div class="units-section"> <!-- Start of units-section Container -->
+            <h3 style="margin-top: 0; margin-bottom: 15px; font-size: 1.3em;">1. Select Week</h3> <!-- Section Title -->
+            <div id="units-container" class="unit-container"></div> <!-- Start of units-container Container -->
+        </div> <!-- End of Container -->
 
-        <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 8px 15px; align-items: center; margin-bottom: 15px;">
+        <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 8px 15px; align-items: center; margin-bottom: 15px;"> <!-- Start of Div Container -->
             <!-- Left column spans both rows -->
-            <div style="grid-row: 1 / 3; display: inline-flex; flex-direction: column; gap: 5px; align-self: start;">
-                <h3 style="margin: 0; font-size: 1.3em; line-height: 1; white-space: nowrap;">2. Student Roster</h3>
-                <button class="btn btn-primary" style="width: 24%; font-size: 0.8em; padding: 4px 8px; box-sizing: border-box; white-space: nowrap;" onclick="openTemplateModal()">✎ Edit Class Email Template</button>
-                <button class="btn" style="width: 24%; font-size: 0.8em; padding: 4px 8px; background: #c9a227; box-sizing: border-box; white-space: nowrap;" onclick="printClassRoster()">🖨️ Print Class</button>
-            </div>
+            <div style="grid-row: 1 / 3; display: inline-flex; flex-direction: column; gap: 5px; align-self: start;"> <!-- Start of Div Container -->
+                <h3 style="margin: 0; font-size: 1.3em; line-height: 1; white-space: nowrap;">2. Student Roster</h3> <!-- Section Title -->
+                <button class="btn btn-primary" style="width: 24%; font-size: 0.8em; padding: 4px 8px; box-sizing: border-box; white-space: nowrap;" onclick="openTemplateModal()">✎ Edit Class Email Template</button> <!-- Button Element -->
+                <button class="btn" style="width: 24%; font-size: 0.8em; padding: 4px 8px; background: #c9a227; box-sizing: border-box; white-space: nowrap;" onclick="printClassRoster()">🖨️ Print Class</button> <!-- Button Element -->
+            </div> <!-- End of Container -->
 
-            <label style="font-weight: bold; font-size: 1em; color: var(--text-color); text-align: right;">Next Eval:</label>
-            <input type="text" id="next-eval-input" placeholder="e.g. May 25" title="Date of next evaluation" style="padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; font-size: 0.95em; width: 100%; box-sizing: border-box; min-width: 280px;">
+            <label style="font-weight: bold; font-size: 1em; color: var(--text-color); text-align: right;">Next Eval:</label> <!-- Label for Input -->
+            <input type="text" id="next-eval-input" placeholder="e.g. May 25" title="Date of next evaluation" style="padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; font-size: 0.95em; width: 100%; box-sizing: border-box; min-width: 280px;"> <!-- Input Field -->
 
-            <label style="font-weight: bold; font-size: 1em; color: var(--text-color); text-align: right;">Search:</label>
-            <div style="display: flex; gap: 5px; width: 100%; box-sizing: border-box; min-width: 280px;">
-                <input type="text" id="search-student-input" placeholder="e.g. John Smith" title="Search student by name" oninput="filterStudents()" style="flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; font-size: 0.95em; box-sizing: border-box; width: 100%;">
-                <select id="sort-student-select" onchange="sortStudents()" style="padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; font-size: 0.95em; cursor: pointer;">
-                    <option value="first-asc">First Name (A-Z)</option>
-                    <option value="first-desc">First Name (Z-A)</option>
-                    <option value="last-asc">Last Name (A-Z)</option>
-                    <option value="last-desc">Last Name (Z-A)</option>
-                </select>
-            </div>
-        </div>
-        <div id="roster-container" class="table-responsive"></div>
-    </div>
+            <label style="font-weight: bold; font-size: 1em; color: var(--text-color); text-align: right;">Search:</label> <!-- Label for Input -->
+            <div style="display: flex; gap: 5px; width: 100%; box-sizing: border-box; min-width: 280px;"> <!-- Start of Div Container -->
+                <input type="text" id="search-student-input" placeholder="e.g. John Smith" title="Search student by name" oninput="filterStudents()" style="flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; font-size: 0.95em; box-sizing: border-box; width: 100%;"> <!-- Input Field -->
+                <select id="sort-student-select" onchange="sortStudents()" style="padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--text-color); font-family: inherit; font-size: 0.95em; cursor: pointer;"> <!-- HTML Element -->
+                    <option value="first-asc">First Name (A-Z)</option> <!-- HTML Element -->
+                    <option value="first-desc">First Name (Z-A)</option> <!-- HTML Element -->
+                    <option value="last-asc">Last Name (A-Z)</option> <!-- HTML Element -->
+                    <option value="last-desc">Last Name (Z-A)</option> <!-- HTML Element -->
+                </select> <!-- HTML Element -->
+            </div> <!-- End of Container -->
+        </div> <!-- End of Container -->
+        <div id="roster-container" class="table-responsive"></div> <!-- Start of roster-container Container -->
+    </div> <!-- End of Container -->
 
-    <div id="profile-modal" class="modal">
-        <div class="modalcontent" style="max-width: 450px; width: 100%;">
-            <h2 style="margin-top:0;">Edit Profile</h2>
-            <div class="signupinput" style="justify-content: space-between;"><label>First Name:</label><input type="text" id="prof-fname"></div>
-            <div class="signupinput" style="justify-content: space-between;"><label>Last Name:</label><input type="text" id="prof-lname"></div>
-            <div class="signupinput" style="justify-content: space-between;"><label>Username:</label><input type="email" id="prof-email"></div>
+    <div id="profile-modal" class="modal"> <!-- Start of profile-modal Container -->
+        <div class="modalcontent" style="max-width: 450px; width: 100%;"> <!-- Start of modalcontent Container -->
+            <h2 style="margin-top:0;">Edit Profile</h2> <!-- Subtitle -->
+            <div class="signupinput" style="justify-content: space-between;"><label>First Name:</label><input type="text" id="prof-fname"></div> <!-- Start of prof-fname Container -->
+            <div class="signupinput" style="justify-content: space-between;"><label>Last Name:</label><input type="text" id="prof-lname"></div> <!-- Start of prof-lname Container -->
+            <div class="signupinput" style="justify-content: space-between;"><label>Username:</label><input type="email" id="prof-email"></div> <!-- Start of prof-email Container -->
 
-            <div class="signupinput" style="justify-content: space-between;">
-                <label>App Password:</label>
-                <div style="position: relative; flex: 1;">
-                    <input type="password" id="prof-apppass" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
-                    <span id="toggleProfApp" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
-                </div>
-            </div>
+            <div class="signupinput" style="justify-content: space-between;"> <!-- Start of signupinput Container -->
+                <label>App Password:</label> <!-- Label for Input -->
+                <div style="position: relative; flex: 1;"> <!-- Start of Div Container -->
+                    <input type="password" id="prof-apppass" style="width: 100%; box-sizing: border-box; padding-right: 30px;"> <!-- Input Field -->
+                    <span id="toggleProfApp" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span> <!-- HTML Element -->
+                </div> <!-- End of Container -->
+            </div> <!-- End of Container -->
 
-            <hr style="width:100%; border: 0; border-top: 1px solid var(--border-color, #ccc); margin: 20px 0;">
+            <hr style="width:100%; border: 0; border-top: 1px solid var(--border-color, #ccc); margin: 20px 0;"> <!-- HTML Element -->
 
-            <div class="signupinput" style="justify-content: space-between;">
-                <label style="color: #e74c3c !important;">Confirm PIN:</label>
-                <div style="position: relative; flex: 1;">
-                    <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes" style="width: 100%; box-sizing: border-box; padding-right: 30px;">
-                    <span id="toggleProfPin" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
-                </div>
-            </div>
+            <div class="signupinput" style="justify-content: space-between;"> <!-- Start of signupinput Container -->
+                <label style="color: #e74c3c !important;">Confirm PIN:</label> <!-- Label for Input -->
+                <div style="position: relative; flex: 1;"> <!-- Start of Div Container -->
+                    <input type="password" id="prof-pin" maxlength="4" placeholder="To authorize changes" style="width: 100%; box-sizing: border-box; padding-right: 30px;"> <!-- Input Field -->
+                    <span id="toggleProfPin" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span> <!-- HTML Element -->
+                </div> <!-- End of Container -->
+            </div> <!-- End of Container -->
 
-            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
-                <button class="btn" style="background-color: #c0392b; color: white;" onclick="deleteAccount()">Delete
-                    Account</button>
-                <button class="btn" style="background-color: #95a5a6; color: white;" onclick="closeProfileModal()">Cancel</button>
-            </div>
-        </div>
-    </div>
+            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;"> <!-- Start of Div Container -->
+                <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button> <!-- Button Element -->
+                <button class="btn" style="background-color: #c0392b; color: white;" onclick="deleteAccount()">Delete <!-- Button Element -->
+                    Account</button> <!-- HTML Element -->
+                <button class="btn" style="background-color: #95a5a6; color: white;" onclick="closeProfileModal()">Cancel</button> <!-- Button Element -->
+            </div> <!-- End of Container -->
+        </div> <!-- End of Container -->
+    </div> <!-- End of Container -->
 
-    <div id="template-modal" class="modal">
-        <div class="modalcontent" style="max-width: 600px; width: 100%;">
-            <h2 style="margin-top:0; margin-bottom: 5px;">Edit Class Email Template</h2>
-            <p style="font-size: 0.85em; color: gray; margin-top: 0; margin-bottom: 10px;">
-                Available Tags: [RecipientName], [StudentName], [Week], [Grades], [TeacherNotes], [TeacherName]
-            </p>
-            <div id="template-textarea" class="rich-editor" contenteditable="true"></div>
+    <div id="template-modal" class="modal"> <!-- Start of template-modal Container -->
+        <div class="modalcontent" style="max-width: 600px; width: 100%;"> <!-- Start of modalcontent Container -->
+            <h2 style="margin-top:0; margin-bottom: 5px;">Edit Class Email Template</h2> <!-- Subtitle -->
+            <p style="font-size: 0.85em; color: gray; margin-top: 0; margin-bottom: 10px;"> <!-- Paragraph Text -->
+                Available Tags: [RecipientName], [StudentName], [Week], [Grades], [TeacherNotes], [TeacherName] <!-- HTML Element -->
+            </p> <!-- HTML Element -->
+            <div id="template-textarea" class="rich-editor" contenteditable="true"></div> <!-- Start of template-textarea Container -->
 
-            <div style="margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
-                <button class="btn" style="background-color: #95a5a6; color: white;" onclick="closeTemplateModal()">Cancel</button>
-                <button class="btn" style="background-color: #2980b9; color: white;" onclick="restoreDefaultGlobalTemplate()">Default</button>
-                <button class="btn btn-primary" onclick="saveTemplate()" style="background-color: #27ae60;">Save
-                    Template</button>
-            </div>
-        </div>
-    </div>
+            <div style="margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px;"> <!-- Start of Div Container -->
+                <button class="btn" style="background-color: #95a5a6; color: white;" onclick="closeTemplateModal()">Cancel</button> <!-- Button Element -->
+                <button class="btn" style="background-color: #2980b9; color: white;" onclick="restoreDefaultGlobalTemplate()">Default</button> <!-- Button Element -->
+                <button class="btn btn-primary" onclick="saveTemplate()" style="background-color: #27ae60;">Save <!-- Button Element -->
+                    Template</button> <!-- HTML Element -->
+            </div> <!-- End of Container -->
+        </div> <!-- End of Container -->
+    </div> <!-- End of Container -->
 
-    <div id="individual-email-modal" class="modal">
-        <div class="modalcontent" style="max-width: 600px; width: 100%;">
-            <h2 style="margin-top:0; margin-bottom: 5px;">Edit Individual Email</h2>
-            <p style="font-size: 0.85em; color: gray; margin-top: 0; margin-bottom: 10px;">
-                Edit the template below for this specific student. Use tags like <strong>[RecipientName]</strong> and
-                <strong>[Grades]</strong> so they update automatically! Once complete, just click the green Done button.
-            </p>
+    <div id="individual-email-modal" class="modal"> <!-- Start of individual-email-modal Container -->
+        <div class="modalcontent" style="max-width: 600px; width: 100%;"> <!-- Start of modalcontent Container -->
+            <h2 style="margin-top:0; margin-bottom: 5px;">Edit Individual Email</h2> <!-- Subtitle -->
+            <p style="font-size: 0.85em; color: gray; margin-top: 0; margin-bottom: 10px;"> <!-- Paragraph Text -->
+                Edit the template below for this specific student. Use tags like <strong>[RecipientName]</strong> and <!-- HTML Element -->
+                <strong>[Grades]</strong> so they update automatically! Once complete, just click the green Done button. <!-- HTML Element -->
+            </p> <!-- HTML Element -->
 
-            <div id="individual-email-textarea" class="rich-editor" contenteditable="true"></div>
+            <div id="individual-email-textarea" class="rich-editor" contenteditable="true"></div> <!-- Start of individual-email-textarea Container -->
 
-            <div style="margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
-                <button class="btn" style="background-color: #95a5a6;" onclick="closeIndividualEmailModal()">Cancel</button>
-                <button class="btn" style="background-color: #2980b9;" onclick="restoreDefaultIndividualEmail()">Revert to Default</button>
-                <button class="btn btn-primary" onclick="saveIndividualEmailModal()" style="background-color: #27ae60;">Done</button>
-            </div>
-        </div>
-    </div>
+            <div style="margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px;"> <!-- Start of Div Container -->
+                <button class="btn" style="background-color: #95a5a6;" onclick="closeIndividualEmailModal()">Cancel</button> <!-- Button Element -->
+                <button class="btn" style="background-color: #2980b9;" onclick="restoreDefaultIndividualEmail()">Revert to Default</button> <!-- Button Element -->
+                <button class="btn btn-primary" onclick="saveIndividualEmailModal()" style="background-color: #27ae60;">Done</button> <!-- Button Element -->
+            </div> <!-- End of Container -->
+        </div> <!-- End of Container -->
+    </div> <!-- End of Container -->
 
     <script src="studentScript.js"></script> <!-- Links to studentScript.js File -->
     <script src="keyboardNav.js"></script> <!-- Links to keyboardNav.js File -->
-
+    <script src="sync.js"></script> <!-- Automated Sync -->
 </body> <!-- End of Body -->
 
 </html> <!-- End of HTML -->

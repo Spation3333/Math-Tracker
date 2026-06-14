@@ -1,0 +1,8 @@
+{
+  "esversion": 9,
+  "node": true,
+  "browser": true,
+  "asi": true,
+  "sub": true,
+  "loopfunc": true
+}
